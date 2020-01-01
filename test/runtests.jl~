@@ -1,0 +1,55 @@
+using Test
+using GEEBRA
+using Random
+
+## Ratios
+
+@testset "implementation for single parameters" begin
+    ## Ratio data
+    struct ratio_data
+        y::Vector
+        x::Vector
+    end
+
+    ## Ratio nobs
+    function ratio_nobs(data::ratio_data)
+        nx = length(data.x)
+        ny = length(data.y)
+        if (nx != ny) 
+            error("length of x is not equal to the length of y")
+        end
+        nx
+    end
+
+    ## Ratio contribution to estimating function
+    function ratio_ef(theta::Vector,
+                      data::ratio_data,
+                      i::Int64)
+        p = length(theta)
+        (data.y[i] .- theta * data.x[i])[1:p]
+    end
+
+    ## Set the ratio template
+    ratio_template = geebra_template(ratio_nobs, ratio_ef)
+    @inferred geebra_template(ratio_nobs, ratio_ef)
+    
+    ## Generate some data
+    Random.seed!(123);
+    my_data = ratio_data(randn(10), rand(10));
+
+    ## Get M-estimator for the ratio
+    result_m = solve_estimating_equation([0.1], my_data, ratio_template, false)
+    @inferred solve_estimating_equation([0.1], my_data, ratio_template, false)
+    ## Get reduced-bias estimator for the ratio
+    result_br = solve_estimating_equation([0.1], my_data, ratio_template, true)
+    @inferred solve_estimating_equation([0.1], my_data, ratio_template, true)
+
+    ## Quantities for estimators
+    sx = sum(my_data.x)
+    sxx = sum(my_data.x .* my_data.x)
+    sy = sum(my_data.y)
+    sxy = sum(my_data.x .* my_data.y)
+
+    @test isapprox(sy/sx, result_m.zero[1])
+    @test isapprox((sy + sxy/sx)/(sx + sxx/sx), result_br.zero[1])
+end
