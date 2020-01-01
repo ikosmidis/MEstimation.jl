@@ -1,7 +1,7 @@
 using Test
 
 ## Ratios
-@testset "implementation for a single parameter" begin
+@testset "ef implementation for a single parameter" begin
     using GEEBRA
     using Random
     
@@ -56,7 +56,7 @@ end
 
 
 ## Instrumental variables
-@testset "implementation for multiple parameters" begin
+@testset "ef implementation for multiple parameters" begin
     using GEEBRA
     using Random
     using Distributions
@@ -143,5 +143,11 @@ end
     @test isapprox(estimating_function(o2_br.zero, my_data, iv_template, true),
                    zeros(Float64, 2, 1),
                    atol = 1e-10)
-    
+end
+
+
+@testset "obj implementation for multiple parameters" begin
+end
+
+@testset "agreement between obj and ef implementations" begin
 end
