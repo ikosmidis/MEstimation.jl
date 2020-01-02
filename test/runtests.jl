@@ -149,6 +149,8 @@ end
 @testset "obj implementation for multiple parameters" begin
     using GEEBRA
     using Random
+    using Distributions
+    using Optim
     
     ## Ratio data
     struct logistic_data
@@ -192,12 +194,102 @@ end
     my_data = logistic_data(y, x, fill(m, n));
 
     logistic_template = geebra_obj_template(logistic_nobs, logistic_loglik)
+    @inferred geebra_obj_template(logistic_nobs, logistic_loglik)
 
-    objective_function(true_betas, my_data, logistic_template, false)
+    o1_ml = optimize(b -> -objective_function(b, my_data, logistic_template, false),
+                     true_betas, LBFGS())
+    o1_br = optimize(b -> -objective_function(b, my_data, logistic_template, true),
+                     true_betas, LBFGS())
 
-    objective_function(true_betas, my_data, logistic_template, true)
+    o2_ml = optimize_objective(true_betas, my_data, logistic_template, false)
+    o2_br = optimize_objective(true_betas, my_data, logistic_template, true)  
+
+    o3_ml = optimize(b -> -objective_function(b, my_data, logistic_template, false),
+                     true_betas, Optim.Options(iterations = 2))
+    o3_br = optimize(b -> -objective_function(b, my_data, logistic_template, true),
+                     true_betas, Optim.Options(iterations = 2))
+
+    o4_ml = optimize_objective(true_betas, my_data, logistic_template, false,
+                               method = NelderMead(),
+                               optim_options = Optim.Options(iterations = 2))
+    o4_br = optimize_objective(true_betas, my_data, logistic_template, true,
+                               method = NelderMead(),
+                               optim_options = Optim.Options(iterations = 2))
     
+    @test isapprox(Optim.minimizer(o1_ml), Optim.minimizer(o2_ml))
+    @test isapprox(Optim.minimizer(o1_br), Optim.minimizer(o2_br))
+    @test isapprox(Optim.minimizer(o3_ml), Optim.minimizer(o4_ml))
+    @test isapprox(Optim.minimizer(o3_br), Optim.minimizer(o4_br))
+   
 end
 
 @testset "agreement between obj and ef implementations" begin
+    using GEEBRA
+    using Random
+    using Distributions
+    using Optim
+    using NLsolve
+    
+    ## Ratio data
+    struct logistic_data
+        y::Vector
+        x::Array{Float64}
+        m::Vector
+    end
+
+    ## Ratio nobs
+    function logistic_nobs(data::logistic_data)
+        nx = size(data.x)[1]
+        ny = length(data.y)
+        nm = length(data.m)
+        if (nx != ny) 
+            error("number of rows in of x is not equal to the length of y")
+        elseif (nx != nm)
+            error("number of rows in of x is not equal to the length of m")
+        elseif (ny != nm)
+            error("length of y is not equal to the length of m")
+        end
+        nx
+    end
+
+    function logistic_loglik(theta::Vector,
+                             data::logistic_data,
+                             i::Int64)
+        eta = sum(data.x[i, :] .* theta)
+        mu = exp.(eta)./(1 .+ exp.(eta))
+        ll = data.y[i] .* log.(mu) + (data.m[i] - data.y[i]) .* log.(1 .- mu)
+        ll
+    end
+
+    function logistic_ef(theta::Vector,
+                         data::logistic_data,
+                         i::Int64)
+        eta = sum(data.x[i, :] .* theta)
+        mu = exp.(eta)./(1 .+ exp.(eta))
+        data.x[i, :] * (data.y[i] - data.m[i] * mu)
+    end
+
+    
+    Random.seed!(123);
+    n = 100;
+    m = 1;
+    x = Array{Float64}(undef, n, 2);
+    x[:, 1] .= 1.0;
+    x[:, 2] .= rand(n);
+    true_betas = [0.5, -1];
+    y = rand.(Binomial.(m, cdf.(Logistic(), x * true_betas)));
+    my_data = logistic_data(y, x, fill(m, n));
+
+    logistic_obj_template = geebra_obj_template(logistic_nobs, logistic_loglik)
+    logistic_ef_template = geebra_ef_template(logistic_nobs, logistic_ef)
+    
+    o1_ml = optimize_objective(true_betas, my_data, logistic_obj_template, false)
+    e1_ml = solve_estimating_equation(true_betas, my_data, logistic_ef_template, false)
+    o1_br = optimize_objective(true_betas, my_data, logistic_obj_template, true)
+    e1_br = solve_estimating_equation(true_betas, my_data, logistic_ef_template, true)
+
+    @test isapprox(o1_ml.minimizer, e1_ml.zero)
+    @test isapprox(o1_br.minimizer, e1_br.zero)
+    
+    
 end
