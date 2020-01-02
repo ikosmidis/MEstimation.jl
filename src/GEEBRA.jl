@@ -1,16 +1,16 @@
 module GEEBRA
 
 using NLsolve, ForwardDiff, LinearAlgebra
-export estimating_function, get_estimating_function, solve_estimating_equation, geebra_ef_template, geebra_obj_template
+export objective_function, estimating_function, get_estimating_function, solve_estimating_equation, geebra_ef_template, geebra_obj_template
 
 struct geebra_ef_template
     nobs::Function
-    ef_contributon::Function
+    ef_contribution::Function
 end
 
 struct geebra_obj_template
     nobs::Function
-    obj_contributon::Function
+    obj_contribution::Function
 end
 
 ## Objective
@@ -22,7 +22,7 @@ function objective_function(theta::Vector,
     n_obs = template.nobs(data)
     contributions = Vector(undef, n_obs)
     for i in 1:n_obs
-        contributions[i] = template.obj_contributon(theta, data, i)
+        contributions[i] = template.obj_contribution(theta, data, i)
     end
     if (br)
         quants = obj_quantities(theta, data, template, br)
@@ -42,7 +42,7 @@ function estimating_function(theta::Vector,
     n_obs = template.nobs(data)
     contributions = Matrix(undef, p, n_obs)
     for i in 1:n_obs
-        contributions[:, i] = template.ef_contributon(theta, data, i)
+        contributions[:, i] = template.ef_contribution(theta, data, i)
     end
     if (br)
         quants = ef_quantities(theta, data, template, br)
@@ -78,13 +78,13 @@ function ef_quantities(theta::Vector,
                        data::Any,
                        template::geebra_ef_template,
                        adjustment::Bool = false)
-    nj(eta::Vector, i::Int) = ForwardDiff.jacobian(beta -> template.ef_contributon(beta, data, i), eta)
+    nj(eta::Vector, i::Int) = ForwardDiff.jacobian(beta -> template.ef_contribution(beta, data, i), eta)
     p = length(theta)
     n_obs = template.nobs(data)
     psi = Matrix(undef, n_obs, p)
     njmats = Vector(undef, n_obs)
     for i in 1:n_obs
-        psi[i, :] =  template.ef_contributon(theta, data, i) 
+        psi[i, :] =  template.ef_contribution(theta, data, i) 
         njmats[i] = nj(theta, i)
     end
     jmat_inv = inv(-sum(njmats))
@@ -116,8 +116,8 @@ function obj_quantities(theta::Vector,
                         data::Any,
                         template::geebra_obj_template,
                         penalty::Bool = false)
-    npsi(eta::Vector, i::Int) = ForwardDiff.gradient(beta -> template.obj_contributon(beta, data, i), eta)
-    nj(eta::Vector, i::Int) = ForwardDiff.hessian(beta -> template.obj_contributon(beta, data, i), eta)
+    npsi(eta::Vector, i::Int) = ForwardDiff.gradient(beta -> template.obj_contribution(beta, data, i), eta)
+    nj(eta::Vector, i::Int) = ForwardDiff.hessian(beta -> template.obj_contribution(beta, data, i), eta)
     p = length(theta)
     n_obs = template.nobs(data)
     psi = Matrix(undef, n_obs, p)
@@ -128,8 +128,9 @@ function obj_quantities(theta::Vector,
     end
     jmat_inv = inv(-sum(njmats))
     emat = psi' * psi
+    emat = convert(Array{Float64, 2}, emat)
     vcov = jmat_inv * (emat * jmat_inv)
-    if (penalty)
+    if (penalty)        
         penalty = - tr(jmat_inv * emat) / 2
         [vcov, penalty]
     else

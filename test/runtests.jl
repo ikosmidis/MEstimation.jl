@@ -147,6 +147,56 @@ end
 
 
 @testset "obj implementation for multiple parameters" begin
+    using GEEBRA
+    using Random
+    
+    ## Ratio data
+    struct logistic_data
+        y::Vector
+        x::Array{Float64}
+        m::Vector
+    end
+
+    ## Ratio nobs
+    function logistic_nobs(data::logistic_data)
+        nx = size(data.x)[1]
+        ny = length(data.y)
+        nm = length(data.m)
+        if (nx != ny) 
+            error("number of rows in of x is not equal to the length of y")
+        elseif (nx != nm)
+            error("number of rows in of x is not equal to the length of m")
+        elseif (ny != nm)
+            error("length of y is not equal to the length of m")
+        end
+        nx
+    end
+
+    function logistic_loglik(theta::Vector,
+                             data::logistic_data,
+                             i::Int64)
+        eta = sum(data.x[i, :] .* theta)
+        mu = exp.(eta)./(1 .+ exp.(eta))
+        ll = data.y[i] .* log.(mu) + (data.m[i] - data.y[i]) .* log.(1 .- mu)
+        ll
+    end
+
+    Random.seed!(123);
+    n = 100;
+    m = 1;
+    x = Array{Float64}(undef, n, 2);
+    x[:, 1] .= 1.0;
+    x[:, 2] .= rand(n);
+    true_betas = [0.5, -1];
+    y = rand.(Binomial.(m, cdf.(Logistic(), x * true_betas)));
+    my_data = logistic_data(y, x, fill(m, n));
+
+    logistic_template = geebra_obj_template(logistic_nobs, logistic_loglik)
+
+    objective_function(true_betas, my_data, logistic_template, false)
+
+    objective_function(true_betas, my_data, logistic_template, true)
+    
 end
 
 @testset "agreement between obj and ef implementations" begin
