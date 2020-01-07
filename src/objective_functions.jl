@@ -1,4 +1,4 @@
-struct set_obj_template
+struct objective_template
     nobs::Function
     obj_contribution::Function
 end
@@ -6,7 +6,7 @@ end
 ## Objective
 function objective_function(theta::Vector,
                             data::Any,
-                            template::set_obj_template,
+                            template::objective_template,
                             br::Bool = false)
     p = length(theta)
     n_obs = template.nobs(data)
@@ -25,7 +25,7 @@ end
 ## optimize objective
 function optimize_objective(theta::Vector,
                             data::Any,
-                            template::set_obj_template,
+                            template::objective_template,
                             br::Bool = false;
                             method = LBFGS(),
                             optim_options = Optim.Options())
@@ -36,7 +36,7 @@ end
 
 function obj_quantities(theta::Vector,
                         data::Any,
-                        template::set_obj_template,
+                        template::objective_template,
                         penalty::Bool = false)
     npsi(eta::Vector, i::Int) = ForwardDiff.gradient(beta -> template.obj_contribution(beta, data, i), eta)
     nj(eta::Vector, i::Int) = ForwardDiff.hessian(beta -> template.obj_contribution(beta, data, i), eta)

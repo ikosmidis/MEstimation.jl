@@ -4,7 +4,7 @@ struct geebra_results
     results::Union{NLsolve.SolverResults, Optim.MultivariateOptimizationResults, Optim.UnivariateOptimizationResults}
     theta::Vector
     data::Any
-    template::Union{set_obj_template, set_ef_template}
+    template::Union{objective_template, estimating_function_template}
     br::Bool
     has_objective::Bool
 end

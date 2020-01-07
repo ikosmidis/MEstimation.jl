@@ -30,8 +30,8 @@ using Test
     end
 
     ## Set the ratio template
-    ratio_template = set_ef_template(ratio_nobs, ratio_ef)
-    @inferred set_ef_template(ratio_nobs, ratio_ef)
+    ratio_template = estimating_function_template(ratio_nobs, ratio_ef)
+    @inferred estimating_function_template(ratio_nobs, ratio_ef)
     
     ## Generate some data
     Random.seed!(123);
@@ -114,8 +114,8 @@ end
     end
 
     ## Set up IV geebra template
-    iv_template = set_ef_template(iv_nobs, iv_ef)
-    @inferred set_ef_template(iv_nobs, iv_ef)
+    iv_template = estimating_function_template(iv_nobs, iv_ef)
+    @inferred estimating_function_template(iv_nobs, iv_ef)
 
     ## Simulate data
     true_theta = [2.0, 2.0, 1.0, 3.0, 0.0, 1.0, 2.0, 1.0, 1.0]
@@ -193,8 +193,8 @@ end
     y = rand.(Binomial.(m, cdf.(Logistic(), x * true_betas)));
     my_data = logistic_data(y, x, fill(m, n));
 
-    logistic_template = set_obj_template(logistic_nobs, logistic_loglik)
-    @inferred set_obj_template(logistic_nobs, logistic_loglik)
+    logistic_template = objective_template(logistic_nobs, logistic_loglik)
+    @inferred objective_template(logistic_nobs, logistic_loglik)
 
     o1_ml = optimize(b -> -objective_function(b, my_data, logistic_template, false),
                      true_betas, LBFGS())
@@ -279,8 +279,8 @@ end
     y = rand.(Binomial.(m, cdf.(Logistic(), x * true_betas)));
     my_data = logistic_data(y, x, fill(m, n));
 
-    logistic_obj_template = set_obj_template(logistic_nobs, logistic_loglik)
-    logistic_ef_template = set_ef_template(logistic_nobs, logistic_ef)
+    logistic_obj_template = objective_template(logistic_nobs, logistic_loglik)
+    logistic_ef_template = estimating_function_template(logistic_nobs, logistic_ef)
     
     o1_ml = optimize_objective(true_betas, my_data, logistic_obj_template, false)
     e1_ml = solve_estimating_equation(true_betas, my_data, logistic_ef_template, false)
