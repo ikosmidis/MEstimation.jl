@@ -74,11 +74,11 @@ function get_estimating_function(data::Any,
 end
 
 ## nlsolve_argumentsa are further arguments to be passed to nlsolve
-function solve_estimating_equation(theta::Vector,
-                                   data::Any,
-                                   template::estimating_function_template,
-                                   br::Bool = false;
-                                   nlsolve_arguments...)
+function fit(theta::Vector,
+             data::Any,
+             template::estimating_function_template,
+             br::Bool = false;
+             nlsolve_arguments...)
     ef = get_estimating_function(data, template, br)
     out = nlsolve(ef, theta; nlsolve_arguments...)
     geebra_results(out, out.zero, data, template, br, false)

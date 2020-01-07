@@ -7,12 +7,12 @@ using LinearAlgebra
 
 export objective_function
 export objective_template
-export optimize_objective
 
 export estimating_function
 export get_estimating_function
 export estimating_function_template
-export solve_estimating_equation
+
+export fit
 
 export tic
 export vcov

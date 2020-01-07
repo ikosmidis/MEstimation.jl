@@ -23,12 +23,12 @@ function objective_function(theta::Vector,
 end
 
 ## optimize objective
-function optimize_objective(theta::Vector,
-                            data::Any,
-                            template::objective_template,
-                            br::Bool = false;
-                            method = LBFGS(),
-                            optim_options = Optim.Options())
+function fit(theta::Vector,
+             data::Any,
+             template::objective_template,
+             br::Bool = false;
+             method = LBFGS(),
+             optim_options = Optim.Options())
     obj = beta -> -objective_function(beta, data, template, br)
     out = optimize(obj, theta, method, optim_options)
     geebra_results(out, out.minimizer, data, template, br, true)

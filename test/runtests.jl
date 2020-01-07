@@ -38,11 +38,11 @@ using Test
     my_data = ratio_data(randn(10), rand(10));
 
     ## Get M-estimator for the ratio
-    result_m = solve_estimating_equation([0.1], my_data, ratio_template, false)
-    @inferred solve_estimating_equation([0.1], my_data, ratio_template, false)
+    result_m = fit([0.1], my_data, ratio_template, false)
+    @inferred fit([0.1], my_data, ratio_template, false)
     ## Get reduced-bias estimator for the ratio
-    result_br = solve_estimating_equation([0.1], my_data, ratio_template, true)
-    @inferred solve_estimating_equation([0.1], my_data, ratio_template, true)
+    result_br = fit([0.1], my_data, ratio_template, true)
+    @inferred fit([0.1], my_data, ratio_template, true)
 
     ## Quantities for estimators
     sx = sum(my_data.x)
@@ -124,10 +124,10 @@ end
     Random.seed!(123)
     my_data = simulate_iv(100, true_theta)
     
-    o1_ml = solve_estimating_equation(true_parameter, my_data, iv_template, false)
-    @inferred solve_estimating_equation(true_parameter, my_data, iv_template, false)
-    o1_br = solve_estimating_equation(true_parameter, my_data, iv_template, true)
-    @inferred solve_estimating_equation(true_parameter, my_data, iv_template, true)
+    o1_ml = fit(true_parameter, my_data, iv_template, false)
+    @inferred fit(true_parameter, my_data, iv_template, false)
+    o1_br = fit(true_parameter, my_data, iv_template, true)
+    @inferred fit(true_parameter, my_data, iv_template, true)
     
     ef_br = get_estimating_function(my_data, iv_template, true)
     @inferred get_estimating_function(my_data, iv_template, true)
@@ -201,18 +201,18 @@ end
     o1_br = optimize(b -> -objective_function(b, my_data, logistic_template, true),
                      true_betas, LBFGS())
 
-    o2_ml = optimize_objective(true_betas, my_data, logistic_template, false)
-    o2_br = optimize_objective(true_betas, my_data, logistic_template, true)  
+    o2_ml = fit(true_betas, my_data, logistic_template, false)
+    o2_br = fit(true_betas, my_data, logistic_template, true)  
 
     o3_ml = optimize(b -> -objective_function(b, my_data, logistic_template, false),
                      true_betas, Optim.Options(iterations = 2))
     o3_br = optimize(b -> -objective_function(b, my_data, logistic_template, true),
                      true_betas, Optim.Options(iterations = 2))
 
-    o4_ml = optimize_objective(true_betas, my_data, logistic_template, false,
+    o4_ml = fit(true_betas, my_data, logistic_template, false,
                                method = NelderMead(),
                                optim_options = Optim.Options(iterations = 2))
-    o4_br = optimize_objective(true_betas, my_data, logistic_template, true,
+    o4_br = fit(true_betas, my_data, logistic_template, true,
                                method = NelderMead(),
                                optim_options = Optim.Options(iterations = 2))
     
@@ -282,10 +282,10 @@ end
     logistic_obj_template = objective_template(logistic_nobs, logistic_loglik)
     logistic_ef_template = estimating_function_template(logistic_nobs, logistic_ef)
     
-    o1_ml = optimize_objective(true_betas, my_data, logistic_obj_template, false)
-    e1_ml = solve_estimating_equation(true_betas, my_data, logistic_ef_template, false)
-    o1_br = optimize_objective(true_betas, my_data, logistic_obj_template, true)
-    e1_br = solve_estimating_equation(true_betas, my_data, logistic_ef_template, true)
+    o1_ml = fit(true_betas, my_data, logistic_obj_template, false)
+    e1_ml = fit(true_betas, my_data, logistic_ef_template, false)
+    o1_br = fit(true_betas, my_data, logistic_obj_template, true)
+    e1_br = fit(true_betas, my_data, logistic_ef_template, true)
 
     @test isapprox(o1_ml.theta, e1_ml.theta)
     @test isapprox(o1_br.theta, e1_br.theta)   
