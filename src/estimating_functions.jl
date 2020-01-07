@@ -1,11 +1,12 @@
-struct geebra_ef_template
+
+struct set_ef_template
     nobs::Function
     ef_contribution::Function
 end
 
 function ef_quantities(theta::Vector,
                        data::Any,
-                       template::geebra_ef_template,
+                       template::set_ef_template,
                        adjustment::Bool = false)
     nj(eta::Vector, i::Int) = ForwardDiff.jacobian(beta -> template.ef_contribution(beta, data, i), eta)
     p = length(theta)
@@ -44,7 +45,7 @@ end
 ## Estimating function 
 function estimating_function(theta::Vector,
                              data::Any,
-                             template::geebra_ef_template,
+                             template::set_ef_template,
                              br::Bool = false)
     p = length(theta)
     n_obs = template.nobs(data)
@@ -62,7 +63,7 @@ end
 
 ## Esimating function 
 function get_estimating_function(data::Any,
-                                 template::geebra_ef_template,
+                                 template::set_ef_template,
                                  br::Bool = false)
     function g(F, theta::Vector) 
         out = estimating_function(theta, data, template, br)
@@ -75,7 +76,7 @@ end
 ## nlsolve_argumentsa are further arguments to be passed to nlsolve
 function solve_estimating_equation(theta::Vector,
                                    data::Any,
-                                   template::geebra_ef_template,
+                                   template::set_ef_template,
                                    br::Bool = false;
                                    nlsolve_arguments...)
     ef = get_estimating_function(data, template, br)
