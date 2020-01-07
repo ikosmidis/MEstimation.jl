@@ -8,14 +8,19 @@ using LinearAlgebra
 export objective_function
 export set_obj_template
 export optimize_objective
+
 export estimating_function
 export get_estimating_function
 export set_ef_template
 export solve_estimating_equation
 
+export tic
+export vcov
+export estimates
 
 include("estimating_functions.jl")
 include("objective_functions.jl")
+include("result_methods.jl")
 
 end # module
 

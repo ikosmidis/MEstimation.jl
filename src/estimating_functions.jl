@@ -80,5 +80,6 @@ function solve_estimating_equation(theta::Vector,
                                    br::Bool = false;
                                    nlsolve_arguments...)
     ef = get_estimating_function(data, template, br)
-    nlsolve(ef, theta; nlsolve_arguments...)
+    out = nlsolve(ef, theta; nlsolve_arguments...)
+    geebra_results(out, out.zero, data, template, br, false)
 end

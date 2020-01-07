@@ -50,8 +50,8 @@ using Test
     sy = sum(my_data.y)
     sxy = sum(my_data.x .* my_data.y)
 
-    @test isapprox(sy/sx, result_m.zero[1])
-    @test isapprox((sy + sxy/sx)/(sx + sxx/sx), result_br.zero[1])
+    @test isapprox(sy/sx, result_m.theta[1])
+    @test isapprox((sy + sxy/sx)/(sx + sxx/sx), result_br.theta[1])
 end
 
 
@@ -136,8 +136,8 @@ end
     o2_ml = nlsolve(ef_ml, [0.1, 0.2])
     o2_br = nlsolve(ef_br, [0.1, 0.2])
 
-    @test isapprox(o1_ml.zero, o2_ml.zero)
-    @test isapprox(o1_br.zero, o2_br.zero)
+    @test isapprox(o1_ml.theta, o2_ml.zero)
+    @test isapprox(o1_br.theta, o2_br.zero)
 
     ## Estimating function at the estimates
     @test isapprox(estimating_function(o2_br.zero, my_data, iv_template, true),
@@ -216,10 +216,10 @@ end
                                method = NelderMead(),
                                optim_options = Optim.Options(iterations = 2))
     
-    @test isapprox(Optim.minimizer(o1_ml), Optim.minimizer(o2_ml))
-    @test isapprox(Optim.minimizer(o1_br), Optim.minimizer(o2_br))
-    @test isapprox(Optim.minimizer(o3_ml), Optim.minimizer(o4_ml))
-    @test isapprox(Optim.minimizer(o3_br), Optim.minimizer(o4_br))
+    @test isapprox(Optim.minimizer(o1_ml), Optim.minimizer(o2_ml.results))
+    @test isapprox(Optim.minimizer(o1_br), Optim.minimizer(o2_br.results))
+    @test isapprox(Optim.minimizer(o3_ml), Optim.minimizer(o4_ml.results))
+    @test isapprox(Optim.minimizer(o3_br), Optim.minimizer(o4_br.results))
    
 end
 
@@ -268,8 +268,7 @@ end
         mu = exp.(eta)./(1 .+ exp.(eta))
         data.x[i, :] * (data.y[i] - data.m[i] * mu)
     end
-
-    
+   
     Random.seed!(123);
     n = 100;
     m = 1;
@@ -288,7 +287,7 @@ end
     o1_br = optimize_objective(true_betas, my_data, logistic_obj_template, true)
     e1_br = solve_estimating_equation(true_betas, my_data, logistic_ef_template, true)
 
-    @test isapprox(o1_ml.minimizer, e1_ml.zero)
-    @test isapprox(o1_br.minimizer, e1_br.zero)   
+    @test isapprox(o1_ml.theta, e1_ml.theta)
+    @test isapprox(o1_br.theta, e1_br.theta)   
     
 end

@@ -30,7 +30,8 @@ function optimize_objective(theta::Vector,
                             method = LBFGS(),
                             optim_options = Optim.Options())
     obj = beta -> -objective_function(beta, data, template, br)
-    optimize(obj, theta, method, optim_options)
+    out = optimize(obj, theta, method, optim_options)
+    geebra_results(out, out.minimizer, data, template, br, true)
 end
 
 function obj_quantities(theta::Vector,
