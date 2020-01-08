@@ -1,4 +1,4 @@
-module GEEBRA
+module geebra # general esimtating equations with or without bias-reducting adjustments
 
 using NLsolve
 using Optim
@@ -6,7 +6,7 @@ using ForwardDiff
 using LinearAlgebra
 
 export objective_function
-export objective_template
+export objective_function_template
 
 export estimating_function
 export get_estimating_function
