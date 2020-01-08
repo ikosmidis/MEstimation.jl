@@ -50,26 +50,27 @@ function Base.show(io::IO, ::MIME"text/plain", results::GEEBRA_results;
     end
     println("Bias reduction: ", results.br)
     println()
-    println("Parameter\tEstimate\tS.E")
-    for i in 1:p
-        est = theta[i]
-        std = sqrt(v[i, i])
-        println("theta[$(i)]", "\t", round(est, digits = digits), "\t\t", round(std, digits = digits))
-    end
+    # println("Parameter\tEstimate\tS.E")
+    # for i in 1:p
+    #     est = theta[i]
+    #     std = sqrt(v[i, i])
+    #     println("theta[$(i)]", "\t", round(est, digits = digits), "\t\t", round(std, digits = digits))
+    # end
+    show(coeftable(results))
     if results.has_objective
         if results.br
-            Base.print("\nMaximum penalized objetive:\t", round(-results.results.minimum, digits = digits))
+            print("\nMaximum penalized objetive:\t", round(-results.results.minimum, digits = digits))
         else
-            Base.print("\nMaximum objetive:\t\t", round(-results.results.minimum, digits = digits))
+            print("\nMaximum objetive:\t\t", round(-results.results.minimum, digits = digits))
         end
-        Base.print("\nTakeuchi information criterion:\t", round(tic(results), digits = digits))
-        Base.print("\nAkaike information criterion:\t", round(aic(results), digits = digits))
+        print("\nTakeuchi information criterion:\t", round(tic(results), digits = digits))
+        print("\nAkaike information criterion:\t", round(aic(results), digits = digits))
     else
         estfun = estimating_function(results.theta, results.data, results.template, results.br)
         if results.br
-            Base.print("\nAdjusted estimating functions:\t", estfun)
+            print("\nAdjusted estimating functions:\t", estfun)
         else
-            Base.print("\nEstimating functions:\t", estfun)
+            print("\nEstimating functions:\t", estfun)
         end
     end     
 end

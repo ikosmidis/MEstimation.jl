@@ -6,7 +6,7 @@ using ForwardDiff
 using LinearAlgebra
 using Distributions
 
-import Base: show
+import Base: show, print
 import StatsBase: fit, aic, vcov, coef, coeftable, stderror, CoefTable
 
 export objective_function

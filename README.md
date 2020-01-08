@@ -22,6 +22,6 @@ user are to:
 
 There is also the option to compute adjustments to the estimating functions or penalties to the objective to compute estimators with improved bias properties. 
 
-The bias-reducing adjustments or penalties are formed internally from the supplied templates and data object, using forward mode automatic differentiation (AD), as implemented in [**ForwardDiff**](https://github.com/JuliaDiff/ForwardDiff.jl). No further work or input is required by the user.
+The bias-reducing adjustments or penalties are formed internally from the supplied templates and data object, using forward mode automatic differentiation, as implemented in [**ForwardDiff**](https://github.com/JuliaDiff/ForwardDiff.jl). No further work or input is required by the user.
 
 

@@ -60,7 +60,12 @@ function estimating_function(theta::Vector,
     end
 end
 
-## Esimating function 
+"""
+   
+    estimating_function(data::Any, template::estimating_function_template, br::Bool = false)
+
+Type for setting estimating function templates
+"""
 function get_estimating_function(data::Any,
                                  template::estimating_function_template,
                                  br::Bool = false)
