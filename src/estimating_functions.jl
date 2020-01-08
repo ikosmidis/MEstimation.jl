@@ -1,4 +1,3 @@
-
 struct estimating_function_template
     nobs::Function
     ef_contribution::Function
@@ -81,5 +80,5 @@ function fit(theta::Vector,
              nlsolve_arguments...)
     ef = get_estimating_function(data, template, br)
     out = nlsolve(ef, theta; nlsolve_arguments...)
-    geebra_results(out, out.zero, data, template, br, false)
+    GEEBRA_results(out, out.zero, data, template, br, false)
 end

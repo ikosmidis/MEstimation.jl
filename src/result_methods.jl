@@ -1,15 +1,13 @@
-## output from solve_estimating_equation and optimize_objective
-
-struct geebra_results
+struct GEEBRA_results
     results::Union{NLsolve.SolverResults, Optim.MultivariateOptimizationResults, Optim.UnivariateOptimizationResults}
     theta::Vector
     data::Any
-    template::Union{objective_template, estimating_function_template}
+    template::Union{objective_function_template, estimating_function_template}
     br::Bool
     has_objective::Bool
 end
 
-function vcov(results::geebra_results)
+function vcov(results::GEEBRA_results)
     if (results.has_objective)
         obj_quantities(results.theta, results.data, results.template, false)[1]
     else
@@ -17,7 +15,7 @@ function vcov(results::geebra_results)
     end
 end
 
-function tic(results::geebra_results)
+function tic(results::GEEBRA_results)
     if (results.has_objective)
         obj = objective_function(results.theta, results.data, results.template, false)
         quants = obj_quantities(results.theta, results.data, results.template, true)
@@ -25,11 +23,11 @@ function tic(results::geebra_results)
     end
 end
 
-function estimates(results::geebra_results)
+function estimates(results::GEEBRA_results)
     results.theta
 end
 
-function print(results::geebra_results,
+function print(results::GEEBRA_results,
                digits::Real = 4)
     theta = results.theta
     p = length(theta)
@@ -51,19 +49,18 @@ function print(results::geebra_results,
     end
     if results.has_objective
         if results.br
-            print("\nMaximum penalized objetive: ", round(-results.results.minimum, digits = digits))
+            Base.print("\nMaximum penalized objetive: ", round(-results.results.minimum, digits = digits))
         else
-            print("\nMaximum objetive: ", round(-results.results.minimum, digits = digits))
+            Base.print("\nMaximum objetive: ", round(-results.results.minimum, digits = digits))
         end
-        print("\nTakeuchi information criterion: ", round(tic(results), digits = digits))
+        Base.print("\nTakeuchi information criterion: ", round(tic(results), digits = digits))
     else
         estfun = estimating_function(results.theta, results.data, results.template, results.br)
         if results.br
-            print("\nAdjusted estimating functions: ", estfun)
+            Base.print("\nAdjusted estimating functions: ", estfun)
         else
-            print("\nEstimating functions: ", estfun)
+            Base.print("\nEstimating functions: ", estfun)
         end
-    end
-    
+    end  
     
 end
