@@ -12,7 +12,7 @@ export estimating_function
 export get_estimating_function
 export estimating_function_template
 
-export fit
+export fit ## Distributions also exports fit so users will need to qualify it 
 
 export tic
 export vcov
