@@ -14,6 +14,7 @@ export estimating_function_template
 
 export fit ## Distributions also exports fit so users will need to qualify it 
 
+export aic
 export tic
 export vcov
 export estimates

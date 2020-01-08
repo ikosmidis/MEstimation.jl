@@ -272,10 +272,11 @@ end
     Random.seed!(123);
     n = 100;
     m = 1;
-    x = Array{Float64}(undef, n, 2);
+    x = Array{Float64}(undef, n, 3);
     x[:, 1] .= 1.0;
     x[:, 2] .= rand(n);
-    true_betas = [0.5, -1];
+    x[:, 3] .= rand(n);
+    true_betas = [0.5, -1, 2];
     y = rand.(Binomial.(m, cdf.(Logistic(), x * true_betas)));
     my_data = logistic_data(y, x, fill(m, n));
 
@@ -289,5 +290,22 @@ end
 
     @test isapprox(o1_ml.theta, e1_ml.theta)
     @test isapprox(o1_br.theta, e1_br.theta)   
+
+    @test isapprox(aic(o1_ml),
+                   -2 * (objective_function(o1_ml.theta, my_data, logistic_obj_template) - 3))
+
+    @test isapprox(aic(o1_br),
+                   -2 * (objective_function(o1_br.theta, my_data, logistic_obj_template) - 3))
+
+    quants_ml = GEEBRA.obj_quantities(o1_ml.theta, my_data, logistic_obj_template, true)
+    quants_br = GEEBRA.obj_quantities(o1_br.theta, my_data, logistic_obj_template, true)
+
+    @test isapprox(tic(o1_ml),
+                   -2 * (objective_function(o1_ml.theta, my_data, logistic_obj_template) + 2 * quants_ml[2]))
+    
+    @test isapprox(tic(o1_br),
+                   -2 * (objective_function(o1_br.theta, my_data, logistic_obj_template) + 2 * quants_br[2]))
+    
+    
     
 end
