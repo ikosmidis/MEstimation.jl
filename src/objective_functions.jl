@@ -23,9 +23,9 @@ function objective_function(theta::Vector,
 end
 
 ## optimize objective
-function fit(theta::Vector,
+function fit(template::objective_function_template,
              data::Any,
-             template::objective_function_template,
+             theta::Vector,
              br::Bool = false;
              method = LBFGS(),
              optim_options = Optim.Options())

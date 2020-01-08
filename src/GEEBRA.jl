@@ -4,6 +4,10 @@ using NLsolve
 using Optim
 using ForwardDiff
 using LinearAlgebra
+using Distributions
+
+import Base: show
+import StatsBase: fit, aic, vcov, coef, coeftable, stderror, CoefTable
 
 export objective_function
 export objective_function_template
@@ -12,14 +16,14 @@ export estimating_function
 export get_estimating_function
 export estimating_function_template
 
-export fit ## Distributions also exports fit so users will need to qualify it 
-
 export aic
 export tic
 export vcov
-export estimates
+export coef
+export coeftable
+export fit
+export stderror
 
-import Base: show
 
 include("estimating_functions.jl")
 include("objective_functions.jl")

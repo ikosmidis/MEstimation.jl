@@ -73,9 +73,9 @@ function get_estimating_function(data::Any,
 end
 
 ## nlsolve_argumentsa are further arguments to be passed to nlsolve
-function fit(theta::Vector,
+function fit(template::estimating_function_template,
              data::Any,
-             template::estimating_function_template,
+             theta::Vector,
              br::Bool = false;
              nlsolve_arguments...)
     ef = get_estimating_function(data, template, br)

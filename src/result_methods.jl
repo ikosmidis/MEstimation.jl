@@ -32,7 +32,7 @@ function aic(results::GEEBRA_results)
 end
 
 
-function estimates(results::GEEBRA_results)
+function coef(results::GEEBRA_results)
     results.theta
 end
 
@@ -72,4 +72,20 @@ function Base.show(io::IO, ::MIME"text/plain", results::GEEBRA_results;
             Base.print("\nEstimating functions:\t", estfun)
         end
     end     
+end
+
+function stderror(results::GEEBRA_results)
+    sqrt.(diag(vcov(results)))
+end
+
+function coeftable(results::GEEBRA_results; level::Real=0.95)
+    cc = coef(results)
+    se = stderror(results)
+    zz = cc ./ se
+    p = 2 * ccdf.(Ref(Normal()), abs.(zz))
+    ci = se * quantile(Normal(), (1-level)/2)
+    levstr = isinteger(level*100) ? string(Integer(level*100)) : string(level*100)
+    CoefTable(hcat(cc, se, zz, p, cc + ci, cc - ci),
+              ["Estimate","Std. Error","z value","Pr(>|z|)","Lower $levstr%","Upper $levstr%"],
+              ["theta[$i]" for i = 1:length(cc)], 4)
 end

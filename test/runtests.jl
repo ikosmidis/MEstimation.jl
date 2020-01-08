@@ -38,11 +38,11 @@ using Test
     my_data = ratio_data(randn(10), rand(10));
 
     ## Get M-estimator for the ratio
-    result_m = GEEBRA.fit([0.1], my_data, ratio_template, false)
-    @inferred GEEBRA.fit([0.1], my_data, ratio_template, false)
+    result_m = fit(ratio_template, my_data, [0.1], false)
+    @inferred fit(ratio_template, my_data, [0.1], false)
     ## Get reduced-bias estimator for the ratio
-    result_br = GEEBRA.fit([0.1], my_data, ratio_template, true)
-    @inferred GEEBRA.fit([0.1], my_data, ratio_template, true)
+    result_br = fit(ratio_template, my_data, [0.1], true)
+    @inferred fit(ratio_template, my_data, [0.1], true)
 
     ## Quantities for estimators
     sx = sum(my_data.x)
@@ -124,10 +124,10 @@ end
     Random.seed!(123)
     my_data = simulate_iv(100, true_theta)
     
-    o1_ml = GEEBRA.fit(true_parameter, my_data, iv_template, false)
-    @inferred GEEBRA.fit(true_parameter, my_data, iv_template, false)
-    o1_br = GEEBRA.fit(true_parameter, my_data, iv_template, true)
-    @inferred GEEBRA.fit(true_parameter, my_data, iv_template, true)
+    o1_ml = fit(iv_template, my_data, true_parameter, false)
+    @inferred fit(iv_template, my_data, true_parameter, false)
+    o1_br = fit(iv_template, my_data, true_parameter, true)
+    @inferred fit(iv_template, my_data, true_parameter, true)
     
     ef_br = get_estimating_function(my_data, iv_template, true)
     @inferred get_estimating_function(my_data, iv_template, true)
@@ -201,18 +201,18 @@ end
     o1_br = optimize(b -> -objective_function(b, my_data, logistic_template, true),
                      true_betas, LBFGS())
 
-    o2_ml = GEEBRA.fit(true_betas, my_data, logistic_template, false)
-    o2_br = GEEBRA.fit(true_betas, my_data, logistic_template, true)  
+    o2_ml = fit(logistic_template, my_data, true_betas, false)
+    o2_br = fit(logistic_template, my_data, true_betas, true)  
 
     o3_ml = optimize(b -> -objective_function(b, my_data, logistic_template, false),
                      true_betas, Optim.Options(iterations = 2))
     o3_br = optimize(b -> -objective_function(b, my_data, logistic_template, true),
                      true_betas, Optim.Options(iterations = 2))
 
-    o4_ml = GEEBRA.fit(true_betas, my_data, logistic_template, false,
+    o4_ml = fit(logistic_template, my_data, true_betas, false,
                                method = NelderMead(),
                                optim_options = Optim.Options(iterations = 2))
-    o4_br = GEEBRA.fit(true_betas, my_data, logistic_template, true,
+    o4_br = fit(logistic_template, my_data, true_betas, true,
                                method = NelderMead(),
                                optim_options = Optim.Options(iterations = 2))
     
@@ -270,32 +270,34 @@ end
     end
    
     Random.seed!(123);
-    n = 100;
+    n = 1000;
     m = 1;
-    x = Array{Float64}(undef, n, 3);
+    p = 7
+    x = Array{Float64}(undef, n, p);
     x[:, 1] .= 1.0;
-    x[:, 2] .= rand(n);
-    x[:, 3] .= rand(n);
-    true_betas = [0.5, -1, 2];
+    for j in 2:p
+        x[:, j] .= rand(n);
+    end
+    true_betas = randn(p) * sqrt(p);
     y = rand.(Binomial.(m, cdf.(Logistic(), x * true_betas)));
     my_data = logistic_data(y, x, fill(m, n));
 
     logistic_obj_template = objective_function_template(logistic_nobs, logistic_loglik)
     logistic_ef_template = estimating_function_template(logistic_nobs, logistic_ef)
     
-    o1_ml = GEEBRA.fit(true_betas, my_data, logistic_obj_template, false)
-    e1_ml = GEEBRA.fit(true_betas, my_data, logistic_ef_template, false)
-    o1_br = GEEBRA.fit(true_betas, my_data, logistic_obj_template, true)
-    e1_br = GEEBRA.fit(true_betas, my_data, logistic_ef_template, true)
+    o1_ml = fit(logistic_obj_template, my_data, true_betas, false)
+    e1_ml = fit(logistic_ef_template, my_data, true_betas, false)
+    o1_br = fit(logistic_obj_template, my_data, true_betas, true)
+    e1_br = fit(logistic_ef_template, my_data, true_betas, true)
 
-    @test isapprox(o1_ml.theta, e1_ml.theta)
-    @test isapprox(o1_br.theta, e1_br.theta)   
+    @test isapprox(o1_ml.theta, e1_ml.theta, atol = 1e-05)
+    @test isapprox(o1_br.theta, e1_br.theta,atol = 1e-05)   
 
     @test isapprox(aic(o1_ml),
-                   -2 * (objective_function(o1_ml.theta, my_data, logistic_obj_template) - 3))
+                   -2 * (objective_function(o1_ml.theta, my_data, logistic_obj_template, false) - p))
 
     @test isapprox(aic(o1_br),
-                   -2 * (objective_function(o1_br.theta, my_data, logistic_obj_template) - 3))
+                   -2 * (objective_function(o1_br.theta, my_data, logistic_obj_template) - p))
 
     quants_ml = GEEBRA.obj_quantities(o1_ml.theta, my_data, logistic_obj_template, true)
     quants_br = GEEBRA.obj_quantities(o1_br.theta, my_data, logistic_obj_template, true)
@@ -309,3 +311,7 @@ end
     
     
 end
+
+# using Revise
+# using Pkg
+# Pkg.activate("/Users/yiannis/Repositories/GEEBRA.jl")
