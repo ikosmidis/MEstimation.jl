@@ -18,6 +18,8 @@ export tic
 export vcov
 export estimates
 
+import Base: show
+
 include("estimating_functions.jl")
 include("objective_functions.jl")
 include("result_methods.jl")

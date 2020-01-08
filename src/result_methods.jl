@@ -23,12 +23,21 @@ function tic(results::GEEBRA_results)
     end
 end
 
+function aic(results::GEEBRA_results)
+    if (results.has_objective)
+        obj = objective_function(results.theta, results.data, results.template, false)
+        p = length(results.theta)
+        -2 * (obj - p)
+    end
+end
+
+
 function estimates(results::GEEBRA_results)
     results.theta
 end
 
-function print(results::GEEBRA_results,
-               digits::Real = 4)
+function Base.show(io::IO, ::MIME"text/plain", results::GEEBRA_results;
+                   digits::Real = 4)
     theta = results.theta
     p = length(theta)
     v = vcov(results)
@@ -49,18 +58,18 @@ function print(results::GEEBRA_results,
     end
     if results.has_objective
         if results.br
-            Base.print("\nMaximum penalized objetive: ", round(-results.results.minimum, digits = digits))
+            Base.print("\nMaximum penalized objetive:\t", round(-results.results.minimum, digits = digits))
         else
-            Base.print("\nMaximum objetive: ", round(-results.results.minimum, digits = digits))
+            Base.print("\nMaximum objetive:\t\t", round(-results.results.minimum, digits = digits))
         end
-        Base.print("\nTakeuchi information criterion: ", round(tic(results), digits = digits))
+        Base.print("\nTakeuchi information criterion:\t", round(tic(results), digits = digits))
+        Base.print("\nAkaike information criterion:\t", round(aic(results), digits = digits))
     else
         estfun = estimating_function(results.theta, results.data, results.template, results.br)
         if results.br
-            Base.print("\nAdjusted estimating functions: ", estfun)
+            Base.print("\nAdjusted estimating functions:\t", estfun)
         else
-            Base.print("\nEstimating functions: ", estfun)
+            Base.print("\nEstimating functions:\t", estfun)
         end
-    end  
-    
+    end     
 end
