@@ -2,9 +2,9 @@
 
 ## Authors
 
-[Ioannis Kosmidis](http://www.ikosmidis.com) <ioannis.kosmidis@warwick.ac.uk> (author, maintainer) 
+[Ioannis Kosmidis](http://www.ikosmidis.com) (author, maintainer) 
 
-Nicola Lunardon <nicola.lunardon@unimib.it> (author)
+Nicola Lunardon (author)
 
 ## Licence
 
