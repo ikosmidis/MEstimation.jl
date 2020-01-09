@@ -270,7 +270,7 @@ end
     end
    
     Random.seed!(123);
-    n = 1000;
+    n = 50;
     m = 1;
     p = 7
     x = Array{Float64}(undef, n, p);
