@@ -1,6 +1,6 @@
 # GEEBRA.jl
 
-/**G**eneral **E**stimating **E**quations with or without **B**ias-**R**educing **A**djustments; pronounced `zee· bruh`/
+*G***eneral* **E****stimating* **E***quations with or without* **B***ias*-**R***educing* **A***djustments* *(pronounced `zee· bruh`)*
 
 | **Documentation**                                                               | **Build Status**                                                                                |
 |:-------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------:|
