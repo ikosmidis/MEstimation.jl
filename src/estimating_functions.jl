@@ -48,8 +48,7 @@ function ef_quantities(theta::Vector,
     end
 end
 
-"""
-   
+""" 
     estimating_function(theta::Vector, data::Any, template::estimating_function_template, br::Bool = false)
 
 Construct the estimating function by adding up all contributions in the `data` according to [`estimating_function_template`](@ref), and evaluate it at `theta`. If `br = true` then automatic differentiation is used to compute the empirical bias-reducing adjustments and add them to the estimating function.
@@ -83,7 +82,10 @@ function get_estimating_function(data::Any,
     end
 end
 
-## nlsolve_argumentsa are further arguments to be passed to nlsolve
+"""   
+    fit(template::estimating_function_template, data::Any, theta::Vector, br::Bool = false; nlsolve_arguments...)
+
+"""
 function fit(template::estimating_function_template,
              data::Any,
              theta::Vector,

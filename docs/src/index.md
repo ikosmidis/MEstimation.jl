@@ -35,20 +35,20 @@ estimators.
 
 There is also the option to compute bias-reducing adjustments to the estimating functions or bias-reducing penalties to the objective to compute estimators with improved bias properties.  The bias-reducing adjustments and penalties are formed internally from the supplied templates and data object, using forward mode automatic differentiation, as implemented in [**ForwardDiff**](https://github.com/JuliaDiff/ForwardDiff.jl). No further work or input is required by the user.
 
-## Examples and guidance
+## Examples
+
 ```@contents
 Pages = [
     "man/examples.md",
-    "man/guidance.md"
     ]
-Depth = 1
 ```
 
 ## Documentation
 
 ```@contents
 Pages = [
-    "lib/public.md"
+    "lib/public.md",
+    "lib/internal.md",
     ]
 ```
 
@@ -56,6 +56,7 @@ Pages = [
 
 ```@index
 Pages = [
-    "lib/public.md"
+    "lib/public.md",
+    "lib/internal.md",
     ]
 ```

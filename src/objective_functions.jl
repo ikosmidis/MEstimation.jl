@@ -39,7 +39,11 @@ function objective_function(theta::Vector,
     end
 end
 
-## optimize objective
+
+"""   
+    fit(template::objective_function_template, data::Any, theta::Vector, br::Bool = false; method = LBFGS(), optim_Options = Optim.Options())
+
+"""
 function fit(template::objective_function_template,
              data::Any,
              theta::Vector,
