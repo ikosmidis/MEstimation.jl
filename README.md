@@ -2,7 +2,7 @@
 
 ## Authors
 
-Ioannis Kosmidis <ioannis.kosmidis@warwick.ac.uk> (author, maintainer) 
+[Ioannis Kosmidis](http://www.ikosmidis.com) <ioannis.kosmidis@warwick.ac.uk> (author, maintainer) 
 
 Nicola Lunardon <nicola.lunardon@unimib.it> (author)
 
