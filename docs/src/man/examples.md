@@ -70,7 +70,7 @@ We are now ready use `ratio_template` and `my_data` to compute the ``M``-estimat
 ```@repl 1
 result_m = fit(ratio_template, my_data, [0.1], false)
 ```
-`fit` uses methods from the [**NLsolve**](https://github.com/JuliaNLSolvers/NLsolve.jl) package for solving the estimating equations. Options can be supplied directly to `NLsolve.nlsolve` through [keyword arguments](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) to the `fit` method. For example,
+`fit` uses methods from the [**NLsolve**](https://github.com/JuliaNLSolvers/NLsolve.jl) package for solving the estimating equations. Arguments can be passed directly to `NLsolve.nlsolve` through [keyword arguments](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) to the `fit` method. For example,
 ```@repl 1
 result_m = fit(ratio_template, my_data, [0.1], false, show_trace = true)
 ```
@@ -163,7 +163,7 @@ The maximum likelihood estimates starting at `true_betas` are
 ```@repl 2
 o1_ml = fit(logistic_template, my_data, true_betas, false, method = NelderMead())
 ```
-`fit` uses methods from the [**Optim**](https://github.com/JuliaNLSolvers/Optim.jl) package internally. Here, we used the `Optim.NelderMead` method. Alternative optimization methods and options can be supplied directly through [keyword arguments](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) to the `fit` method. For example,
+`fit` uses methods from the [**Optim**](https://github.com/JuliaNLSolvers/Optim.jl) package internally. Here, we used the `Optim.NelderMead` method. Alternative optimization methods and options can be supplied directly through the [keyword arguments](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `method` and `optim.Options`, respectively. For example,
 ```@repl 2
 o2_ml = fit(logistic_template, my_data, true_betas, false, method = LBFGS(), optim_options = Optim.Options(g_abstol = 1e-05))
 ```

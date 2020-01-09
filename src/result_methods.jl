@@ -1,3 +1,8 @@
+"""
+    GEEBRA_results(results::Union{NLsolve.SolverResults, Optim.MultivariateOptimizationResults, Optim.UnivariateOptimizationResults}, theta::Vector, data::Any,  data::Any, template::Union{objective_function_template, estimating_function_template}, br::Bool,has_objective::Bool)
+
+Composite type for the output of [`fit`](@ref) for an [`objective_function_template`](@ref) or an [`estimating_function_template`](@ref).
+"""
 struct GEEBRA_results
     results::Union{NLsolve.SolverResults, Optim.MultivariateOptimizationResults, Optim.UnivariateOptimizationResults}
     theta::Vector
@@ -7,6 +12,11 @@ struct GEEBRA_results
     has_objective::Bool
 end
 
+"""
+    vcov(results::GEEBRA_results)
+
+Compute an esitmate of the variance-covariance matrix of the `M`-estimator or its reduced-bias version from the output of [`fit`](@ref) for an [`objective_function_template`](@ref) or an [`estimating_function_template`](@ref).
+"""
 function vcov(results::GEEBRA_results)
     if (results.has_objective)
         obj_quantities(results.theta, results.data, results.template, false)[1]
@@ -15,6 +25,11 @@ function vcov(results::GEEBRA_results)
     end
 end
 
+"""
+    tic(results::GEEBRA_results)
+
+Compute the Takeuchi Information Criterion at the `M`-estimator or its reduced-bias version from the output of [`fit`](@ref) for an [`objective_function_template`](@ref). `nothing` is returned if `results` is the output of [`fit`](@ref) for an [`estimating_function_template`](@ref).
+"""
 function tic(results::GEEBRA_results)
     if (results.has_objective)
         obj = objective_function(results.theta, results.data, results.template, false)
@@ -23,6 +38,11 @@ function tic(results::GEEBRA_results)
     end
 end
 
+"""
+    aic(results::GEEBRA_results)
+
+Compute the Akaike Information Criterion at the `M`-estimator or its reduced-bias version from the output of [`fit`](@ref) for an [`objective_function_template`](@ref). `nothing` is returned if `results` is the output of [`fit`](@ref) for an [`estimating_function_template`](@ref).
+"""
 function aic(results::GEEBRA_results)
     if (results.has_objective)
         obj = objective_function(results.theta, results.data, results.template, false)
@@ -31,11 +51,20 @@ function aic(results::GEEBRA_results)
     end
 end
 
+"""
+    coef(results::GEEBRA_results)
 
+Extract the `M`-estimates or their reduced-bias versions from the output of [`fit`](@ref) for an [`objective_function_template`](@ref) or an [`estimating_function_template`](@ref).
+"""
 function coef(results::GEEBRA_results)
     results.theta
 end
 
+"""
+    show(io::IO, results::GEEBRA_results; digits::Real = 4)
+
+`show` method for `GEEBRA_results` objects. If `GEEBRA_results.has_object == true`, then the result of `aic(results)` and `tic(results)` are also printed.
+"""
 function Base.show(io::IO, results::GEEBRA_results;
                    digits::Real = 4)
     theta = results.theta
@@ -77,12 +106,20 @@ function Base.show(io::IO, results::GEEBRA_results;
     end     
 end
 
+"""
+    stderror(results::GEEBRA_results)
 
-
+Compute esitmated standard errors for the `M`-estimator or its reduced-bias version from the output of [`fit`](@ref) for an [`objective_function_template`](@ref) or an [`estimating_function_template`](@ref).
+"""
 function stderror(results::GEEBRA_results)
     sqrt.(diag(vcov(results)))
 end
 
+"""
+    coeftable(results::GEEBRA_results; level::Real=0.95)
+
+Return a `StatsBase.CoefTable` for the `M`-estimator or its reduced-bias version from the output of [`fit`](@ref) for an [`objective_function_template`](@ref) or an [`estimating_function_template`](@ref). `level` can be used to set the level of the reported Wald-type confidence intervals (using quantiles of the standard normal distribution). 
+"""
 function coeftable(results::GEEBRA_results; level::Real=0.95)
     cc = coef(results)
     se = stderror(results)

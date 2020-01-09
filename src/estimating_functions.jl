@@ -71,10 +71,15 @@ function estimating_function(theta::Vector,
     end
 end
 
+""" 
+    get_estimating_function(data::Any, template::estimating_function_template, br::Bool = false)
+
+Construct the estimating function by adding up all contributions in the `data` according to [`estimating_function_template`](@ref). If `br = true` then automatic differentiation is used to compute the empirical bias-reducing adjustments and add them to the estimating function. The result is a function that stores the estimating functions values at its second argument, in a preallocated vector passed as its first argument, ready to be used withing `NLsolve.nlsolve`.
+"""
 function get_estimating_function(data::Any,
                                  template::estimating_function_template,
                                  br::Bool = false)
-    function g(F, theta::Vector) 
+    function g!(F, theta::Vector) 
         out = estimating_function(theta, data, template, br)
         for i in 1:length(out)
             F[i] = out[i]
@@ -85,6 +90,9 @@ end
 """   
     fit(template::estimating_function_template, data::Any, theta::Vector, br::Bool = false; nlsolve_arguments...)
 
+Fit an [`estimating_function_template`](@ref) on `data` with (`br = true`) or without (`br = false`) bias reduction. Bias reduction is through the solution of the empirically adjusted estimating functions in Kosmidis & Lunardon (2020). The bias-reducing adjustments are constructed internally using automatic differentiation (using the [ForwardDiff](https://github.com/JuliaDiff/ForwardDiff.jl) package).
+
+The solition of the estimating equations or the adjusted estimating equations is done using the [**NLsolve**](https://github.com/JuliaNLSolvers/NLsolve.jl) package. Arguments can be passed directly to `NLsolve.nlsolve` through [keyword arguments](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1).
 """
 function fit(template::estimating_function_template,
              data::Any,

@@ -43,6 +43,9 @@ end
 """   
     fit(template::objective_function_template, data::Any, theta::Vector, br::Bool = false; method = LBFGS(), optim_Options = Optim.Options())
 
+Fit an [`objective_function_template`](@ref) on `data` with (`br = true`) or without (`br = false`) bias reduction. Bias reduction is through the maximization of the bias-reducing penalized objective in Kosmidis & Lunardon (2020). The bias-reducing penalty is constructed internally using automatic differentiation (using the [ForwardDiff](https://github.com/JuliaDiff/ForwardDiff.jl) package).
+
+The maximization of the objective or the penalized objective is done using the [**Optim**](https://github.com/JuliaNLSolvers/Optim.jl) package. Optimization methods and options can be supplied directly through the [keyword arguments](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `method` and `optim.Options`, respectively.
 """
 function fit(template::objective_function_template,
              data::Any,
