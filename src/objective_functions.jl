@@ -10,12 +10,17 @@ struct objective_function_template
     obj_contribution::Function
 end
 
-"""   
-    objective_function(theta::Vector, data::Any, template::estimating_function_template, br::Bool = false)
 
-Construct the objective function by adding up all contributions in the `data` according to [`objective_function_template`](@ref), and evaluate it at `theta`. If `br = true` then automatic differentiation is used to compute the empirical bias-reducing penalty and add it to the objective function.
+"""   
+
+    objective_function(theta::Vector, data::Any, template::objective_function_template, br::Bool = false)
+
+Construct the objective function by adding up all contributions in the
+`data` according to [`objective_function_template`](@ref), and
+evaluate it at `theta`. If `br = true` then automatic differentiation
+is used to compute the empirical bias-reducing penalty and add it to
+the objective function.  
 """
-## Objective
 function objective_function(theta::Vector,
                             data::Any,
                             template::objective_function_template,

@@ -8,21 +8,18 @@ makedocs(
     modules = [GEEBRA],
     pages = [
         "Home" => "index.md",
-        "Manual" => Any[
-            "Guide" => "man/guide.md",
-            "man/examples.md",
-        ],
-        "Library" => Any[
+        "Examples" => "man/examples.md",
+        "Documentation" => Any[
             "Public" => "lib/public.md",
-        ],
-        "contributing.md",
+            "Internal" => "lib/internal.md",
+        ]
     ],
     doctest = false
 )
 
-# Documenter can also automatically deploy documentation to gh-pages.
-# See "Hosting Documentation" and deploydocs() in the Documenter manual
-# for more information.
-#=deploydocs(
-    repo = "<repository url>"
-)=#
+# deploydocs(
+#     repo = "github.com/ikosmidis/GEEBRA.jl.git",
+#     target = "build",
+#     push_preview = true,
+# )
+

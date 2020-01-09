@@ -36,44 +36,48 @@ function coef(results::GEEBRA_results)
     results.theta
 end
 
-function Base.show(io::IO, ::MIME"text/plain", results::GEEBRA_results;
+function Base.show(io::IO, results::GEEBRA_results;
                    digits::Real = 4)
     theta = results.theta
     p = length(theta)
     v = vcov(results)
     if results.has_objective
-        println("M-estimation with objective contributions ",
+        println(io,
+                "M-estimation with objective contributions ",
                 results.template.obj_contribution)
     else
-        println("M-estimation with estimating function contributions ",
+        println(io,
+                "M-estimation with estimating function contributions ",
                 results.template.ef_contribution)
     end
-    println("Bias reduction: ", results.br)
-    println()
+    println(io, "Bias reduction: ", results.br)
+    println(io)
     # println("Parameter\tEstimate\tS.E")
     # for i in 1:p
     #     est = theta[i]
     #     std = sqrt(v[i, i])
     #     println("theta[$(i)]", "\t", round(est, digits = digits), "\t\t", round(std, digits = digits))
     # end
-    show(coeftable(results))
+    show(io, coeftable(results))
     if results.has_objective
         if results.br
-            print("\nMaximum penalized objetive:\t", round(-results.results.minimum, digits = digits))
+            print(io, "\nMaximum penalized objetive:\t", round(-results.results.minimum, digits = digits))
         else
-            print("\nMaximum objetive:\t\t", round(-results.results.minimum, digits = digits))
+            print(io, "\nMaximum objetive:\t\t", round(-results.results.minimum, digits = digits))
         end
-        print("\nTakeuchi information criterion:\t", round(tic(results), digits = digits))
-        print("\nAkaike information criterion:\t", round(aic(results), digits = digits))
+        print(io, "\nTakeuchi information criterion:\t", round(tic(results), digits = digits))
+        print(io, "\nAkaike information criterion:\t", round(aic(results), digits = digits))
     else
         estfun = estimating_function(results.theta, results.data, results.template, results.br)
         if results.br
-            print("\nAdjusted estimating functions:\t", estfun)
+            print(io, "\nAdjusted estimating functions:\t", estfun)
         else
-            print("\nEstimating functions:\t", estfun)
+            print(io, "\nEstimating functions:\t", estfun)
         end
     end     
 end
+
+
 
 function stderror(results::GEEBRA_results)
     sqrt.(diag(vcov(results)))
