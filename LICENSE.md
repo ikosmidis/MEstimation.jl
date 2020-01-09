@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) (2020) Ioannis Kosmidis <ioannis.kosmidis@warwick.ac.uk>, Nicola Lunardon <nocila.lunardon@unimib.it>
+Copyright (c) (2020) Ioannis Kosmidis <ioannis.kosmidis@warwick.ac.uk>, Nicola Lunardon <nicola.lunardon@unimib.it>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
