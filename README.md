@@ -3,6 +3,7 @@
 ## Authors
 
 Ioannis Kosmidis <ioannis.kosmidis@warwick.ac.uk> (author, maintainer) 
+
 Nicola Lunardon <nicola.lunardon@unimib.it> (author)
 
 ## Licence
