@@ -41,7 +41,12 @@ function ef_quantities(theta::Vector,
     end
 end
 
-## Estimating function 
+"""
+   
+    estimating_function(theta::Vector, data::Any, template::estimating_function_template, br::Bool = false)
+
+Formulate the estimating function from an estimating_function_template
+"""
 function estimating_function(theta::Vector,
                              data::Any,
                              template::estimating_function_template,
@@ -60,12 +65,6 @@ function estimating_function(theta::Vector,
     end
 end
 
-"""
-   
-    estimating_function(data::Any, template::estimating_function_template, br::Bool = false)
-
-Type for setting estimating function templates
-"""
 function get_estimating_function(data::Any,
                                  template::estimating_function_template,
                                  br::Bool = false)
