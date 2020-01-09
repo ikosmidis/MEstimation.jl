@@ -2,11 +2,6 @@
 
 **G**eneral **E**stimating **E**quations with or without **B**ias-**R**educing **A**djustments (pronounced `zee· bruh`)
 
-| **Documentation**                                                               | **Build Status**                                                                                |
-|:-------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------:|
-| [![][docs-stable-img]][docs-stable-url] [![][docs-dev-img]][docs-dev-url] | [![][travis-img]][travis-url] [![][appveyor-img]][appveyor-url] [![][codecov-img]][codecov-url] |
-
-
 ## Authors
 
 [Ioannis Kosmidis](http://www.ikosmidis.com) (author, maintainer) 
