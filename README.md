@@ -1,5 +1,12 @@
 # GEEBRA.jl
 
+* **G**eneral **E**stimating **E**quations with or without **B**ias-**R**educing **A**djustments; pronounced `zee· bruh` *
+
+| **Documentation**                                                               | **Build Status**                                                                                |
+|:-------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------:|
+| [![][docs-stable-img]][docs-stable-url] [![][docs-dev-img]][docs-dev-url] | [![][travis-img]][travis-url] [![][appveyor-img]][appveyor-url] [![][codecov-img]][codecov-url] |
+
+
 ## Authors
 
 [Ioannis Kosmidis](http://www.ikosmidis.com) (author, maintainer) 
@@ -12,12 +19,10 @@ Nicola Lunardon (author)
 
 ## Package description
 
-**GEEBRA** (**G**eneral **E**stimating **E**quations with or without
-**B**ias-**R**educing **A**djustments; pronounced `zee· bruh`) is a
-Julia package that provides infrastructure to estimate statistical
-models by solving estimating equations or by maximizing inference
-objectives, like the likelihood functions, using user-specified
-templates. 
+**GEEBRA** is a Julia package that provides infrastructure to estimate
+statistical models by solving estimating equations or by maximizing
+inference objectives, like the likelihood functions, using
+user-specified templates.
 
 A key feature is the option to adjust the estimating equation or
 penalize the objectives in order to reduce the bias of the resulting
