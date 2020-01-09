@@ -1,7 +1,5 @@
-codecov: true
-coveralls: true
-
 language: julia
 julia:
   - nightly
+  - 1.0
   - 1.3

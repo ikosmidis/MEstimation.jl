@@ -2,6 +2,8 @@
 
 **G**eneral **E**stimating **E**quations with or without **B**ias-**R**educing **A**djustments (pronounced `zee· bruh`)
 
+[![Travis status](https://travis-ci.com/ikosmidis/GEEBRA.jl.svg?branch=master)](https://travis-ci.org/ikosmidis/GEEBRA.jl)
+
 ## Authors
 
 [Ioannis Kosmidis](http://www.ikosmidis.com) (author, maintainer) 
