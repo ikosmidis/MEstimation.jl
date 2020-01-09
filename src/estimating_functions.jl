@@ -1,3 +1,10 @@
+"""
+    estimating_function_template(nobs::Function, ef_contribution::Function)
+
+Define an `estimating_function_template` by supplying:
++ `nobs`: a function of `data` that computes the number of observations of the particular data type,
++ `ef_contribution`: a function of the parameters `theta`, the `data` and the observation index `i` that returns a vector of length `length(theta)`.
+"""
 struct estimating_function_template
     nobs::Function
     ef_contribution::Function
@@ -45,7 +52,7 @@ end
    
     estimating_function(theta::Vector, data::Any, template::estimating_function_template, br::Bool = false)
 
-Formulate the estimating function from an estimating_function_template
+Construct the estimating function by adding up all contributions in the `data` according to [`estimating_function_template`](@ref), and evaluate it at `theta`. If `br = true` then automatic differentiation is used to compute the empirical bias-reducing adjustments and add them to the estimating function.
 """
 function estimating_function(theta::Vector,
                              data::Any,
