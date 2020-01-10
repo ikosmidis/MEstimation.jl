@@ -46,9 +46,9 @@ version = "1.1.0"
 
 [[DataStructures]]
 deps = ["InteractiveUtils", "OrderedCollections"]
-git-tree-sha1 = "a1b652fb77ae8ca7ea328fa7ba5aa151036e5c10"
+git-tree-sha1 = "f784254f428fb8fd7ac15982e5862a38a44523d3"
 uuid = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
-version = "0.17.6"
+version = "0.17.7"
 
 [[Dates]]
 deps = ["Printf"]
@@ -152,9 +152,9 @@ version = "0.3.3"
 
 [[OpenBLAS_jll]]
 deps = ["Libdl", "Pkg"]
-git-tree-sha1 = "cb0671dfcf4afbad1d3631079c58275b46a572b8"
+git-tree-sha1 = "3a6e5767e8ae022871c19162cc3ecd80748bd3dc"
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
-version = "0.3.7+2"
+version = "0.3.7+4"
 
 [[OpenSpecFun_jll]]
 deps = ["Libdl", "Pkg"]
@@ -187,7 +187,7 @@ uuid = "d96e819e-fc66-5662-9728-84c9c7592b0a"
 version = "0.12.0"
 
 [[Pkg]]
-deps = ["Dates", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "UUIDs"]
+deps = ["Dates", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Test", "UUIDs"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 
 [[PositiveFactorizations]]
