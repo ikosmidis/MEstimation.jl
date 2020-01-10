@@ -6,16 +6,7 @@
 [![Coverage Status](https://img.shields.io/codecov/c/github/ikosmidis/GEEBRA.jl/master.svg)](https://codecov.io/github/ikosmidis/GEEBRA.jl?branch=master)
 [![](https://img.shields.io/badge/docs-dev-red.svg)](https://ikosmidis.github.io/GEEBRA.jl/dev/)
 [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://ikosmidis.github.io/GEEBRA.jl/stable/)
-
-## Authors
-
-[Ioannis Kosmidis](http://www.ikosmidis.com) (author, maintainer) 
-
-Nicola Lunardon (author)
-
-## Licence
-
-[MIT License](https://github.com/ikosmidis/GEEBRA.jl/blob/master/LICENSE.md)
+[![](https://img.shields.io/github/license/ikosmidis/GEEBRA.jl)](https://github.com/ikosmidis/GEEBRA.jl/blob/master/LICENSE.md)
 
 ## Package description
 
@@ -29,4 +20,10 @@ penalize the objectives in order to reduce the bias of the resulting
 estimators.
 
 **See the [GEEBRA documentation](https://ikosmidis.github.io/GEEBRA.jl/dev/) for more information and [examples](https://ikosmidis.github.io/GEEBRA.jl/dev/man/examples/)**
+
+## Authors
+
+[Ioannis Kosmidis](http://www.ikosmidis.com) (author, maintainer) 
+
+Nicola Lunardon (author)
 
