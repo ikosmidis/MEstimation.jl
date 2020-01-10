@@ -270,9 +270,9 @@ end
     end
    
     Random.seed!(123);
-    n = 50;
+    n = 100;
     m = 1;
-    p = 7
+    p = 5;
     x = Array{Float64}(undef, n, p);
     x[:, 1] .= 1.0;
     for j in 2:p
