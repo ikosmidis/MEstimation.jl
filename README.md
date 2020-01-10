@@ -23,7 +23,7 @@ estimators.
 
 ## Authors
 
-[Ioannis Kosmidis](http://www.ikosmidis.com) (author, maintainer) 
-
-Nicola Lunardon (author)
+| [Ioannis Kosmidis](http://www.ikosmidis.com) | (author, maintainer) |
+--- | ---
+| Nicola Lunardon | (author) |
 

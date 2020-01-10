@@ -50,8 +50,8 @@ using Test
     sy = sum(my_data.y)
     sxy = sum(my_data.x .* my_data.y)
 
-    @test isapprox(sy/sx, result_m.theta[1])
-    @test isapprox((sy + sxy/sx)/(sx + sxx/sx), result_br.theta[1])
+    @test isapprox(sy/sx, coef(result_m)[1])
+    @test isapprox((sy + sxy/sx)/(sx + sxx/sx), coef(result_br)[1])
 end
 
 
@@ -136,8 +136,8 @@ end
     o2_ml = nlsolve(ef_ml, [0.1, 0.2])
     o2_br = nlsolve(ef_br, [0.1, 0.2])
 
-    @test isapprox(o1_ml.theta, o2_ml.zero)
-    @test isapprox(o1_br.theta, o2_br.zero)
+    @test isapprox(coef(o1_ml), o2_ml.zero)
+    @test isapprox(coef(o1_br), o2_br.zero)
 
     ## Estimating function at the estimates
     @test isapprox(estimating_function(o2_br.zero, my_data, iv_template, true),
@@ -151,6 +151,7 @@ end
     using Random
     using Distributions
     using Optim
+    using LinearAlgebra
     
     ## Logistic regression data
     struct logistic_data
@@ -220,7 +221,9 @@ end
     @test isapprox(Optim.minimizer(o1_br), Optim.minimizer(o2_br.results))
     @test isapprox(Optim.minimizer(o3_ml), Optim.minimizer(o4_ml.results))
     @test isapprox(Optim.minimizer(o3_br), Optim.minimizer(o4_br.results))
-   
+
+    @test isapprox(sqrt.(diag(vcov(o2_br))), stderror(o2_br))
+    
 end
 
 @testset "agreement between obj and ef implementations" begin
@@ -290,23 +293,23 @@ end
     o1_br = fit(logistic_obj_template, my_data, true_betas, true)
     e1_br = fit(logistic_ef_template, my_data, true_betas, true)
 
-    @test isapprox(o1_ml.theta, e1_ml.theta, atol = 1e-05)
-    @test isapprox(o1_br.theta, e1_br.theta,atol = 1e-05)   
+    @test isapprox(coef(o1_ml), coef(e1_ml), atol = 1e-05)
+    @test isapprox(coef(o1_br), coef(e1_br), atol = 1e-05)   
 
     @test isapprox(aic(o1_ml),
-                   -2 * (objective_function(o1_ml.theta, my_data, logistic_obj_template, false) - p))
+                   -2 * (objective_function(coef(o1_ml), my_data, logistic_obj_template, false) - p))
 
     @test isapprox(aic(o1_br),
-                   -2 * (objective_function(o1_br.theta, my_data, logistic_obj_template) - p))
+                   -2 * (objective_function(coef(o1_br), my_data, logistic_obj_template) - p))
 
-    quants_ml = GEEBRA.obj_quantities(o1_ml.theta, my_data, logistic_obj_template, true)
-    quants_br = GEEBRA.obj_quantities(o1_br.theta, my_data, logistic_obj_template, true)
+    quants_ml = GEEBRA.obj_quantities(coef(o1_ml), my_data, logistic_obj_template, true)
+    quants_br = GEEBRA.obj_quantities(coef(o1_br), my_data, logistic_obj_template, true)
 
     @test isapprox(tic(o1_ml),
-                   -2 * (objective_function(o1_ml.theta, my_data, logistic_obj_template) + 2 * quants_ml[2]))
+                   -2 * (objective_function(coef(o1_ml), my_data, logistic_obj_template) + 2 * quants_ml[2]))
     
     @test isapprox(tic(o1_br),
-                   -2 * (objective_function(o1_br.theta, my_data, logistic_obj_template) + 2 * quants_br[2]))
+                   -2 * (objective_function(coef(o1_br), my_data, logistic_obj_template) + 2 * quants_br[2]))
     
     
     
