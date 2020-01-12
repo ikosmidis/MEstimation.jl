@@ -17,9 +17,9 @@ makedocs(
     doctest = false
 )
 
-deploydocs(
-    repo = "github.com/ikosmidis/GEEBRA.jl.git",
-    target = "build",
-    push_preview = true,
-)
+# deploydocs(
+#     repo = "github.com/ikosmidis/GEEBRA.jl.git",
+#     target = "build",
+#     push_preview = true,
+# )
 
