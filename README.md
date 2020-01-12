@@ -34,4 +34,4 @@ information and
 ## References
 
 + Varin, C., N. Reid, and D. Firth (2011). An overview of composite likelihood methods. *Statistica Sinica 21*(1), 5-42. 
-[URL](http://www3.stat.sinica.edu.tw/statistica/oldpdf/A21n11.pdf)
+[PDF link](http://www3.stat.sinica.edu.tw/statistica/oldpdf/A21n11.pdf)
