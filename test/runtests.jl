@@ -306,10 +306,10 @@ end
     quants_br = GEEBRA.obj_quantities(coef(o1_br), my_data, logistic_obj_template, true)
 
     @test isapprox(tic(o1_ml),
-                   -2 * (objective_function(coef(o1_ml), my_data, logistic_obj_template) + 2 * quants_ml[2]))
+                   -2 * (objective_function(coef(o1_ml), my_data, logistic_obj_template) + 2 * quants_ml[1]))
     
     @test isapprox(tic(o1_br),
-                   -2 * (objective_function(coef(o1_br), my_data, logistic_obj_template) + 2 * quants_br[2]))
+                   -2 * (objective_function(coef(o1_br), my_data, logistic_obj_template) + 2 * quants_br[1]))
     
     
     

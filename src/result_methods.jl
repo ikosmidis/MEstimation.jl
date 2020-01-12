@@ -10,6 +10,7 @@ struct GEEBRA_results
     template::Union{objective_function_template, estimating_function_template}
     br::Bool
     has_objective::Bool
+    br_method::String
 end
 
 """
@@ -34,7 +35,7 @@ function tic(results::GEEBRA_results)
     if (results.has_objective)
         obj = objective_function(results.theta, results.data, results.template, false)
         quants = obj_quantities(results.theta, results.data, results.template, true)
-        -2 * (obj + 2 * quants[2])
+        -2 * (obj + 2 * quants[1])
     end
 end
 
@@ -72,14 +73,16 @@ function Base.show(io::IO, results::GEEBRA_results;
     v = vcov(results)
     if results.has_objective
         println(io,
-                "M-estimation with objective contributions ",
+                (results.br ? "RBM" : "M") * "-estimation with objective contributions ",
                 results.template.obj_contribution)
     else
         println(io,
-                "M-estimation with estimating function contributions ",
+                (results.br ? "RBM" : "M") * "-estimation with estimating function contributions ",
                 results.template.ef_contribution)
     end
-    println(io, "Bias reduction: ", results.br)
+    if (results.br) 
+        println(io, "Bias reduction method: ", results.br_method)
+    end
     println(io)
     # println("Parameter\tEstimate\tS.E")
     # for i in 1:p

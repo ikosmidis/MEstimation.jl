@@ -33,7 +33,7 @@ function objective_function(theta::Vector,
     end
     if (br)
         quants = obj_quantities(theta, data, template, br)
-        sum(contributions) + quants[2]
+        sum(contributions) + quants[1]
     else
         sum(contributions)
     end
@@ -49,14 +49,59 @@ The maximization of the objective or the penalized objective is done using the [
 """
 function fit(template::objective_function_template,
              data::Any,
-             theta::Vector,
-             br::Bool = false;
-             method = LBFGS(),
-             optim_options = Optim.Options())
+             theta::Vector;
+             estimation_method::String = "M",
+             br_method::String = "implicit_trace",
+             nlsolve_arguments...)
+
+    if (estimation_method == "M")
+        br = false
+    elseif (estimation_method == "RBM")
+        if (br_method == "implicit_trace")
+            br = true
+        elseif (br_method == "explicit_trace")
+            br = false
+        else
+            error(br_method, " is not a recognized bias-reduction method")
+        end
+    else
+        error(estimation_method, " is not a recognized estimation method")
+    end
+
+    ## down the line when det is implemented we need to be passing the
+    ## bias reduction method to estimating_function
+
     obj = beta -> -objective_function(beta, data, template, br)
     out = optimize(obj, theta, method, optim_options)
-    GEEBRA_results(out, out.minimizer, data, template, br, true)
+    
+    out = nlsolve(ef, theta; nlsolve_arguments...)
+
+    if (estimation_method == "M")
+        theta = out.zero
+    elseif (estimation_method == "RBM") 
+        if (br_method == "implicit_trace") 
+            theta = out.zero
+        elseif (br_method == "explicit_trace")
+            quants = ef_quantities(out.zero, data, template, true)
+            adjustment = quants[1]
+            jmat_inv = quants[2]
+            theta = out.zero + jmat_inv * adjustment
+            ## Reset br
+            br = true
+        end
+    end
+    GEEBRA_results(out, theta, data, template, br, false, br_method)
 end
+# function fit(template::objective_function_template,
+#              data::Any,
+#              theta::Vector,
+#              br::Bool = false;
+#              method = LBFGS(),
+#              optim_options = Optim.Options())
+#     obj = beta -> -objective_function(beta, data, template, br)
+#     out = optimize(obj, theta, method, optim_options)
+#     GEEBRA_results(out, out.minimizer, data, template, br, true)
+# end
 
 function obj_quantities(theta::Vector,
                         data::Any,
@@ -78,8 +123,8 @@ function obj_quantities(theta::Vector,
     vcov = jmat_inv * (emat * jmat_inv)
     if (penalty)        
         penalty = - tr(jmat_inv * emat) / 2
-        [vcov, penalty]
+        [penalty, jmat_inv, emat]
     else
-        [vcov]
+        [vcov, jmat_inv, emat]
     end
 end

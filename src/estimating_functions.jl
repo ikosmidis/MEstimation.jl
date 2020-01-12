@@ -10,44 +10,6 @@ struct estimating_function_template
     ef_contribution::Function
 end
 
-function ef_quantities(theta::Vector,
-                       data::Any,
-                       template::estimating_function_template,
-                       adjustment::Bool = false)
-    nj(eta::Vector, i::Int) = ForwardDiff.jacobian(beta -> template.ef_contribution(beta, data, i), eta)
-    p = length(theta)
-    n_obs = template.nobs(data)
-    psi = Matrix(undef, n_obs, p)
-    njmats = Vector(undef, n_obs)
-    for i in 1:n_obs
-        psi[i, :] =  template.ef_contribution(theta, data, i) 
-        njmats[i] = nj(theta, i)
-    end
-    jmat_inv = inv(-sum(njmats))
-    vcov = jmat_inv * psi'
-    vcov = vcov * vcov'
-    if (adjustment)
-        u(eta::Vector, i::Int) = ForwardDiff.jacobian(beta -> nj(beta, i), eta)
-        psi_tilde = Matrix(undef, n_obs, p)
-        umats = Vector(undef, n_obs)
-        for i in 1:n_obs
-            umats[i] = u(theta, i)
-        end       
-        umat = sum(umats)
-        A = Vector(undef, p)
-        for j in 1:p
-            for i in 1:n_obs
-                psi_tilde[i, :] = njmats[i][j, :]
-            end
-            A[j] = -tr(jmat_inv * psi_tilde' * psi +
-                       vcov * umat[j:p:(p*p - p + j), :] / 2)
-        end
-        [vcov, A]
-    else
-        [vcov]
-    end
-end
-
 """ 
     estimating_function(theta::Vector, data::Any, template::estimating_function_template, br::Bool = false)
 
@@ -65,7 +27,7 @@ function estimating_function(theta::Vector,
     end
     if (br)
         quants = ef_quantities(theta, data, template, br)
-        sum(contributions, dims = 2) + quants[2]
+        sum(contributions, dims = 2) + quants[1]
     else
         sum(contributions, dims = 2)
     end
@@ -92,14 +54,100 @@ end
 
 Fit an [`estimating_function_template`](@ref) on `data` with (`br = true`) or without (`br = false`) bias reduction. Bias reduction is through the solution of the empirically adjusted estimating functions in Kosmidis & Lunardon (2020). The bias-reducing adjustments are constructed internally using automatic differentiation (using the [ForwardDiff](https://github.com/JuliaDiff/ForwardDiff.jl) package).
 
-The solition of the estimating equations or the adjusted estimating equations is done using the [**NLsolve**](https://github.com/JuliaNLSolvers/NLsolve.jl) package. Arguments can be passed directly to `NLsolve.nlsolve` through [keyword arguments](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1).
+The solution of the estimating equations or the adjusted estimating equations is done using the [**NLsolve**](https://github.com/JuliaNLSolvers/NLsolve.jl) package. Arguments can be passed directly to `NLsolve.nlsolve` through [keyword arguments](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1).
 """
 function fit(template::estimating_function_template,
              data::Any,
-             theta::Vector,
-             br::Bool = false;
+             theta::Vector;
+             estimation_method::String = "M",
+             br_method::String = "implicit_trace",
              nlsolve_arguments...)
+
+    if (estimation_method == "M")
+        br = false
+    elseif (estimation_method == "RBM")
+        if (br_method == "implicit_trace")
+            br = true
+        elseif (br_method == "explicit_trace")
+            br = false
+        else
+            error(br_method, " is not a recognized bias-reduction method")
+        end
+    else
+        error(estimation_method, " is not a recognized estimation method")
+    end
+
+    ## down the line when det is implemented we need to be passing the
+    ## bias reduction method to estimating_function
     ef = get_estimating_function(data, template, br)
+    
     out = nlsolve(ef, theta; nlsolve_arguments...)
-    GEEBRA_results(out, out.zero, data, template, br, false)
+
+    if (estimation_method == "M")
+        theta = out.zero
+    elseif (estimation_method == "RBM") 
+        if (br_method == "implicit_trace") 
+            theta = out.zero
+        elseif (br_method == "explicit_trace")
+            quants = ef_quantities(out.zero, data, template, true)
+            adjustment = quants[1]
+            jmat_inv = quants[2]
+            theta = out.zero + jmat_inv * adjustment
+            ## Reset br
+            br = true
+        end
+    end
+    GEEBRA_results(out, theta, data, template, br, false, br_method)
 end
+# function fit(template::estimating_function_template,
+#              data::Any,
+#              theta::Vector,
+#              br::Bool = false;
+#              nlsolve_arguments...)
+#     ef = get_estimating_function(data, template, br)
+#     out = nlsolve(ef, theta; nlsolve_arguments...)
+#     GEEBRA_results(out, out.zero, data, template, br, false)
+# end
+
+
+function ef_quantities(theta::Vector,
+                       data::Any,
+                       template::estimating_function_template,
+                       adjustment::Bool = false)
+    nj(eta::Vector, i::Int) = ForwardDiff.jacobian(beta -> template.ef_contribution(beta, data, i), eta)
+    p = length(theta)
+    n_obs = template.nobs(data)
+    psi = Matrix(undef, n_obs, p)
+    njmats = Vector(undef, n_obs)
+    for i in 1:n_obs
+        psi[i, :] =  template.ef_contribution(theta, data, i) 
+        njmats[i] = nj(theta, i)
+    end
+    jmat_inv = inv(-sum(njmats))
+    emat = psi' * psi
+    emat = convert(Array{Float64, 2}, emat)
+    vcov = jmat_inv * (emat * jmat_inv)
+    # vcov = jmat_inv * psi'
+    # vcov = vcov * vcov'
+    if (adjustment)
+        u(eta::Vector, i::Int) = ForwardDiff.jacobian(beta -> nj(beta, i), eta)
+        psi_tilde = Matrix(undef, n_obs, p)
+        umats = Vector(undef, n_obs)
+        for i in 1:n_obs
+            umats[i] = u(theta, i)
+        end       
+        umat = sum(umats)
+        A = Vector(undef, p)
+        for j in 1:p
+            for i in 1:n_obs
+                psi_tilde[i, :] = njmats[i][j, :]
+            end
+            A[j] = -tr(jmat_inv * psi_tilde' * psi +
+                       vcov * umat[j:p:(p * p - p + j), :] / 2)
+        end
+        [A, jmat_inv, emat]
+    else
+        [vcov, jmat_inv, emat]
+    end
+end
+
