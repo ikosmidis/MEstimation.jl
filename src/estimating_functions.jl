@@ -114,7 +114,7 @@ function ef_quantities(theta::Vector,
                        data::Any,
                        template::estimating_function_template,
                        adjustment::Bool = false)
-    nj(eta::Vector, i::Int) = jacobian(beta -> template.ef_contribution(beta, data, i), eta)
+    nj(eta::Vector, i::Int) = ForwardDiff.jacobian(beta -> template.ef_contribution(beta, data, i), eta)
     p = length(theta)
     n_obs = template.nobs(data)
     psi = Matrix(undef, n_obs, p)
@@ -130,7 +130,7 @@ function ef_quantities(theta::Vector,
     # vcov = jmat_inv * psi'
     # vcov = vcov * vcov'
     if (adjustment)
-        u(eta::Vector, i::Int) = jacobian(beta -> nj(beta, i), eta)
+        u(eta::Vector, i::Int) = ForwardDiff.jacobian(beta -> nj(beta, i), eta)
         psi_tilde = Matrix(undef, n_obs, p)
         umats = Vector(undef, n_obs)
         for i in 1:n_obs

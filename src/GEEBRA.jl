@@ -2,13 +2,10 @@ module GEEBRA # general esimtating equations with or without bias-reducting adju
 
 using NLsolve
 using Optim
+using FiniteDiff
 using ForwardDiff
 using LinearAlgebra
 using Distributions
-using FiniteDiff
-
-import ForwardDiff: gradient, hessian
-import FiniteDiff: finite_difference_gradient
 
 import Base: show, print
 import StatsBase: fit, aic, vcov, coef, coeftable, stderror, CoefTable
