@@ -92,10 +92,11 @@ function Base.show(io::IO, results::GEEBRA_results;
     # end
     show(io, coeftable(results))
     if results.has_objective
+        objfun = objective_function(results.theta, results.data, results.template, results.br)
         if results.br
-            print(io, "\nMaximum penalized objetive:\t", round(-results.results.minimum, digits = digits))
+            print(io, "\nMaximum penalized objetive:\t", round(objfun, digits = digits))
         else
-            print(io, "\nMaximum objetive:\t\t", round(-results.results.minimum, digits = digits))
+            print(io, "\nMaximum objetive:\t\t", round(objfun, digits = digits))
         end
         print(io, "\nTakeuchi information criterion:\t", round(tic(results), digits = digits))
         print(io, "\nAkaike information criterion:\t", round(aic(results), digits = digits))

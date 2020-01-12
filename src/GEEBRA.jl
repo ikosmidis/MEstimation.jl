@@ -5,6 +5,10 @@ using Optim
 using ForwardDiff
 using LinearAlgebra
 using Distributions
+using FiniteDiff
+
+import ForwardDiff: gradient, hessian
+import FiniteDiff: finite_difference_gradient
 
 import Base: show, print
 import StatsBase: fit, aic, vcov, coef, coeftable, stderror, CoefTable
@@ -78,7 +82,7 @@ end # module
 # function obj_derivatives(data::Any,
 #                          template::objective_template)
 #     result
-#     npsi(eta::Vector, i::Int) = ForwardDiff.gradient(beta -> template.obj_contribution(beta, data, i), eta)
-#     nj(eta::Vector, i::Int) = ForwardDiff.hessian(beta -> template.obj_contribution(beta, data, i), eta)
+#     npsi(eta::Vector, i::Int) = gradient(beta -> template.obj_contribution(beta, data, i), eta)
+#     nj(eta::Vector, i::Int) = hessian(beta -> template.obj_contribution(beta, data, i), eta)
 #     [npsi, nj]
 # end                        

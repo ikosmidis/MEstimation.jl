@@ -83,9 +83,8 @@ function fit(template::objective_function_template,
         elseif (br_method == "explicit_trace")
             quants = obj_quantities(out.minimizer, data, template, true)
             jmat_inv = quants[2]
-
-            ## Here we need numerical diff!!!
-            adjustment = ForwardDiff.gradient(beta -> obj_quantities(beta, data, template, true)[1], out.minimizer)
+            ## We use finite differences to get the adjustment
+            adjustment = finite_difference_gradient(beta -> obj_quantities(beta, data, template, true)[1], out.minimizer)
             theta = out.minimizer + jmat_inv * adjustment
             ## Reset br
             br = true
@@ -108,8 +107,8 @@ function obj_quantities(theta::Vector,
                         data::Any,
                         template::objective_function_template,
                         penalty::Bool = false)
-    npsi(eta::Vector, i::Int) = ForwardDiff.gradient(beta -> template.obj_contribution(beta, data, i), eta)
-    nj(eta::Vector, i::Int) = ForwardDiff.hessian(beta -> template.obj_contribution(beta, data, i), eta)
+    npsi(eta::Vector, i::Int) = gradient(beta -> template.obj_contribution(beta, data, i), eta)
+    nj(eta::Vector, i::Int) = hessian(beta -> template.obj_contribution(beta, data, i), eta)
     p = length(theta)
     n_obs = template.nobs(data)
     psi = Matrix{Float64}(undef, n_obs, p)
