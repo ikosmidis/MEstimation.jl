@@ -1,5 +1,5 @@
 """
-    GEEBRA_results(results::Union{NLsolve.SolverResults, Optim.MultivariateOptimizationResults, Optim.UnivariateOptimizationResults}, theta::Vector, data::Any,  data::Any, template::Union{objective_function_template, estimating_function_template}, br::Bool,has_objective::Bool)
+    GEEBRA_results(results::Union{NLsolve.SolverResults, Optim.MultivariateOptimizationResults, Optim.UnivariateOptimizationResults}, theta::Vector, data::Any,  data::Any, template::Union{objective_function_template, estimating_function_template}, br::Bool, has_objective::Bool, br_method::String)
 
 Composite type for the output of [`fit`](@ref) for an [`objective_function_template`](@ref) or an [`estimating_function_template`](@ref).
 """

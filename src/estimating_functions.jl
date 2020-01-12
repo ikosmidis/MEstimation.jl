@@ -117,7 +117,7 @@ function ef_quantities(theta::Vector,
     nj(eta::Vector, i::Int) = ForwardDiff.jacobian(beta -> template.ef_contribution(beta, data, i), eta)
     p = length(theta)
     n_obs = template.nobs(data)
-    psi = Matrix(undef, n_obs, p)
+    psi = Matrix{Float64}(undef, n_obs, p)
     njmats = Vector(undef, n_obs)
     for i in 1:n_obs
         psi[i, :] =  template.ef_contribution(theta, data, i) 
@@ -125,8 +125,7 @@ function ef_quantities(theta::Vector,
     end
     jmat_inv = inv(-sum(njmats))
     emat = psi' * psi
-    emat = convert(Array{Float64, 2}, emat)
-    vcov = jmat_inv * (emat * jmat_inv)
+    vcov = jmat_inv * (emat * jmat_inv')
     # vcov = jmat_inv * psi'
     # vcov = vcov * vcov'
     if (adjustment)

@@ -43,6 +43,8 @@ using Test
     ## Get reduced-bias estimator for the ratio
     result_br = fit(ratio_template, my_data, [0.1], estimation_method = "RBM")
     @inferred fit(ratio_template, my_data, [0.1], estimation_method = "RBM")
+    ## Gere reduced-bias estimator for the ration using explicit RBM-estimation
+    result_br1 = fit(ratio_template, my_data, [0.1], estimation_method = "RBM", br_method = "explicit_trace")
 
     ## Quantities for estimators
     sx = sum(my_data.x)
@@ -52,6 +54,8 @@ using Test
 
     @test isapprox(sy/sx, coef(result_m)[1])
     @test isapprox((sy + sxy/sx)/(sx + sxx/sx), coef(result_br)[1])
+    @test isapprox(sy/sx * (1 - sxx / sx^2) + sxy/sx^2, coef(result_br1)[1])
+    @test_throws ErrorException  result_br1 = fit(ratio_template, my_data, [0.1], estimation_method = "RBM", br_method = "magic_br_method")
 end
 
 
@@ -128,6 +132,8 @@ end
     @inferred fit(iv_template, my_data, true_parameter, estimation_method = "M")
     o1_br = fit(iv_template, my_data, true_parameter, estimation_method = "RBM")
     @inferred fit(iv_template, my_data, true_parameter, estimation_method = "RBM")
+    o1_br1 = fit(iv_template, my_data, true_parameter, estimation_method = "RBM", br_method = "explicit_trace")
+    @inferred fit(iv_template, my_data, true_parameter, estimation_method = "RBM", br_method = "explicit_trace")
     
     ef_br = get_estimating_function(my_data, iv_template, true)
     @inferred get_estimating_function(my_data, iv_template, true)
@@ -136,6 +142,9 @@ end
     o2_ml = nlsolve(ef_ml, [0.1, 0.2])
     o2_br = nlsolve(ef_br, [0.1, 0.2])
 
+    qs = GEEBRA.ef_quantities(coef(o1_ml), my_data, iv_template, true)
+    @test isapprox(coef(o1_ml) + qs[2] * qs[1], coef(o1_br1))
+    
     @test isapprox(coef(o1_ml), o2_ml.zero)
     @test isapprox(coef(o1_br), o2_br.zero)
 
@@ -216,7 +225,7 @@ end
     o4_br = fit(logistic_template, my_data, true_betas, estimation_method = "RBM",
                                optim_method = NelderMead(),
                                optim_options = Optim.Options(iterations = 2))
-    
+             
     @test isapprox(Optim.minimizer(o1_ml), Optim.minimizer(o2_ml.results))
     @test isapprox(Optim.minimizer(o1_br), Optim.minimizer(o2_br.results))
     @test isapprox(Optim.minimizer(o3_ml), Optim.minimizer(o4_ml.results))
@@ -292,9 +301,12 @@ end
     e1_ml = fit(logistic_ef_template, my_data, true_betas, estimation_method = "M")
     o1_br = fit(logistic_obj_template, my_data, true_betas, estimation_method = "RBM")
     e1_br = fit(logistic_ef_template, my_data, true_betas, estimation_method = "RBM")
+    o1_br1 = fit(logistic_obj_template, my_data, true_betas, estimation_method = "RBM", br_method = "explicit_trace")
+    e1_br1 = fit(logistic_ef_template, my_data, true_betas, estimation_method = "RBM", br_method = "explicit_trace")
 
     @test isapprox(coef(o1_ml), coef(e1_ml), atol = 1e-05)
-    @test isapprox(coef(o1_br), coef(e1_br), atol = 1e-05)   
+    @test isapprox(coef(o1_br), coef(e1_br), atol = 1e-05)
+    @test isapprox(coef(o1_br1), coef(e1_br1), atol = 1e-05)   
 
     @test isapprox(aic(o1_ml),
                    -2 * (objective_function(coef(o1_ml), my_data, logistic_obj_template, false) - p))
