@@ -1,4 +1,4 @@
-module GEEBRA # general esimtating equations with or without bias-reducting adjustments
+module GEEBRA # general estimating equations with or without bias-reducting adjustments
 
 using NLsolve
 using Optim

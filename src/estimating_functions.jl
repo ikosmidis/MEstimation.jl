@@ -50,11 +50,11 @@ function get_estimating_function(data::Any,
 end
 
 """   
-    fit(template::estimating_function_template, data::Any, theta::Vector, br::Bool = false; nlsolve_arguments...)
+    fit(template::estimating_function_template, data::Any, theta::Vector; estimation_method::String = "M", br_method::String = "implicit_trace", nlsolve_arguments...)
 
-Fit an [`estimating_function_template`](@ref) on `data` with (`br = true`) or without (`br = false`) bias reduction. Bias reduction is through the solution of the empirically adjusted estimating functions in Kosmidis & Lunardon (2020). The bias-reducing adjustments are constructed internally using automatic differentiation (using the [ForwardDiff](https://github.com/JuliaDiff/ForwardDiff.jl) package).
+Fit an [`estimating_function_template`](@ref) on `data` using M-estimation ([keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `estimation_method = "M"`; default) or RBM-estimation (reduced-bias M estimation; [keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `estimation_method = "RBM"`). Bias reduction is either through the solution of the empirically adjusted estimating functions in Kosmidis & Lunardon (2020) ([keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `br_method = "implicit_trace"`; default) or by subtracting an estimate of the bias from the M-estimates ([keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `br_method = "explicit_trace"`). The bias-reducing adjustments and the bias estimate are constructed internally using automatic differentiation (using the [ForwardDiff](https://github.com/JuliaDiff/ForwardDiff.jl) package).
 
-The solution of the estimating equations or the adjusted estimating equations is done using the [**NLsolve**](https://github.com/JuliaNLSolvers/NLsolve.jl) package. Arguments can be passed directly to `NLsolve.nlsolve` through [keyword arguments](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1).
+The solution of the estimating equations or the adjusted estimating equations is done using the [**NLsolve**](https://github.com/JuliaNLSolvers/NLsolve.jl) package. Arguments can be passed directly to `NLsolve.nlsolve` through [keyword arguments](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1). See the [NLsolve README](https://github.com/JuliaNLSolvers/NLsolve.jl) for more information on available options.
 """
 function fit(template::estimating_function_template,
              data::Any,
@@ -62,7 +62,6 @@ function fit(template::estimating_function_template,
              estimation_method::String = "M",
              br_method::String = "implicit_trace",
              nlsolve_arguments...)
-
     if (estimation_method == "M")
         br = false
     elseif (estimation_method == "RBM")
@@ -76,13 +75,10 @@ function fit(template::estimating_function_template,
     else
         error(estimation_method, " is not a recognized estimation method")
     end
-
     ## down the line when det is implemented we need to be passing the
     ## bias reduction method to estimating_function
-    ef = get_estimating_function(data, template, br)
-    
+    ef = get_estimating_function(data, template, br)   
     out = nlsolve(ef, theta; nlsolve_arguments...)
-
     if (estimation_method == "M")
         theta = out.zero
     elseif (estimation_method == "RBM") 
@@ -99,16 +95,6 @@ function fit(template::estimating_function_template,
     end
     GEEBRA_results(out, theta, data, template, br, false, br_method)
 end
-# function fit(template::estimating_function_template,
-#              data::Any,
-#              theta::Vector,
-#              br::Bool = false;
-#              nlsolve_arguments...)
-#     ef = get_estimating_function(data, template, br)
-#     out = nlsolve(ef, theta; nlsolve_arguments...)
-#     GEEBRA_results(out, out.zero, data, template, br, false)
-# end
-
 
 function ef_quantities(theta::Vector,
                        data::Any,
