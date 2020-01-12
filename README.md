@@ -14,7 +14,7 @@
 statistical models by solving estimating equations or by maximizing
 inference objectives, like
 [likelihood](https://en.wikipedia.org/wiki/Likelihood_function) and
-composite likelihood functions (see, Varin et al, 2011, for a review),
+composite likelihood functions (see, [Varin et al, 2011](http://www3.stat.sinica.edu.tw/statistica/oldpdf/A21n11.pdf), for a review),
 using user-specified templates.
 
 A key feature is the option to adjust the estimating equation or
@@ -33,4 +33,6 @@ information and
 
 ## References
 
-+ Varin, C., N. Reid, and D. Firth (2011). An overview of composite likelihood methods. *Statistica Sinica 21*(1), 5-42.
++ Varin, C., N. Reid, and D. Firth (2011). An overview of composite likelihood methods. *Statistica Sinica 21*(1), 5-42. 
+<br/>
+[URL](http://www3.stat.sinica.edu.tw/statistica/oldpdf/A21n11.pdf)
