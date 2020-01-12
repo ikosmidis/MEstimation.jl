@@ -1,9 +1,9 @@
 """
-    objective_function_template(nobs::Function, ef_contribution::Function)
+    objective_function_template(nobs::Function, obj_contribution::Function)
 
 Define an `objective_function_template` by supplying:
 + `nobs`: a function of `data` that computes the number of observations of the particular data type,
-+ `ef_contribution`: a function of the parameters `theta`, the `data` and the observation index `i` that returns a real.
++ `obj_contribution`: a function of the parameters `theta`, the `data` and the observation index `i` that returns a real.
 """
 struct objective_function_template
     nobs::Function
@@ -52,7 +52,8 @@ function fit(template::objective_function_template,
              theta::Vector;
              estimation_method::String = "M",
              br_method::String = "implicit_trace",
-             nlsolve_arguments...)
+             optim_method = LBFGS(),
+             optim_options = Optim.Options())
 
     if (estimation_method == "M")
         br = false
@@ -69,28 +70,28 @@ function fit(template::objective_function_template,
     end
 
     ## down the line when det is implemented we need to be passing the
-    ## bias reduction method to estimating_function
+    ## bias reduction method to objetive_function
 
     obj = beta -> -objective_function(beta, data, template, br)
-    out = optimize(obj, theta, method, optim_options)
+    out = optimize(obj, theta, optim_method, optim_options)
     
-    out = nlsolve(ef, theta; nlsolve_arguments...)
-
     if (estimation_method == "M")
-        theta = out.zero
+        theta = out.minimizer
     elseif (estimation_method == "RBM") 
         if (br_method == "implicit_trace") 
-            theta = out.zero
+            theta = out.minimizer
         elseif (br_method == "explicit_trace")
-            quants = ef_quantities(out.zero, data, template, true)
-            adjustment = quants[1]
+            quants = obj_quantities(out.minimizer, data, template, true)
             jmat_inv = quants[2]
-            theta = out.zero + jmat_inv * adjustment
+
+            ## Here we need numerical diff!!!
+            adjustment = ForwardDiff.gradient(beta -> obj_quantities(beta, data, template, true)[1], out.minimizer)
+            theta = out.minimizer + jmat_inv * adjustment
             ## Reset br
             br = true
         end
     end
-    GEEBRA_results(out, theta, data, template, br, false, br_method)
+    GEEBRA_results(out, theta, data, template, br, true, br_method)
 end
 # function fit(template::objective_function_template,
 #              data::Any,
@@ -111,7 +112,7 @@ function obj_quantities(theta::Vector,
     nj(eta::Vector, i::Int) = ForwardDiff.hessian(beta -> template.obj_contribution(beta, data, i), eta)
     p = length(theta)
     n_obs = template.nobs(data)
-    psi = Matrix(undef, n_obs, p)
+    psi = Matrix{Float64}(undef, n_obs, p)
     njmats = Vector(undef, n_obs)
     for i in 1:n_obs
         psi[i, :] =  npsi(theta, i)
@@ -119,7 +120,7 @@ function obj_quantities(theta::Vector,
     end
     jmat_inv = inv(-sum(njmats))
     emat = psi' * psi
-    emat = convert(Array{Float64, 2}, emat)
+    # emat = convert(Array{Float64, 2}, emat)
     vcov = jmat_inv * (emat * jmat_inv)
     if (penalty)        
         penalty = - tr(jmat_inv * emat) / 2
