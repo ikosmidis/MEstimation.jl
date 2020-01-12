@@ -12,18 +12,21 @@
 
 **GEEBRA** is a Julia package that provides infrastructure to estimate
 statistical models by solving estimating equations or by maximizing
-inference objectives, like the likelihood functions, using
-user-specified templates.
+inference objectives, like likelihood and composite likelihood
+functions, using user-specified templates.
 
 A key feature is the option to adjust the estimating equation or
 penalize the objectives in order to reduce the bias of the resulting
 estimators.
 
-**See the [GEEBRA documentation](https://ikosmidis.github.io/GEEBRA.jl/dev/) for more information and [examples](https://ikosmidis.github.io/GEEBRA.jl/dev/man/examples/)**
+**See the [GEEBRA
+documentation](https://ikosmidis.github.io/GEEBRA.jl/dev/) for more
+information and
+[examples](https://ikosmidis.github.io/GEEBRA.jl/dev/man/examples/)**
 
 ## Authors
 
-| [Ioannis Kosmidis](http://www.ikosmidis.com) | (author, maintainer) |
+| [Ioannis Kosmidis](http://www.ikosmidis.com) | **(author, maintainer)** |
 --- | ---
-| Nicola Lunardon | (author) |
+| [Nicola Lunardon](https://www.unimib.it/nicola-lunardon) | **(author)** |
 
