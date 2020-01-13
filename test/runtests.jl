@@ -328,7 +328,17 @@ end
     @test isapprox(tic(o1_br),
                    -2 * (objective_function(coef(o1_br), my_data, logistic_obj_template) + 2 * quants_br[1]))
     
-    
+
+    @test isapprox(vcov(o1_ml), vcov(e1_ml))
+    @test isapprox(vcov(o1_br), vcov(e1_br))
+    @test isapprox(vcov(o1_br1), vcov(e1_br1))
+    @test isapprox(vcov(o1_br2), vcov(e1_br2))
+
+    @test isapprox(coeftable(o1_ml).cols, coeftable(e1_ml).cols)
+    @test isapprox(coeftable(o1_br).cols, coeftable(e1_br).cols)
+    @test isapprox(coeftable(o1_br1).cols, coeftable(e1_br1).cols)
+    @test isapprox(coeftable(o1_br2).cols, coeftable(e1_br2).cols)
+   
     
 end
 
