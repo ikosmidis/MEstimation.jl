@@ -12,9 +12,9 @@
 
 ## Package description
 
-**GEEBRA** is a Julia package implements ``M``-estimation for statistical
-models, either by solving estimating equations or by maximizing
-inference objectives, like
+**GEEBRA** is a Julia package that implements ``M``-estimation for
+statistical models, either by solving estimating equations or by
+maximizing inference objectives, like
 [likelihoods](https://en.wikipedia.org/wiki/Likelihood_function) and
 composite likelihoods (see, [Varin et al,
 2011](http://www3.stat.sinica.edu.tw/statistica/oldpdf/A21n11.pdf),
@@ -50,6 +50,11 @@ objectives, or the subtraction of an estimate of the bias of the
 
 **GEEBRA**, then, can estimate the unknown parameters by either
 ``M``-estimation or RB``M``-estimation.
+
+See the
+[examples](https://ikosmidis.github.io/GEEBRA.jl/dev/man/examples/)
+for a showcase of the functionaly **GEEBRA** provides.
+
 
 ## Examples
 
