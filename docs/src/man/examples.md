@@ -190,8 +190,8 @@ end
 
 Then, solving the bias-reducing adjusted estimating equations
 ```@repl 2
-logistic_ef_template = estimating_function_template(logistic_nobs, logistic_ef);
-e1_br = fit(logistic_ef_template, my_data, true_betas, estimation_method = "RBM")
+logistic_template_ef = estimating_function_template(logistic_nobs, logistic_ef);
+e1_br = fit(logistic_template_ef, my_data, true_betas, estimation_method = "RBM")
 ```
 returns the reduced-bias estimates from maximum penalized likelihood:
 ```@repl 2
@@ -203,13 +203,13 @@ isapprox(coef(o1_br), coef(e1_br))
 
 For example, for logistic regression via estimating functions 
 ```@repl 2
-e2_br = fit(logistic_ef_template, my_data, true_betas, estimation_method = "RBM", br_method = "explicit_trace")
+e2_br = fit(logistic_template_ef, my_data, true_betas, estimation_method = "RBM", br_method = "explicit_trace")
 ```
 which gives slightly different estimates that what are in the `implict_trace` fit in `e1_br`. 
 
 The same can be done using objective functions, but numerical differentiation (using the [FiniteDiff](https://github.com/JuliaDiff/FiniteDiff.jl) package) is used to approximate the gradient of the bias-reducing penalty (i.e. ``A(\theta)``).
 ```@repl 2
-o2_br = fit(logistic_obj_template, my_data, true_betas, estimation_method = "RBM", br_method = "explicit_trace")
+o2_br = fit(logistic_template, my_data, true_betas, estimation_method = "RBM", br_method = "explicit_trace")
 isapprox(coef(e2_br), coef(o2_br))
 ```
 
