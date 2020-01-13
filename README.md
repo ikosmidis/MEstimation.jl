@@ -30,6 +30,10 @@ for more information, and the
 [examples](https://ikosmidis.github.io/GEEBRA.jl/dev/man/examples/)
 for a showcase of the functionaly **GEEBRA** provides.
 
+See
+[NEWS.md](https://github.com/ikosmidis/GEEBRA.jl/blob/master/NEWS.md)
+for changes, bug fixes and enhancements.
+
 ## Authors
 
 | [**Ioannis Kosmidis**](http://www.ikosmidis.com) | **(author, maintainer)** |

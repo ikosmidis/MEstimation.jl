@@ -1,4 +1,4 @@
-# GEEBRA.jl
+# [GEEBRA.jl](https://github.com/ikosmidis/GEEBRA.jl)
 
 ## Authors
 
@@ -30,6 +30,14 @@ adjustment of the estimating equations or the penalization of the
 objectives, or the subtraction of an estimate of the bias of the
 ``M``-estimator from the ``M``-estimates.
 
+See the
+[examples](https://ikosmidis.github.io/GEEBRA.jl/dev/man/examples/)
+for a showcase of the functionaly **GEEBRA** provides.
+
+See
+[NEWS.md](https://github.com/ikosmidis/GEEBRA.jl/blob/master/NEWS.md)
+for changes, bug fixes and enhancements.
+
 ## **GEEBRA** templates
 
 **GEEBRA** has been designed so that the only requirements from the user are to:
@@ -50,11 +58,6 @@ objectives, or the subtraction of an estimate of the bias of the
 
 **GEEBRA**, then, can estimate the unknown parameters by either
 ``M``-estimation or RB``M``-estimation.
-
-See the
-[examples](https://ikosmidis.github.io/GEEBRA.jl/dev/man/examples/)
-for a showcase of the functionaly **GEEBRA** provides.
-
 
 ## Examples
 
