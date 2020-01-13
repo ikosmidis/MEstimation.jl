@@ -302,11 +302,16 @@ end
     o1_br = fit(logistic_obj_template, my_data, true_betas, estimation_method = "RBM")
     e1_br = fit(logistic_ef_template, my_data, true_betas, estimation_method = "RBM")
     o1_br1 = fit(logistic_obj_template, my_data, true_betas, estimation_method = "RBM", br_method = "explicit_trace")
+    o1_br2 = fit(logistic_obj_template, my_data, coef(o1_ml), estimation_method = "RBM", br_method = "explicit_trace")
     e1_br1 = fit(logistic_ef_template, my_data, true_betas, estimation_method = "RBM", br_method = "explicit_trace")
+    e1_br2 = fit(logistic_ef_template, my_data, coef(o1_ml), estimation_method = "RBM", br_method = "explicit_trace")
 
+    
     @test isapprox(coef(o1_ml), coef(e1_ml), atol = 1e-05)
     @test isapprox(coef(o1_br), coef(e1_br), atol = 1e-05)
-    @test isapprox(coef(o1_br1), coef(e1_br1), atol = 1e-05)   
+    @test isapprox(coef(o1_br1), coef(e1_br1), atol = 1e-05)
+    @test isapprox(coef(o1_br2), coef(e1_br2), atol = 1e-05)
+    @test isapprox(coef(o1_br1), coef(e1_br2), atol = 1e-05)   
 
     @test isapprox(aic(o1_ml),
                    -2 * (objective_function(coef(o1_ml), my_data, logistic_obj_template, false) - p))

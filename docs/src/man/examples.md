@@ -68,17 +68,18 @@ The `estimating_function_template` for the ratio estimation problem can now be s
 
 We are now ready use `ratio_template` and `my_data` to compute the ``M``-estimator of ``\theta`` by solving the esitmating equation ``\sum_{i = 1}^n (Y_i - \theta X_i) = 0``. The starting value for the nonlinear solver is set to `0.1`.
 ```@repl 1
-result_m = fit(ratio_template, my_data, [0.1], false)
+result_m = fit(ratio_template, my_data, [0.1])
 ```
 `fit` uses methods from the [**NLsolve**](https://github.com/JuliaNLSolvers/NLsolve.jl) package for solving the estimating equations. Arguments can be passed directly to `NLsolve.nlsolve` through [keyword arguments](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) to the `fit` method. For example,
 ```@repl 1
-result_m = fit(ratio_template, my_data, [0.1], false, show_trace = true)
+result_m = fit(ratio_template, my_data, [0.1], show_trace = true)
 ```
 
 Bias reduction in general ``M``-estimation can be achieved by solving the adjusted estimating equation ``\sum_{i = 1}^n (Y_i - \theta X_i) + A(\theta, Y, X) = 0``, where ``A(\theta)`` are empirical bias-reducing adjustments depending on the first and second derivatives of the estimating function contributions. **GEEBRA** can use `ratio_template` and automatic differentiation (see, [ForwardDiff](https://github.com/JuliaDiff/ForwardDiff.jl)) to construct ``A(\theta, Y, X)`` and, then, solve the bias-reducing adjusted estimating equations. All this is simply done by
 ```@repl 1
-result_br = fit(ratio_template, my_data, [0.1], true) 
+result_br = fit(ratio_template, my_data, [0.1], estimation_method = "RBM") 
 ```
+where `RBM` stands for reduced-bias `M`-estimation.
 
 Kosmidis & Lunardon (2020) show that the reduced-bias estimator of $\theta$ is ``\tilde\theta = (s_Y + s_{XY}/s_{X})/(s_X + s_{XX}/s_{X})``. The code chunks below tests that this is indeed the result **GEEBRA** returns.
 ```@repl 1
@@ -161,16 +162,16 @@ logistic_template = objective_function_template(logistic_nobs, logistic_loglik)
 
 The maximum likelihood estimates starting at `true_betas` are
 ```@repl 2
-o1_ml = fit(logistic_template, my_data, true_betas, false, method = NelderMead())
+o1_ml = fit(logistic_template, my_data, true_betas, optim_method = NelderMead())
 ```
 `fit` uses methods from the [**Optim**](https://github.com/JuliaNLSolvers/Optim.jl) package internally. Here, we used the `Optim.NelderMead` method. Alternative optimization methods and options can be supplied directly through the [keyword arguments](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `method` and `optim.Options`, respectively. For example,
 ```@repl 2
-o2_ml = fit(logistic_template, my_data, true_betas, false, method = LBFGS(), optim_options = Optim.Options(g_abstol = 1e-05))
+o2_ml = fit(logistic_template, my_data, true_betas, optim_method = LBFGS(), optim_options = Optim.Options(g_abstol = 1e-05))
 ```
 
 The reduced-bias estimates starting at the maximum likelihood ones are
 ```@repl 2
-o1_br = fit(logistic_template, my_data, coef(o1_ml), true)
+o1_br = fit(logistic_template, my_data, coef(o1_ml), estimation_method = "RBM")
 ```
 
 ### Using [`estimating_function_template`](@ref)
@@ -190,7 +191,7 @@ end
 Then, solving the bias-reducing adjusted estimating equations
 ```@repl 2
 logistic_ef_template = estimating_function_template(logistic_nobs, logistic_ef);
-e1_br = fit(logistic_ef_template, my_data, true_betas, true)
+e1_br = fit(logistic_ef_template, my_data, true_betas, estimation_method = "RBM")
 ```
 returns the reduced-bias estimates from maximum penalized likelihood:
 ```@repl 2
