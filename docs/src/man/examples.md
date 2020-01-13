@@ -198,3 +198,20 @@ returns the reduced-bias estimates from maximum penalized likelihood:
 isapprox(coef(o1_br), coef(e1_br))
 ```
 
+### Bias-reduction methods
+**GEEBRA** currently implements 2 alternative bias reduction methods, called `implicit_trace` and `explicit_trace`. `implicit_trace` will adjust the estimating functions or penalize the objectives, as we have seen earlier. `explicit_trace`, on the other hand, will form an estimate of the bias of the ``M``-estimator and subtract that from the ``M``-estimates. The default method is ``implicit_trace``.
+
+For example, for logistic regression via estimating functions 
+```@repl 2
+e2_br = fit(logistic_ef_template, my_data, true_betas, estimation_method = "RBM", br_method = "explicit_trace")
+```
+which gives slightly different estimates that what are in the `implict_trace` fit in `e1_br`. 
+
+The same can be done using objective functions, but numerical differentiation (using the [FiniteDiff](https://github.com/JuliaDiff/FiniteDiff.jl) package) is used to approximate the gradient of the bias-reducing penalty (i.e. ``A(\theta)``).
+```@repl 2
+o2_br = fit(logistic_obj_template, my_data, true_betas, estimation_method = "RBM", br_method = "explicit_trace")
+isapprox(coef(e2_br), coef(o2_br))
+```
+
+
+
