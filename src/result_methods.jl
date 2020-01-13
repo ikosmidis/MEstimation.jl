@@ -1,5 +1,5 @@
 """
-    GEEBRA_results(results::Union{NLsolve.SolverResults, Optim.MultivariateOptimizationResults, Optim.UnivariateOptimizationResults}, theta::Vector, data::Any,  data::Any, template::Union{objective_function_template, estimating_function_template}, br::Bool,has_objective::Bool)
+    GEEBRA_results(results::Union{NLsolve.SolverResults, Optim.MultivariateOptimizationResults, Optim.UnivariateOptimizationResults}, theta::Vector, data::Any,  data::Any, template::Union{objective_function_template, estimating_function_template}, br::Bool, has_objective::Bool, br_method::String)
 
 Composite type for the output of [`fit`](@ref) for an [`objective_function_template`](@ref) or an [`estimating_function_template`](@ref).
 """
@@ -10,6 +10,7 @@ struct GEEBRA_results
     template::Union{objective_function_template, estimating_function_template}
     br::Bool
     has_objective::Bool
+    br_method::String
 end
 
 """
@@ -34,7 +35,7 @@ function tic(results::GEEBRA_results)
     if (results.has_objective)
         obj = objective_function(results.theta, results.data, results.template, false)
         quants = obj_quantities(results.theta, results.data, results.template, true)
-        -2 * (obj + 2 * quants[2])
+        -2 * (obj + 2 * quants[1])
     end
 end
 
@@ -72,14 +73,16 @@ function Base.show(io::IO, results::GEEBRA_results;
     v = vcov(results)
     if results.has_objective
         println(io,
-                "M-estimation with objective contributions ",
+                (results.br ? "RBM" : "M") * "-estimation with objective contributions ",
                 results.template.obj_contribution)
     else
         println(io,
-                "M-estimation with estimating function contributions ",
+                (results.br ? "RBM" : "M") * "-estimation with estimating function contributions ",
                 results.template.ef_contribution)
     end
-    println(io, "Bias reduction: ", results.br)
+    if (results.br) 
+        println(io, "Bias reduction method: ", results.br_method)
+    end
     println(io)
     # println("Parameter\tEstimate\tS.E")
     # for i in 1:p
@@ -89,10 +92,11 @@ function Base.show(io::IO, results::GEEBRA_results;
     # end
     show(io, coeftable(results))
     if results.has_objective
+        objfun = objective_function(results.theta, results.data, results.template, results.br)
         if results.br
-            print(io, "\nMaximum penalized objetive:\t", round(-results.results.minimum, digits = digits))
+            print(io, "\nMaximum penalized objetive:\t", round(objfun, digits = digits))
         else
-            print(io, "\nMaximum objetive:\t\t", round(-results.results.minimum, digits = digits))
+            print(io, "\nMaximum objetive:\t\t", round(objfun, digits = digits))
         end
         print(io, "\nTakeuchi information criterion:\t", round(tic(results), digits = digits))
         print(io, "\nAkaike information criterion:\t", round(aic(results), digits = digits))

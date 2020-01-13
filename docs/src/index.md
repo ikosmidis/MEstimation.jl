@@ -2,9 +2,9 @@
 
 ## Authors
 
-[Ioannis Kosmidis](http://www.ikosmidis.com) (author, maintainer) 
-
-[Nicola Lunardon](https://www.unimib.it/nicola-lunardon)
+| [**Ioannis Kosmidis**](http://www.ikosmidis.com) | **(author, maintainer)** |
+--- | ---
+| [**Nicola Lunardon**](https://www.unimib.it/nicola-lunardon) | **(author)** |
 
 ## Licence
 
@@ -12,21 +12,27 @@
 
 ## Package description
 
-**GEEBRA** is a Julia package that provides infrastructure to estimate
-statistical models by solving estimating equations or by maximizing
-inference objectives, like
-[likelihood](https://en.wikipedia.org/wiki/Likelihood_function) and
-composite likelihood functions (see, Varin et al, 2011, for a review),
-using user-specified templates.
+**GEEBRA** is a Julia package that implements ``M``-estimation for
+statistical models, either by solving estimating equations or by
+maximizing inference objectives, like
+[likelihoods](https://en.wikipedia.org/wiki/Likelihood_function) and
+composite likelihoods (see, [Varin et al,
+2011](http://www3.stat.sinica.edu.tw/statistica/oldpdf/A21n11.pdf),
+for a review), using user-specified templates of the estimating
+function or the objective functions contributions.
 
-A key feature is the option to adjust the estimating equation or
-penalize the objectives in order to reduce the bias of the resulting
-estimators.
+A key feature is the use of only those templates and forward mode
+automatic differentiation (as implemented in
+[**ForwardDiff**](https://github.com/JuliaDiff/ForwardDiff.jl)) to
+provide methods for **reduced-bias ``M``-estimation**
+(**RB``M``-estimation**). RB``M``-estimation takes place either through the
+adjustment of the estimating equations or the penalization of the
+objectives, or the subtraction of an estimate of the bias of the
+``M``-estimator from the ``M``-estimates.
 
-## M-estimation and bias reduction
+## **GEEBRA** templates
 
-**GEEBRA** has been designed so that the only requirements from the
-user are to:
+**GEEBRA** has been designed so that the only requirements from the user are to:
 1. implement a [Julia composite type](https://docs.julialang.org/en/v1/manual/types/index.html) for
    the data;
 2. implement a function for computing the number of observations from
@@ -42,10 +48,13 @@ user are to:
    estimating functions or to the objective, and the number of
    observations.
 
-**GEEBRA**, then, can estimate the unknown parameters by solving the
-estimating equations or maximizing the inference objectives.
+**GEEBRA**, then, can estimate the unknown parameters by either
+``M``-estimation or RB``M``-estimation.
 
-There is also the option to compute bias-reducing adjustments to the estimating functions or bias-reducing penalties to the objective to compute estimators with improved bias properties.  The bias-reducing adjustments and penalties are formed internally from the supplied templates and data object, using forward mode automatic differentiation, as implemented in [**ForwardDiff**](https://github.com/JuliaDiff/ForwardDiff.jl). No further work or input is required by the user.
+See the
+[examples](https://ikosmidis.github.io/GEEBRA.jl/dev/man/examples/)
+for a showcase of the functionaly **GEEBRA** provides.
+
 
 ## Examples
 

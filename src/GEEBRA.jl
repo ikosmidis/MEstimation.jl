@@ -1,7 +1,8 @@
-module GEEBRA # general esimtating equations with or without bias-reducting adjustments
+module GEEBRA # general estimating equations with or without bias-reducting adjustments
 
 using NLsolve
 using Optim
+using FiniteDiff
 using ForwardDiff
 using LinearAlgebra
 using Distributions
@@ -78,7 +79,7 @@ end # module
 # function obj_derivatives(data::Any,
 #                          template::objective_template)
 #     result
-#     npsi(eta::Vector, i::Int) = ForwardDiff.gradient(beta -> template.obj_contribution(beta, data, i), eta)
-#     nj(eta::Vector, i::Int) = ForwardDiff.hessian(beta -> template.obj_contribution(beta, data, i), eta)
+#     npsi(eta::Vector, i::Int) = gradient(beta -> template.obj_contribution(beta, data, i), eta)
+#     nj(eta::Vector, i::Int) = hessian(beta -> template.obj_contribution(beta, data, i), eta)
 #     [npsi, nj]
 # end                        
