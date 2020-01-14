@@ -1,3 +1,3 @@
-# GEEBRA 0.2.0
+# GEEBRA 0.1.0
 
-First release
+First public release
