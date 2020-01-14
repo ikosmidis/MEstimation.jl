@@ -199,7 +199,7 @@ isapprox(coef(o1_br), coef(e1_br))
 ```
 
 ### Bias-reduction methods
-**GEEBRA** currently implements 2 alternative bias reduction methods, called `implicit_trace` and `explicit_trace`. `implicit_trace` will adjust the estimating functions or penalize the objectives, as we have seen earlier. `explicit_trace`, on the other hand, will form an estimate of the bias of the ``M``-estimator and subtract that from the ``M``-estimates. The default method is ``implicit_trace``.
+**GEEBRA** currently implements 2 alternative bias reduction methods, called `implicit_trace` and `explicit_trace`. `implicit_trace` will adjust the estimating functions or penalize the objectives, as we have seen earlier. `explicit_trace`, on the other hand, will form an estimate of the bias of the ``M``-estimator and subtract that from the ``M``-estimates. The default method is `implicit_trace`.
 
 For example, for logistic regression via estimating functions 
 ```@repl 2

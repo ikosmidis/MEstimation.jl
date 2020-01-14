@@ -23,12 +23,16 @@ A key feature is the use of only those templates and forward mode
 automatic differentiation (as implemented in
 [**ForwardDiff**](https://github.com/JuliaDiff/ForwardDiff.jl)) to
 provide methods for **reduced-bias M-estimation**
-(**RBM-estimation**). 
+(**RBM-estimation**; see, [Kosmidis & Lunardon, 2020](http://arxiv.org/abs/2001.03786)). 
 
 See the [documentation](https://ikosmidis.github.io/GEEBRA.jl/dev/)
 for more information, and the
 [examples](https://ikosmidis.github.io/GEEBRA.jl/dev/man/examples/)
 for a showcase of the functionaly **GEEBRA** provides.
+
+See
+[NEWS.md](https://github.com/ikosmidis/GEEBRA.jl/blob/master/NEWS.md)
+for changes, bug fixes and enhancements.
 
 ## Authors
 
@@ -38,5 +42,6 @@ for a showcase of the functionaly **GEEBRA** provides.
 
 ## References
 
-+ Varin, C., N. Reid, and D. Firth (2011). An overview of composite likelihood methods. *Statistica Sinica 21*(1), 5-42. 
-[PDF link](http://www3.stat.sinica.edu.tw/statistica/oldpdf/A21n11.pdf)
++ Varin, C., N. Reid, and D. Firth (2011). An overview of composite likelihood methods. *Statistica Sinica 21*(1), 5-42. [Link](http://www3.stat.sinica.edu.tw/statistica/oldpdf/A21n11.pdf)
++ Kosmidis, I., N. Lunardon (2020). Empirical bias-reducing adjustments to estimating functions. ArXiv:2001.03786. [Link](http://arxiv.org/abs/2001.03786)
+

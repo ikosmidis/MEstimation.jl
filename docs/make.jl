@@ -20,6 +20,7 @@ makedocs(
 deploydocs(
     repo = "github.com/ikosmidis/GEEBRA.jl.git",
     target = "build",
+    devbranch = "develop",
     push_preview = true,
 )
 
