@@ -95,6 +95,7 @@ end
         [theta[1] - data.t[i], (data.y[i] - theta[2] * data.w[i]) * (theta[1] - data.t[i])]
     end
 
+    
     ## Simulating IV data
     function simulate_iv(nobs::Int,
                          theta::Vector) 
@@ -152,6 +153,44 @@ end
     @test isapprox(estimating_function(o2_br.zero, my_data, iv_template, true),
                    zeros(Float64, 2, 1),
                    atol = 1e-10)
+
+    
+    function iv_ef(theta::Vector,
+                   data::iv_data,
+                   i::Int64)
+        [theta[1] - data.t[i], (data.y[i] - theta[2] * data.w[i]) * (theta[1] - data.t[i])]
+    end
+
+
+    function iv_ef2(theta::Vector,
+                   data::iv_data,
+                   i::Int64)
+        [(data.y[i] - theta[2] * data.w[i]) * (theta[1] - data.t[i]), theta[1] - data.t[i]]
+    end
+
+    function iv_ef3(theta::Vector,
+                   data::iv_data,
+                   i::Int64)
+        [(data.y[i] - theta[1] * data.w[i]) * (theta[2] - data.t[i]), theta[2] - data.t[i]]
+    end
+
+    
+    ## Swapping the order of the estimating functions gives the same results
+    iv_template2 = estimating_function_template(iv_nobs, iv_ef2)
+    iv_template3 = estimating_function_template(iv_nobs, iv_ef3)
+
+    coef(fit(iv_template, my_data, true_parameter, estimation_method = "M"))
+    coef(fit(iv_template2, my_data, true_parameter, estimation_method = "M"))
+    coef(fit(iv_template3, my_data, true_parameter, estimation_method = "M"))
+
+    coef(fit(iv_template, my_data, true_parameter, estimation_method = "RBM"))
+    coef(fit(iv_template2, my_data, true_parameter, estimation_method = "RBM"))
+    coef(fit(iv_template3, my_data, true_parameter, estimation_method = "RBM"))
+
+    GEEBRA.ef_quantities(true_parameter, my_data, iv_template, true)[1]
+    GEEBRA.ef_quantities(true_parameter, my_data, iv_template2, true)[1]
+    GEEBRA.ef_quantities(true_parameter[[2,1]], my_data, iv_template3, true)[1]
+    
 end
 
 

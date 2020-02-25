@@ -100,6 +100,7 @@ function Base.show(io::IO, results::GEEBRA_results;
         end
         print(io, "\nTakeuchi information criterion:\t", round(tic(results), digits = digits))
         print(io, "\nAkaike information criterion:\t", round(aic(results), digits = digits))
+        print(io, "\nConverged: ", Optim.converged(results.results))
     else
         estfun = estimating_function(results.theta, results.data, results.template, results.br)
         if results.br
@@ -107,6 +108,7 @@ function Base.show(io::IO, results::GEEBRA_results;
         else
             print(io, "\nEstimating functions:\t", estfun)
         end
+        print(io, "\nConverged: ", NLsolve.converged(results.results))
     end     
 end
 
