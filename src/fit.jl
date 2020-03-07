@@ -11,7 +11,8 @@ function fit(template::objective_function_template,
              estimation_method::String = "M",
              br_method::String = "implicit_trace",
              optim_method = LBFGS(),
-             optim_options = Optim.Options())
+             optim_options = Optim.Options(),
+             penalty::Function = function penalty(beta, data) 0 end)
     if (estimation_method == "M")
         br = false
     elseif (estimation_method == "RBM")
@@ -27,7 +28,7 @@ function fit(template::objective_function_template,
     end
     ## down the line when det is implemented we need to be passing the
     ## bias reduction method to objetive_function
-    obj = beta -> -objective_function(beta, data, template, br)
+    obj = beta -> -objective_function(beta, data, template, br) - penalty(beta, data)
     out = optimize(obj, theta, optim_method, optim_options)
     if (estimation_method == "M")
         theta = out.minimizer
