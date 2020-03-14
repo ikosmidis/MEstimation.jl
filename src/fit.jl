@@ -7,7 +7,9 @@ The maximization of the objective or the penalized objective is done using the [
 """
 function fit(template::objective_function_template,
              data::Any,
-             theta::Vector;
+             theta::Vector{Float64};
+             lower::Vector{Float64} = Vector{Float64}(),
+             upper::Vector{Float64} = Vector{Float64}(),
              estimation_method::String = "M",
              br_method::String = "implicit_trace",
              optim_method = LBFGS(),
@@ -29,7 +31,12 @@ function fit(template::objective_function_template,
     ## down the line when det is implemented we need to be passing the
     ## bias reduction method to objetive_function
     obj = beta -> -objective_function(beta, data, template, br) - penalty(beta, data)
-    out = optimize(obj, theta, optim_method, optim_options)
+
+    if (length(lower) > 0) & (length(upper) > 0)
+        out = optimize(obj, lower, upper, theta, Fminbox(optim_method), optim_options)
+    else
+        out = optimize(obj, theta, optim_method, optim_options)
+    end
     if (estimation_method == "M")
         theta = out.minimizer
     elseif (estimation_method == "RBM")
@@ -48,6 +55,8 @@ function fit(template::objective_function_template,
     end
     GEEBRA_results(out, theta, data, template, br, true, br_method)
 end
+
+
 
 """   
     fit(template::estimating_function_template, data::Any, theta::Vector; estimation_method::String = "M", br_method::String = "implicit_trace", nlsolve_arguments...)
