@@ -32,7 +32,8 @@ function fit(template::objective_function_template,
     out = optimize(obj, theta, optim_method, optim_options)
     if (estimation_method == "M")
         theta = out.minimizer
-    elseif (estimation_method == "RBM") 
+    elseif (estimation_method == "RBM")
+        ## FIXME, 12/03/2020: Add stop if br_method is not implicit_trace
         if (br_method == "implicit_trace") 
             theta = out.minimizer
         elseif (br_method == "explicit_trace")
