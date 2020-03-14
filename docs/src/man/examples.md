@@ -164,7 +164,7 @@ The maximum likelihood estimates starting at `true_betas` are
 ```@repl 2
 o1_ml = fit(logistic_template, my_data, true_betas, optim_method = NelderMead())
 ```
-`fit` uses methods from the [**Optim**](https://github.com/JuliaNLSolvers/Optim.jl) package internally. Here, we used the `Optim.NelderMead` method. Alternative optimization methods and options can be supplied directly through the [keyword arguments](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `method` and `optim.Options`, respectively. For example,
+`fit` uses methods from the [**Optim**](https://github.com/JuliaNLSolvers/Optim.jl) package internally. Here, we used the `Optim.NelderMead` method. Alternative optimization methods and options can be supplied directly through the [keyword arguments](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `optim_method` and `optim_options`, respectively. For example,
 ```@repl 2
 o2_ml = fit(logistic_template, my_data, true_betas, optim_method = LBFGS(), optim_options = Optim.Options(g_abstol = 1e-05))
 ```
