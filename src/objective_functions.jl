@@ -58,6 +58,7 @@ function obj_quantities(theta::Vector,
     vcov = jmat_inv * (emat * jmat_inv)
     if (penalty)        
         penalty = - tr(jmat_inv * emat) / 2
+        # penalty = + log(det(sum(njmats))) / 2 - log(det(emat)) / 2
         [penalty, jmat_inv, emat]
     else
         [vcov, jmat_inv, emat]
