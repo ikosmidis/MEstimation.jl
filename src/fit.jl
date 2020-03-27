@@ -1,11 +1,11 @@
 """   
-    fit(template::objective_function_template, data::Any, theta::Vector; lower::Vector{Float64} = Vector{Float64}(), upper::Vector{Float64} = Vector{Float64}(), estimation_method::String = "M", br_method::String = "implicit_trace", optim_method = LBFGS(), optim_options = Optim.Options(), penalty::Function = function penalty(beta, data) 0 end))
+    fit(template::objective_function_template, data::Any, theta::Vector; lower::Vector{Float64} = Vector{Float64}(), upper::Vector{Float64} = Vector{Float64}(), estimation_method::String = "M", br_method::String = "implicit_trace", optim_method = LBFGS(), optim_options = Optim.Options(), penalty::Function = function penalty(beta, data) Vector{Float64}() end)
 
 Fit an [`objective_function_template`](@ref) on `data` using M-estimation ([keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `estimation_method = "M"`; default) or RBM-estimation (reduced-bias M estimation; [Kosmidis & Lunardon, 2020](http://arxiv.org/abs/2001.03786); [keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `estimation_method = "RBM"`). Bias reduction is either through the maximization of the bias-reducing penalized objective in Kosmidis & Lunardon (2020) ([keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `br_method = "implicit_trace"`; default) or by subtracting an estimate of the bias from the M-estimates ([keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `br_method = "explicit_trace"`). The bias-reducing penalty is constructed internally using automatic differentiation (using the [ForwardDiff](https://github.com/JuliaDiff/ForwardDiff.jl) package), and the bias estimate using a combination of automatic differentiation (using the [ForwardDiff](https://github.com/JuliaDiff/ForwardDiff.jl) package) and numerical differentiation (using the [FiniteDiff](https://github.com/JuliaDiff/FiniteDiff.jl) package).
 
 The maximization of the objective or the penalized objective is done using the [**Optim**](https://github.com/JuliaNLSolvers/Optim.jl) package. Optimization methods and options can be supplied directly through the [keyword arguments](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `optim_method` and `optim_options`, respectively. `optim_options` expects an object of class `Optim.Options`. See the [Optim documentation](https://julianlsolvers.github.io/Optim.jl/stable/#user/config/#general-options) for more details on the available options.
 
-An extra additive penalty to either the objective or the penalized objective can be suplied via the [keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `penalty`, which must be a function of the parameters and the data; default value is `function penalty(beta, data) 0 end`.
+An extra additive regularizer to either the objective or the penalized objective can be suplied via the [keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `regularizer`, which must be a function of the parameters and the data; the default value will result in no regularization.
 
 The [keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `lower` and `upper` can be used to provide box contraints; see the [**Optim** documentation onn box minimization](https://julianlsolvers.github.io/Optim.jl/stable/#examples/generated/ipnewton_basics/#box-minimzation) for more details.
 """
@@ -18,7 +18,7 @@ function fit(template::objective_function_template,
              br_method::String = "implicit_trace",
              optim_method = LBFGS(),
              optim_options = Optim.Options(),
-             penalty::Function = function penalty(beta, data) 0 end)
+             regularizer::Function = function regularizer(theta, data) Vector{Float64}() end)
     if (estimation_method == "M")
         br = false
     elseif (estimation_method == "RBM")
@@ -32,9 +32,18 @@ function fit(template::objective_function_template,
     else
         error(estimation_method, " is not a recognized estimation method")
     end
-    ## down the line when det is implemented we need to be passing the
+
+    ## Well we only need scalar-valued penalties here but let's leave
+    ## it like this
+    has_regularizer = length(regularizer(theta, data)) > 0
+    
+    ## down the line when/if det is implemented we need to be passing the
     ## bias reduction method to objetive_function
-    obj = beta -> -objective_function(beta, data, template, br) - penalty(beta, data)
+    if has_regularizer
+        obj = beta -> - objective_function(beta, data, template, br) - regularizer(beta, data)
+    else
+        obj = beta -> - objective_function(beta, data, template, br)
+    end
 
     if (length(lower) > 0) & (length(upper) > 0)
         out = optimize(obj, lower, upper, theta, Fminbox(optim_method), optim_options)
@@ -57,7 +66,7 @@ function fit(template::objective_function_template,
             br = true
         end
     end
-    GEEBRA_results(out, theta, data, template, br, true, br_method)
+    GEEBRA_results(out, theta, data, template, br, true, has_regularizer, br_method)
 end
 
 
@@ -75,6 +84,7 @@ function fit(template::estimating_function_template,
              estimation_method::String = "M",
              br_method::String = "implicit_trace",
              concentrate::Vector{Int64} = Vector{Int64}(),
+             regularizer::Function = function regularizer(theta, data) Vector{Float64}() end,
              nlsolve_arguments...)
     if (estimation_method == "M")
         br = false
@@ -89,9 +99,21 @@ function fit(template::estimating_function_template,
     else
         error(estimation_method, " is not a recognized estimation method")
     end
-    ## down the line when det is implemented we need to be passing the
-    ## bias reduction method to estimating_function
-    ef = get_estimating_function(data, template, br, concentrate)   
+
+    ## Well we only need length(theta)-valued penalties here but let's leave
+    ## it like this
+    has_regularizer = length(regularizer(theta, data)) > 0
+    
+    ## down the line when/if det is implemented we need to be passing the
+    ## bias reduction method to objetive_function
+    if has_regularizer
+        ef = get_estimating_function(data, template, br, concentrate, regularizer)
+    else
+        function non_regularizer(theta, data) Vector{Float64}(length(theta)) end
+        ef = get_estimating_function(data, template, br, concentrate, non_regularizer)
+    end
+
+    
     out = nlsolve(ef, theta; nlsolve_arguments...)
     if (estimation_method == "M")
         theta = out.zero
@@ -107,6 +129,7 @@ function fit(template::estimating_function_template,
             br = true
         end
     end
-    GEEBRA_results(out, theta, data, template, br, false, br_method)
+    has_regularizer = false
+    GEEBRA_results(out, theta, data, template, br, false, has_regularizer, br_method)
 end
 

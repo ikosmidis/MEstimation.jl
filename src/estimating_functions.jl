@@ -43,9 +43,10 @@ Construct the estimating function by adding up all contributions in the `data` a
 function get_estimating_function(data::Any,
                                  template::estimating_function_template,
                                  br::Bool = false,
-                                 concentrate::Vector{Int64} = Vector{Int64}())
+                                 concentrate::Vector{Int64} = Vector{Int64}(),
+                                 regularizer::Function)
     function g!(F, theta::Vector) 
-        out = estimating_function(theta, data, template, br, concentrate)
+        out = estimating_function(theta, data, template, br, concentrate) + regularizer(theta, data)
         for i in 1:length(out)
             F[i] = out[i]
         end

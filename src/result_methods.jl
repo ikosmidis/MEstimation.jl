@@ -10,6 +10,7 @@ struct GEEBRA_results
     template::Union{objective_function_template, estimating_function_template}
     br::Bool
     has_objective::Bool
+    has_regularizer::Bool
     br_method::String
 end
 
@@ -72,9 +73,15 @@ function Base.show(io::IO, results::GEEBRA_results;
     p = length(theta)
     v = vcov(results)
     if results.has_objective
-        println(io,
-                (results.br ? "RBM" : "M") * "-estimation with objective contributions ",
-                results.template.obj_contribution)
+        if results.has_regularizer
+            println(io,
+                    (results.br ? "RBM" : "M") * "-estimation with objective contributions ",
+                    results.template.obj_contribution, " and user-supplied regularizer")
+        else
+            println(io,
+                    (results.br ? "RBM" : "M") * "-estimation with objective contributions ",
+                    results.template.obj_contribution)
+        end
     else
         println(io,
                 (results.br ? "RBM" : "M") * "-estimation with estimating function contributions ",
@@ -94,9 +101,9 @@ function Base.show(io::IO, results::GEEBRA_results;
     if results.has_objective
         objfun = objective_function(results.theta, results.data, results.template, results.br)
         if results.br
-            print(io, "\nMaximum penalized objetive:\t", round(objfun, digits = digits))
+            print(io, "\nPenalized objetive:\t\t", round(objfun, digits = digits))
         else
-            print(io, "\nMaximum objetive:\t\t", round(objfun, digits = digits))
+            print(io, "\nObjective:\t\t\t", round(objfun, digits = digits))
         end
         print(io, "\nTakeuchi information criterion:\t", round(tic(results), digits = digits))
         print(io, "\nAkaike information criterion:\t", round(aic(results), digits = digits))
