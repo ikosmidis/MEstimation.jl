@@ -11,7 +11,7 @@ struct estimating_function_template
 end
 
 """ 
-    estimating_function(theta::Vector, data::Any, template::estimating_function_template, br::Bool = false)
+    estimating_function(theta::Vector, data::Any, template::estimating_function_template, br::Bool = false, concentrate::Vector{Int64} = Vector{Int64}())
 
 Construct the estimating function by adding up all contributions in the `data` according to [`estimating_function_template`](@ref), and evaluate it at `theta`. If `br = true` then automatic differentiation is used to compute the empirical bias-reducing adjustments and add them to the estimating function. Bias-reducing adjustments can be computed for only a subset of estimating functions by setting the ([keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `concentrate` to the vector of the indices for those estimating functions.
 """
@@ -36,15 +36,17 @@ function estimating_function(theta::Vector,
 end
 
 """ 
-    get_estimating_function(data::Any, template::estimating_function_template, br::Bool = false)
+    get_estimating_function(data::Any, template::estimating_function_template, br::Bool = false, concentrate::Vector{Int64} = Vector{Int64}(), regularizer::Function = function regularizer(theta::Vector{Float64}, data::Any) Vector{Float64}() end)
 
-Construct the estimating function by adding up all contributions in the `data` according to [`estimating_function_template`](@ref). If `br = true` then automatic differentiation is used to compute the empirical bias-reducing adjustments and add them to the estimating function. Bias-reducing adjustments can be computed for only a subset of estimating functions by setting the ([keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `concentrate` to the vector of the indices for those estimating functions. The result is a function that stores the estimating functions values at its second argument, in a preallocated vector passed as its first argument, ready to be used withing `NLsolve.nlsolve`. 
+Construct the estimating function by adding up all contributions in the `data` according to [`estimating_function_template`](@ref). If `br = true` then automatic differentiation is used to compute the empirical bias-reducing adjustments and add them to the estimating function. Bias-reducing adjustments can be computed for only a subset of estimating functions by setting the ([keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `concentrate` to the vector of the indices for those estimating functions. The result is a function that stores the estimating functions evaluated at its second argument, in a preallocated vector passed as its first argument, ready to be used withing `NLsolve.nlsolve`. 
+
+An extra additive regularizer to either the estimating functions or the adjusted estimating functions can be suplied via the [keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `regularizer`, which must be a function of the parameters and the data returning a real vector of dimension equal to the number of the estimating functions; the default value will result in no regularization.
 """
 function get_estimating_function(data::Any,
                                  template::estimating_function_template,
                                  br::Bool = false,
                                  concentrate::Vector{Int64} = Vector{Int64}(),
-                                 regularizer::Function)
+                                 regularizer::Function = function regularizer(theta::Vector{Float64}, data::Any) Vector{Float64}() end)
     function g!(F, theta::Vector) 
         out = estimating_function(theta, data, template, br, concentrate) + regularizer(theta, data)
         for i in 1:length(out)
