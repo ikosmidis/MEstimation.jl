@@ -75,17 +75,23 @@ function Base.show(io::IO, results::GEEBRA_results;
     if results.has_objective
         if results.has_regularizer
             println(io,
-                    (results.br ? "RBM" : "M") * "-estimation with objective contributions ",
-                    results.template.obj_contribution, " and user-supplied regularizer")
+                    (results.br ? "RBM" : "M") * "-estimation with objective contributions `",
+                    results.template.obj_contribution, "` and user-supplied regularizer")
         else
             println(io,
-                    (results.br ? "RBM" : "M") * "-estimation with objective contributions ",
-                    results.template.obj_contribution)
+                    (results.br ? "RBM" : "M") * "-estimation with objective contributions `",
+                    results.template.obj_contribution, "`")
         end
     else
-        println(io,
-                (results.br ? "RBM" : "M") * "-estimation with estimating function contributions ",
-                results.template.ef_contribution)
+        if results.has_regularizer
+            println(io,
+                    (results.br ? "RBM" : "M") * "-estimation with estimating function contributions `",
+                    results.template.ef_contribution, "` and user-supplied regularizer")
+        else
+            println(io,
+                    (results.br ? "RBM" : "M") * "-estimation with estimating function contributions `",
+                    results.template.ef_contribution, "`")
+        end
     end
     if (results.br) 
         println(io, "Bias reduction method: ", results.br_method)
