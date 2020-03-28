@@ -46,13 +46,22 @@ function get_estimating_function(data::Any,
                                  template::estimating_function_template,
                                  br::Bool = false,
                                  concentrate::Vector{Int64} = Vector{Int64}(),
-                                 regularizer::Function = function regularizer(theta::Vector{Float64}, data::Any) Vector{Float64}() end)
-    function g!(F, theta::Vector) 
-        out = estimating_function(theta, data, template, br, concentrate) + regularizer(theta, data)
+                                 regularizer::Any = Vector{Int64}())
+    ## regulizer here has different type and default than fit, because
+    ## the dimension of theta cannot be inferred
+    has_regularizer = typeof(regularizer) <: Function
+    function (F, theta::Vector)
+        if has_regularizer
+            out = estimating_function(theta, data, template, br, concentrate) + regularizer(theta, data)
+        else
+             out = estimating_function(theta, data, template, br, concentrate)
+        end
         for i in 1:length(out)
             F[i] = out[i]
         end
     end
+    
+    
 end
 
 function ef_quantities(theta::Vector,

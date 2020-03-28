@@ -126,8 +126,8 @@ end
     true_theta = [2.0, 2.0, 1.0, 3.0, 0.0, 1.0, 2.0, 1.0, 1.0]
     true_parameter = true_theta[[3, 2]]
     
-    Random.seed!(123)
-    my_data = simulate_iv(100, true_theta)
+    Random.seed!(123);
+    my_data = simulate_iv(100, true_theta);
     
     o1_ml = fit(iv_template, my_data, true_parameter, estimation_method = "M")
     @inferred fit(iv_template, my_data, true_parameter, estimation_method = "M")
