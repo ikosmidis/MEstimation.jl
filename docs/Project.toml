@@ -7,4 +7,4 @@ Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 [compat]
 Distributions = "0.22, 0.23"
 Documenter = "0.24"
-Optim = "^0.20.0"
+Optim = "0.20"
