@@ -8,6 +8,7 @@ struct GEEBRA_results
     theta::Vector
     data::Any
     template::Union{objective_function_template, estimating_function_template}
+    regularizer::Function
     br::Bool
     has_objective::Bool
     has_regularizer::Bool

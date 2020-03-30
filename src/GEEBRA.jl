@@ -25,10 +25,12 @@ export coeftable
 export fit
 export stderror
 
+export slice
 
 include("estimating_functions.jl")
 include("objective_functions.jl")
 include("fit.jl")
 include("result_methods.jl")
+include("slices.jl")
 
 end # module

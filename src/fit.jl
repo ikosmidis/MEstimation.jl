@@ -7,7 +7,7 @@ The maximization of the objective or the penalized objective is done using the [
 
 An extra additive regularizer to either the objective or the penalized objective can be suplied via the [keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `regularizer`, which must be a scalar-valued function of the parameters and the data; the default value will result in no regularization.
 
-The [keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `lower` and `upper` can be used to provide box contraints; see the [**Optim** documentation onn box minimization](https://julianlsolvers.github.io/Optim.jl/stable/#examples/generated/ipnewton_basics/#box-minimzation) for more details.
+The [keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `lower` and `upper` can be used to provide box contraints; see the [**Optim** documentation on box minimization](https://julianlsolvers.github.io/Optim.jl/stable/#examples/generated/ipnewton_basics/#box-minimzation) for more details.
 """
 function fit(template::objective_function_template,
              data::Any,
@@ -66,7 +66,7 @@ function fit(template::objective_function_template,
             br = true
         end
     end
-    GEEBRA_results(out, theta, data, template, br, true, has_regularizer, br_method)
+    GEEBRA_results(out, theta, data, template, regularizer, br, true, has_regularizer, br_method)
 end
 
 
@@ -130,6 +130,6 @@ function fit(template::estimating_function_template,
             br = true
         end
     end
-    GEEBRA_results(out, theta, data, template, br, false, has_regularizer, br_method)
+    GEEBRA_results(out, theta, data, template, regularizer, br, false, has_regularizer, br_method)
 end
 
