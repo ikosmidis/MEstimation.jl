@@ -27,15 +27,15 @@ function objective_function(theta::Vector,
                             br::Bool = false)
     p = length(theta)
     n_obs = template.nobs(data)
-    contributions = Vector(undef, n_obs)
+    objective = 0
     for i in 1:n_obs
-        contributions[i] = template.obj_contribution(theta, data, i)
+        objective += template.obj_contribution(theta, data, i)
     end
     if (br)
-        quants = obj_quantities(theta, data, template, br)
-        sum(contributions) + quants[1]
+        quants = obj_quantities(theta, data, template, true)
+        objective + quants[1]
     else
-        sum(contributions)
+        objective
     end
 end
 
@@ -47,20 +47,29 @@ function obj_quantities(theta::Vector,
     nj(eta::Vector, i::Int) = ForwardDiff.hessian(beta -> template.obj_contribution(beta, data, i), eta)
     p = length(theta)
     n_obs = template.nobs(data)
-    psi = Matrix{Float64}(undef, n_obs, p)
-    njmats = Vector(undef, n_obs)
+    psi = zeros(p)
+    emat = zeros(p, p)
+    jmat = zeros(p, p)
     for i in 1:n_obs
-        psi[i, :] =  npsi(theta, i)
-        njmats[i] = nj(theta, i)
+        cpsi = npsi(theta, i)
+        psi += cpsi
+        emat += cpsi * cpsi'
+        jmat += -nj(theta, i)
     end
-    jmat_inv = inv(-sum(njmats))
-    emat = psi' * psi
+    jmat_inv = try
+        inv(jmat)
+    catch
+        fill(NaN, p, p)
+    end
     vcov = jmat_inv * (emat * jmat_inv)
     if (penalty)        
         br_penalty = - tr(jmat_inv * emat) / 2
+        # br_penalty = n_obs * log(det(Matrix{Float64}(I * n_obs, p, p) -
+        #                              jmat_inv * emat)) / 2
         # br_penalty = + log(det(sum(njmats))) / 2 - log(det(emat)) / 2
-        [br_penalty, jmat_inv, emat]
+        [br_penalty, jmat_inv, emat, psi]
     else
-        [vcov, jmat_inv, emat]
+        [vcov, jmat_inv, emat, psi]
     end
 end
+
