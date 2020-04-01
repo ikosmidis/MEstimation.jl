@@ -81,6 +81,7 @@ function ef_quantities(theta::Vector,
     jmat_inv = inv(-sum(njmats))
     emat = psi' * psi
     vcov = jmat_inv * (emat * jmat_inv')
+    ef = sum(psi)
     if (adjustment)
         u(eta::Vector, i::Int) = ForwardDiff.jacobian(beta -> nj(beta, i), eta)
         psi_tilde = Matrix(undef, n_obs, p)
@@ -110,9 +111,9 @@ function ef_quantities(theta::Vector,
                          zeros(length(lam)))
             end
         end        
-        [A, jmat_inv, emat]
+        [A, jmat_inv, emat, ef]
     else
-        [vcov, jmat_inv, emat]
+        [vcov, jmat_inv, emat, ef]
     end
 end
 
