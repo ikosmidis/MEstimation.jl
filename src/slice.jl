@@ -24,3 +24,4 @@ function slice(results::GEEBRA_results,
     slice_m = map(function(b) th = theta[1:n_par]; th[what] = b; slice_function(th) end, range)
     Dict("value" => range, "slice" => slice_m)
 end
+

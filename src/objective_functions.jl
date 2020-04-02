@@ -43,8 +43,14 @@ function obj_quantities(theta::Vector,
                         data::Any,
                         template::objective_function_template,
                         penalty::Bool = false)
-    npsi(eta::Vector, i::Int) = ForwardDiff.gradient(beta -> template.obj_contribution(beta, data, i), eta)
-    nj(eta::Vector, i::Int) = ForwardDiff.hessian(beta -> template.obj_contribution(beta, data, i), eta)
+    function npsi(eta::Vector, i::Int)
+        out = similar(eta)
+        ForwardDiff.gradient!(out, beta -> template.obj_contribution(beta, data, i), eta)
+    end
+    function nj(eta::Vector, i::Int)
+        out = similar(eta, p, p)
+        ForwardDiff.hessian!(out, beta -> template.obj_contribution(beta, data, i), eta)
+    end
     p = length(theta)
     n_obs = template.nobs(data)
     psi = zeros(p)
@@ -73,3 +79,12 @@ function obj_quantities(theta::Vector,
     end
 end
 
+
+
+function estimating_function_template(object::objective_function_template)
+    function ef_contribution(theta::Vector, data::Any, i::Int64)
+        out = similar(theta)
+        ForwardDiff.gradient!(out, b -> object.obj_contribution(b, data, i), theta)
+    end
+    estimating_function_template(object.nobs, ef_contribution)
+end

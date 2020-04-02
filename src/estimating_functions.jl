@@ -68,7 +68,10 @@ function ef_quantities(theta::Vector,
                        template::estimating_function_template,
                        adjustment::Bool = false,
                        concentrate::Vector{Int64} = Vector{Int64}())
-    nj(eta::Vector, i::Int) = ForwardDiff.jacobian(beta -> template.ef_contribution(beta, data, i), eta)
+    function nj(eta::Vector, i::Int)
+        out = similar(eta, p, p)
+        ForwardDiff.jacobian!(out, beta -> template.ef_contribution(beta, data, i), eta)
+    end
     p = length(theta)
     n_obs = template.nobs(data)
     psi = zeros(p)
@@ -76,7 +79,10 @@ function ef_quantities(theta::Vector,
     jmat = zeros(p, p)
 
     if adjustment
-        u(eta::Vector, i::Int) = ForwardDiff.jacobian(beta -> nj(beta, i), eta)
+        function u(eta::Vector, i::Int)
+            out = similar(eta, p * p, p)
+            ForwardDiff.jacobian!(out, beta -> nj(beta, i), eta)
+        end
         psi2 = Vector(undef, p)
         for j in 1:p
             psi2[j] = zeros(p, p)
