@@ -83,13 +83,13 @@ end
 
 """   
    fit(template::estimating_function_template, 
-        data::Any, 
-        theta::Vector{Float64}; 
-        estimation_method::String = "M", 
-        br_method::String = "implicit_trace", 
-        concentrate::Vector{Int64} = Vector{Int64}(), 
-        regularizer::Function = function regularizer(theta::Vector{Float64}, data::Any) Vector{Float64}() end, 
-        nlsolve_arguments...)
+       data::Any, 
+       theta::Vector{Float64}; 
+       estimation_method::String = "M", 
+       br_method::String = "implicit_trace", 
+       concentrate::Vector{Int64} = Vector{Int64}(), 
+       regularizer::Function = function regularizer(theta::Vector{Float64}, data::Any) Vector{Float64}() end, 
+       nlsolve_arguments...)
 
 Fit an [`estimating_function_template`](@ref) on `data` using M-estimation ([keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `estimation_method = "M"`; default) or RBM-estimation (reduced-bias M estimation; [Kosmidis & Lunardon, 2020](http://arxiv.org/abs/2001.03786); [keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `estimation_method = "RBM"`). Bias reduction is either through the solution of the empirically adjusted estimating functions in Kosmidis & Lunardon (2020) ([keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `br_method = "implicit_trace"`; default) or by subtracting an estimate of the bias from the M-estimates ([keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `br_method = "explicit_trace"`). The bias-reducing adjustments and the bias estimate are constructed internally using automatic differentiation (using the [ForwardDiff](https://github.com/JuliaDiff/ForwardDiff.jl) package). Bias reduction for only a subset of parameters can be performed by setting the ([keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `concentrate` to the vector of the indices for those parameters.
 
