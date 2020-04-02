@@ -7,7 +7,8 @@
 + The default output now reports whether the optimization algorithm converged or not
 + Documentation improvements and updates
 + Optimization improvements
-
++ Work to make code fully differentiable (estimating_function and objective_function)
++ Allowed to pass keyword arguments to Optim.optimize (e.g. autodiff = :forward)
 
 # GEEBRA 0.1.0
 
