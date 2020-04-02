@@ -22,16 +22,15 @@ function estimating_function(theta::Vector,
                              concentrate::Vector{Int64} = Vector{Int64}())
     p = length(theta)
     n_obs = template.nobs(data)
-    contributions = Matrix(undef, p, n_obs)
+    ef = zeros(p)
     for i in 1:n_obs
-        contributions[:, i] = template.ef_contribution(theta, data, i)
+        ef += template.ef_contribution(theta, data, i)
     end
     if (br)
         quants = ef_quantities(theta, data, template, br, concentrate)
-        ef = sum(contributions, dims = 2) 
         ef + quants[1]
     else
-        sum(contributions, dims = 2)
+        ef
     end
 end
 
@@ -72,48 +71,63 @@ function ef_quantities(theta::Vector,
     nj(eta::Vector, i::Int) = ForwardDiff.jacobian(beta -> template.ef_contribution(beta, data, i), eta)
     p = length(theta)
     n_obs = template.nobs(data)
-    psi = Matrix{Float64}(undef, n_obs, p)
-    njmats = Vector(undef, n_obs)
-    for i in 1:n_obs
-        psi[i, :] =  template.ef_contribution(theta, data, i) 
-        njmats[i] = nj(theta, i)
-    end
-    jmat_inv = inv(-sum(njmats))
-    emat = psi' * psi
-    vcov = jmat_inv * (emat * jmat_inv')
-    ef = sum(psi)
-    if (adjustment)
+    psi = zeros(p)
+    emat = zeros(p, p)
+    jmat = zeros(p, p)
+
+    if adjustment
         u(eta::Vector, i::Int) = ForwardDiff.jacobian(beta -> nj(beta, i), eta)
-        psi_tilde = Matrix(undef, n_obs, p)
-        umats = Vector(undef, n_obs)
-        for i in 1:n_obs
-            umats[i] = u(theta, i)
-        end       
-        umat = sum(umats)
-        A = Vector(undef, p)
+        psi2 = Vector(undef, p)
         for j in 1:p
-            for i in 1:n_obs
-                psi_tilde[i, :] = njmats[i][j, :]
-            end
-            A[j] = -tr(jmat_inv * psi_tilde' * psi +
-                       vcov * umat[j:p:(p * p - p + j), :] / 2)
+            psi2[j] = zeros(p, p)
         end
+        # psi2 = zeros(p, p, p)
+        umat = zeros(p * p, p)
+        for i in 1:n_obs
+            cpsi = template.ef_contribution(theta, data, i)
+            psi += cpsi
+            emat += cpsi * cpsi'
+            hess = nj(theta, i)
+            jmat += -hess
+            umat += u(theta, i)
+            for j in 1:p
+                psi2[j] += hess[j, :] * cpsi'
+            end
+        end
+    else
+        for i in 1:n_obs
+            cpsi = template.ef_contribution(theta, data, i)
+            psi += cpsi
+            emat += cpsi * cpsi'
+            jmat += -nj(theta, i)
+        end
+    end
+      
+    jmat_inv = try
+        inv(jmat)
+    catch
+        fill(NaN, p, p)
+    end
+    vcov = jmat_inv * (emat * jmat_inv') 
+
+    if adjustment
+        Afun(j::Int64) = -tr(jmat_inv * psi2[j] + vcov * umat[j:p:(p * p - p + j), :] / 2)
+        A = map(Afun, 1:p)
         ## if concentrate then redefine A
         if length(concentrate) > 0
             if any((concentrate .> p) .| (concentrate .< 1))
                 error(concentrate, " should be a vector of integers between ", 1, " and ", p)
             else
-                psi = concentrate
-                lam = deleteat!(collect(1:p), concentrate)
-                A_psi = A[psi]
-                A_lam = A[lam]
-                A = vcat(A_psi + inv(jmat_inv[psi, psi]) * jmat_inv[psi, lam] * A_lam,
-                         zeros(length(lam)))
+                ist = concentrate
+                nce = deleteat!(collect(1:p), concentrate)
+                A_ist = A[ist]
+                A_nce = A[nce]
+                A = vcat(A_ist + inv(jmat_inv[ist, ist]) * jmat_inv[ist, nce] * A_nce,
+                         zeros(length(nce)))
             end
-        end        
-        [A, jmat_inv, emat, ef]
+        end
+        [A, jmat_inv, emat, psi]
     else
-        [vcov, jmat_inv, emat, ef]
+        [vcov, jmat_inv, emat, psi]
     end
 end
-
