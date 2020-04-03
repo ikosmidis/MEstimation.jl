@@ -15,10 +15,10 @@ Assuming that sampling is from an infinite population, one way of estimating ``\
 
 The estimator ``\hat\theta`` is generally biased, as can be shown, for example, by an application of the Jensen inequality assuming that ``X_i``is independent of ``Y_i``, and its bias can be reduced using the empirically adjusted estimating functions approach in Kosmidis & Lunardon (2020). 
 
-This example illustrates how GEEBRA can be used to calculate the ``M``-estimator and its reduced-bias version.
+This example illustrates how **MEstimation** can be used to calculate the ``M``-estimator and its reduced-bias version.
 
 ```@repl 1
-using GEEBRA, Random
+using MEstimation, Random
 ```
 
 Define a data type for ratio estimation problems
@@ -75,13 +75,13 @@ result_m = fit(ratio_template, my_data, [0.1])
 result_m = fit(ratio_template, my_data, [0.1], show_trace = true)
 ```
 
-Bias reduction in general ``M``-estimation can be achieved by solving the adjusted estimating equation ``\sum_{i = 1}^n (Y_i - \theta X_i) + A(\theta, Y, X) = 0``, where ``A(\theta)`` are empirical bias-reducing adjustments depending on the first and second derivatives of the estimating function contributions. **GEEBRA** can use `ratio_template` and automatic differentiation (see, [ForwardDiff](https://github.com/JuliaDiff/ForwardDiff.jl)) to construct ``A(\theta, Y, X)`` and, then, solve the bias-reducing adjusted estimating equations. All this is simply done by
+Bias reduction in general ``M``-estimation can be achieved by solving the adjusted estimating equation ``\sum_{i = 1}^n (Y_i - \theta X_i) + A(\theta, Y, X) = 0``, where ``A(\theta)`` are empirical bias-reducing adjustments depending on the first and second derivatives of the estimating function contributions. **MEstimation** can use `ratio_template` and automatic differentiation (see, [ForwardDiff](https://github.com/JuliaDiff/ForwardDiff.jl)) to construct ``A(\theta, Y, X)`` and, then, solve the bias-reducing adjusted estimating equations. All this is simply done by
 ```@repl 1
 result_br = fit(ratio_template, my_data, [0.1], estimation_method = "RBM") 
 ```
 where `RBM` stands for reduced-bias `M`-estimation.
 
-Kosmidis & Lunardon (2020) show that the reduced-bias estimator of $\theta$ is ``\tilde\theta = (s_Y + s_{XY}/s_{X})/(s_X + s_{XX}/s_{X})``. The code chunks below tests that this is indeed the result **GEEBRA** returns.
+Kosmidis & Lunardon (2020) show that the reduced-bias estimator of $\theta$ is ``\tilde\theta = (s_Y + s_{XY}/s_{X})/(s_X + s_{XX}/s_{X})``. The code chunks below tests that this is indeed the result **MEstimation** returns.
 ```@repl 1
 sx = sum(my_data.x);
 sxx = sum(my_data.x .* my_data.x);
@@ -94,10 +94,10 @@ isapprox((sy + sxy/sx)/(sx + sxx/sx), result_br.theta[1])
 
 ## Logistic regression
 ### Using [`objective_function_template`](@ref)
-Here, we use **GEEBRA**'s [`objective_function_template`](@ref) to estimate a logistic regression model using maximum likelihood and maximum penalized likelihood, with the empirical bias-reducing penalty in Kosmidis & Lunardon (2020).
+Here, we use **MEstimation**'s [`objective_function_template`](@ref) to estimate a logistic regression model using maximum likelihood and maximum penalized likelihood, with the empirical bias-reducing penalty in Kosmidis & Lunardon (2020).
 
 ```@repl 2
-using GEEBRA
+using MEstimation
 using Random
 using Distributions
 using Optim
@@ -199,7 +199,7 @@ isapprox(coef(o1_br), coef(e1_br))
 ```
 
 ### Bias-reduction methods
-**GEEBRA** currently implements 2 alternative bias reduction methods, called `implicit_trace` and `explicit_trace`. `implicit_trace` will adjust the estimating functions or penalize the objectives, as we have seen earlier. `explicit_trace`, on the other hand, will form an estimate of the bias of the ``M``-estimator and subtract that from the ``M``-estimates. The default method is `implicit_trace`.
+**MEstimation** currently implements 2 alternative bias reduction methods, called `implicit_trace` and `explicit_trace`. `implicit_trace` will adjust the estimating functions or penalize the objectives, as we have seen earlier. `explicit_trace`, on the other hand, will form an estimate of the bias of the ``M``-estimator and subtract that from the ``M``-estimates. The default method is `implicit_trace`.
 
 For example, for logistic regression via estimating functions 
 ```@repl 2
