@@ -1,7 +1,7 @@
 name = "MEstimation"
 uuid = "38feb9b4-a243-49d8-ab24-fe2508a85779"
 authors = ["Ioannis Kosmidis <ioannis.kosmidis@warwick.ac.uk>"]
-version = "0.10.900"
+version = "0.9.9"
 
 
 [deps]
