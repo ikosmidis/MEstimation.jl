@@ -14,6 +14,6 @@ Pages = ["internal.md"]
 
 ## Internals
 ```@docs
-GEEBRA.GEEBRA_results
-GEEBRA.show
+MEstimation.MEstimation_results
+MEstimation.show
 ```

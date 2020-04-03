@@ -1,5 +1,6 @@
 """
-    objective_function_template(nobs::Function, obj_contribution::Function)
+    objective_function_template(nobs::Function, 
+                                obj_contribution::Function)
 
 Define an `objective_function_template` by supplying:
 + `nobs`: a function of `data` that computes the number of observations of the particular data type,
@@ -12,8 +13,10 @@ end
 
 
 """   
-
-    objective_function(theta::Vector, data::Any, template::objective_function_template, br::Bool = false)
+    objective_function(theta::Vector, 
+                       data::Any, 
+                       template::objective_function_template, 
+                       br::Bool = false)
 
 Construct the objective function by adding up all contributions in the
 `data` according to [`objective_function_template`](@ref), and

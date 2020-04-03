@@ -2,7 +2,7 @@ using Test
 
 ## Ratios
 @testset "ef implementation for a single parameter" begin
-    using GEEBRA
+    using MEstimation
     using Random
     
     ## Ratio data
@@ -61,7 +61,7 @@ end
 
 ## Instrumental variables
 @testset "ef implementation for multiple parameters" begin
-    using GEEBRA
+    using MEstimation
     using Random
     using Distributions
     using NLsolve
@@ -118,7 +118,7 @@ end
         iv_data(y, t, w)
     end
 
-    ## Set up IV GEEBRA template
+    ## Set up IV MEstimation template
     iv_template = estimating_function_template(iv_nobs, iv_ef)
     @inferred estimating_function_template(iv_nobs, iv_ef)
 
@@ -143,7 +143,7 @@ end
     o2_ml = nlsolve(ef_ml, [0.1, 0.2])
     o2_br = nlsolve(ef_br, [0.1, 0.2])
 
-    qs = GEEBRA.ef_quantities(coef(o1_ml), my_data, iv_template, true)
+    qs = MEstimation.ef_quantities(coef(o1_ml), my_data, iv_template, true)
     @test isapprox(coef(o1_ml) + qs[2] * qs[1], coef(o1_br1))
     
     @test isapprox(coef(o1_ml), o2_ml.zero)
@@ -187,15 +187,15 @@ end
     coef(fit(iv_template2, my_data, true_parameter, estimation_method = "RBM"))
     coef(fit(iv_template3, my_data, true_parameter, estimation_method = "RBM"))
 
-    GEEBRA.ef_quantities(true_parameter, my_data, iv_template, true)[1]
-    GEEBRA.ef_quantities(true_parameter, my_data, iv_template2, true)[1]
-    GEEBRA.ef_quantities(true_parameter[[2,1]], my_data, iv_template3, true)[1]
+    MEstimation.ef_quantities(true_parameter, my_data, iv_template, true)[1]
+    MEstimation.ef_quantities(true_parameter, my_data, iv_template2, true)[1]
+    MEstimation.ef_quantities(true_parameter[[2,1]], my_data, iv_template3, true)[1]
     
 end
 
 
 @testset "obj implementation for multiple parameters" begin
-    using GEEBRA
+    using MEstimation
     using Random
     using Distributions
     using Optim
@@ -275,7 +275,7 @@ end
 end
 
 @testset "agreement between obj and ef implementations" begin
-    using GEEBRA
+    using MEstimation
     using Random
     using Distributions
     using Optim
@@ -358,8 +358,8 @@ end
     @test isapprox(aic(o1_br),
                    -2 * (objective_function(coef(o1_br), my_data, logistic_obj_template) - p))
 
-    quants_ml = GEEBRA.obj_quantities(coef(o1_ml), my_data, logistic_obj_template, true)
-    quants_br = GEEBRA.obj_quantities(coef(o1_br), my_data, logistic_obj_template, true)
+    quants_ml = MEstimation.obj_quantities(coef(o1_ml), my_data, logistic_obj_template, true)
+    quants_br = MEstimation.obj_quantities(coef(o1_br), my_data, logistic_obj_template, true)
 
     @test isapprox(tic(o1_ml),
                    -2 * (objective_function(coef(o1_ml), my_data, logistic_obj_template) + 2 * quants_ml[1]))
@@ -380,7 +380,3 @@ end
    
     
 end
-
-# using Revise
-# using Pkg
-# Pkg.activate("/Users/yiannis/Repositories/GEEBRA.jl")

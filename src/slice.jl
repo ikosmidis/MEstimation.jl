@@ -1,4 +1,4 @@
-function slice(results::GEEBRA_results,
+function slice(results::MEstimation_results,
                what::Int64,
                range::Vector{Float64},
                at::Vector{Float64} = Vector{Float64}())

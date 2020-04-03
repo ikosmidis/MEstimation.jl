@@ -1,4 +1,6 @@
-# GEEBRA 0.2.0
+# MEstimation 0.10.0
+
++ Change name from GEEBRA to MEstimation
 
 + Added support for bias reduction of a subset of the parameters (only for `estimating_function_template`)
 + Added option for optimization in constrained parameters spaces (only for `objective_function_template`)

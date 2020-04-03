@@ -1,11 +1,11 @@
 using Documenter
-using GEEBRA
+using MEstimation
 
 makedocs(
-    sitename = "GEEBRA",
+    sitename = "MEstimation",
     authors = "Ioannis Kosmidis, Nicola Lunardon",
     format = Documenter.HTML(),
-    modules = [GEEBRA],
+    modules = [MEstimation],
     pages = [
         "Home" => "index.md",
         "Examples" => "man/examples.md",
@@ -18,7 +18,7 @@ makedocs(
 )
 
 deploydocs(
-    repo = "github.com/ikosmidis/GEEBRA.jl.git",
+    repo = "github.com/ikosmidis/MEstimation.jl.git",
     target = "build",
     devbranch = "develop",
     push_preview = true,
