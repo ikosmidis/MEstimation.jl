@@ -1,4 +1,5 @@
 """  
+
     fit(template::objective_function_template,
         data::Any,
         theta::Vector{Float64};
@@ -82,7 +83,8 @@ end
 
 
 
-"""   
+""" 
+  
     fit(template::estimating_function_template,
         data::Any,
         theta::Vector{Float64};
