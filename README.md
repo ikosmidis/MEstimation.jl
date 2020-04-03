@@ -1,5 +1,7 @@
 # MEstimation.jl
 
+**Methods for M-estimation of statistical models**
+
 [![Travis status](https://travis-ci.com/ikosmidis/MEstimation.jl.svg?branch=master)](https://travis-ci.org/ikosmidis/MEstimation.jl)
 [![Coverage Status](https://img.shields.io/codecov/c/github/ikosmidis/MEstimation.jl/master.svg)](https://codecov.io/github/ikosmidis/MEstimation.jl?branch=master)
 [![](https://img.shields.io/badge/docs-dev-red.svg)](https://ikosmidis.github.io/MEstimation.jl/dev/)
@@ -9,8 +11,8 @@
 ## Package description
 
 **MEstimation** is a Julia package that implements M-estimation for
-statistical models (see, e.g. Stefanski and Boos, 2002, for a review
-of M-estimation), either by solving estimating equations or by
+statistical models (see, e.g. Stefanski and Boos, 2002, for an
+accessible review) either by solving estimating equations or by
 maximizing inference objectives, like
 [likelihoods](https://en.wikipedia.org/wiki/Likelihood_function) and
 composite likelihoods (see, [Varin et al,

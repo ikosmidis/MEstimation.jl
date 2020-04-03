@@ -13,8 +13,8 @@
 ## Package description
 
 **MEstimation** is a Julia package that implements M-estimation for
-statistical models (see, e.g. Stefanski and Boos, 2002, for a review
-of M-estimation), either by solving estimating equations or by
+statistical models (see, e.g. Stefanski and Boos, 2002, for an
+accessible review) either by solving estimating equations or by
 maximizing inference objectives, like
 [likelihoods](https://en.wikipedia.org/wiki/Likelihood_function) and
 composite likelihoods (see, [Varin et al,
