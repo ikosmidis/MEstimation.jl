@@ -211,6 +211,7 @@ end
     my_data = logistic_regression.simulate(true_betas, x, fill(1, n));
 
     logistic_template = objective_function_template(logistic_regression.nobs, logistic_regression.loglik)
+
     @inferred objective_function_template(logistic_regression.nobs, logistic_regression.loglik)
 
     o1_ml = optimize(b -> -objective_function(b, my_data, logistic_template, false),
