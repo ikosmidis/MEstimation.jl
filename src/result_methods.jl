@@ -9,7 +9,20 @@
                         has_regularizer::Bool,
                         br_method::String)
 
-Composite type for the output of [`fit`](@ref) for an [`objective_function_template`](@ref) or an [`estimating_function_template`](@ref).
+[Composite type](https://docs.julialang.org/en/v1/manual/types/#Composite-Types-1) for the output of [`fit`](@ref) for an [`objective_function_template`](@ref) or an [`estimating_function_template`](@ref).
+
+Arguments
+===
++ `results`
++ `theta`
++ `data`
++ `template`
++ `regularizer`
++ `br`
++ `has_objective`
++ `has_regularizer`
++ `br_method`
+
 """
 struct MEstimation_results
     results::Union{NLsolve.SolverResults, Optim.MultivariateOptimizationResults, Optim.UnivariateOptimizationResults}
@@ -26,7 +39,16 @@ end
 """
     vcov(results::MEstimation_results)
 
-Compute an esitmate of the variance-covariance matrix of the `M`-estimator or its reduced-bias version from the output of [`fit`](@ref) for an [`objective_function_template`](@ref) or an [`estimating_function_template`](@ref).
+Compute an estimate of the variance-covariance matrix of the `M`-estimator or its reduced-bias version at `results.theta`, from a [`MEstimation_results`](@ref) object.
+
+Arguments
+===
++ `results`
+
+Details
+===
+
+
 """
 function vcov(results::MEstimation_results)
     if (results.has_objective)
@@ -39,7 +61,15 @@ end
 """
     tic(results::MEstimation_results)
 
-Compute the Takeuchi Information Criterion at the `M`-estimator or its reduced-bias version from the output of [`fit`](@ref) for an [`objective_function_template`](@ref). `nothing` is returned if `results` is the output of [`fit`](@ref) for an [`estimating_function_template`](@ref).
+Compute the Takeuchi Information Criterion at `results.theta`, from a [`MEstimation_results`](@ref) object.
+
+Arguments
+===
++ `results`
+
+Details
+===
+`nothing` is returned if `results.template` is an [`estimating_function_template`](@ref).
 """
 function tic(results::MEstimation_results)
     if (results.has_objective)
@@ -52,7 +82,15 @@ end
 """
     aic(results::MEstimation_results)
 
-Compute the Akaike Information Criterion at the `M`-estimator or its reduced-bias version from the output of [`fit`](@ref) for an [`objective_function_template`](@ref). `nothing` is returned if `results` is the output of [`fit`](@ref) for an [`estimating_function_template`](@ref).
+Compute the Akaike Information Criterion at `results.theta`, from a [`MEstimation_results`](@ref) object with an [`objective_function_template`](@ref). 
+
+Arguments
+===
++ `results`
+
+Details
+===
+`nothing` is returned if `results.template` is an [`estimating_function_template`](@ref).
 """
 function aic(results::MEstimation_results)
     if (results.has_objective)
@@ -65,16 +103,40 @@ end
 """
     coef(results::MEstimation_results)
 
-Extract the `M`-estimates or their reduced-bias versions from the output of [`fit`](@ref) for an [`objective_function_template`](@ref) or an [`estimating_function_template`](@ref).
+Extract the parameter estimates from a [`MEstimation_results`](@ref) object.
+
+Arguments
+===
++ `results`
+
+Details
+===
+`coef(results)` returns `results.theta`
 """
+
 function coef(results::MEstimation_results)
     results.theta
 end
 
 """
-    show(io::IO, results::MEstimation_results; digits::Real = 4)
+    show(io::IO, 
+         results::MEstimation_results; 
+         digits::Real = 4)
 
-`show` method for `MEstimation_results` objects. If `MEstimation_results.has_object == true`, then the result of `aic(results)` and `tic(results)` are also printed.
+`show` method for `MEstimation_results` objects. 
+
+Arguments
+===
++ `io`
++ `results`
+
+[Keyword arguments](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1)
+===
++ `digits`
+
+Details
+===
+If `MEstimation_results.has_objective == true`, then the result of `aic(results)` and `tic(results)` are also printed.
 """
 function Base.show(io::IO, results::MEstimation_results;
                    digits::Real = 4)
@@ -137,7 +199,12 @@ end
 """
     stderror(results::MEstimation_results)
 
-Compute esitmated standard errors for the `M`-estimator or its reduced-bias version from the output of [`fit`](@ref) for an [`objective_function_template`](@ref) or an [`estimating_function_template`](@ref).
+Compute estimated standard errors from a from a [`MEstimation_results`](@ref) object.
+
+Arguments
+===
++ `results`
+
 """
 function stderror(results::MEstimation_results)
     sqrt.(diag(vcov(results)))
@@ -147,7 +214,19 @@ end
     coeftable(results::MEstimation_results; 
               level::Real=0.95)
 
-Return a `StatsBase.CoefTable` for the `M`-estimator or its reduced-bias version from the output of [`fit`](@ref) for an [`objective_function_template`](@ref) or an [`estimating_function_template`](@ref). `level` can be used to set the level of the reported Wald-type confidence intervals (using quantiles of the standard normal distribution). 
+Return a `StatsBase.CoefTable` from a [`MEstimation_results`](@ref) object. 
+
+Arguments
+===
++ `results`
+
+[Keyword arguments](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1)
+===
++ `level`
+
+Details
+===
+`level` can be used to set the level of the reported Wald-type confidence intervals (using quantiles of the standard normal distribution). 
 """
 function coeftable(results::MEstimation_results; level::Real=0.95)
     cc = coef(results)

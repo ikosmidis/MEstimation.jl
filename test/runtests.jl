@@ -173,7 +173,6 @@ end
                    i::Int64)
         [(data.y[i] - theta[1] * data.w[i]) * (theta[2] - data.t[i]), theta[2] - data.t[i]]
     end
-
     
     ## Swapping the order of the estimating functions gives the same results
     iv_template2 = estimating_function_template(iv_nobs, iv_ef2)
@@ -198,52 +197,21 @@ end
     using MEstimation
     using Random
     using Distributions
-    using Optim
     using LinearAlgebra
-    
-    ## Logistic regression data
-    struct logistic_data
-        y::Vector
-        x::Array{Float64}
-        m::Vector
-    end
+    using Optim
 
-    ## Logistic regression nobs
-    function logistic_nobs(data::logistic_data)
-        nx = size(data.x)[1]
-        ny = length(data.y)
-        nm = length(data.m)
-        if (nx != ny) 
-            error("number of rows in of x is not equal to the length of y")
-        elseif (nx != nm)
-            error("number of rows in of x is not equal to the length of m")
-        elseif (ny != nm)
-            error("length of y is not equal to the length of m")
-        end
-        nx
-    end
-
-    function logistic_loglik(theta::Vector,
-                             data::logistic_data,
-                             i::Int64)
-        eta = sum(data.x[i, :] .* theta)
-        mu = exp.(eta)./(1 .+ exp.(eta))
-        ll = data.y[i] .* log.(mu) + (data.m[i] - data.y[i]) .* log.(1 .- mu)
-        ll
-    end
-
+    include("logistic_regression.jl")
+   
     Random.seed!(123);
     n = 100;
-    m = 1;
     x = Array{Float64}(undef, n, 2);
     x[:, 1] .= 1.0;
     x[:, 2] .= rand(n);
     true_betas = [0.5, -1];
-    y = rand.(Binomial.(m, cdf.(Logistic(), x * true_betas)));
-    my_data = logistic_data(y, x, fill(m, n));
+    my_data = logistic_regression.simulate(true_betas, x, fill(1, n));
 
-    logistic_template = objective_function_template(logistic_nobs, logistic_loglik)
-    @inferred objective_function_template(logistic_nobs, logistic_loglik)
+    logistic_template = objective_function_template(logistic_regression.nobs, logistic_regression.loglik)
+    @inferred objective_function_template(logistic_regression.nobs, logistic_regression.loglik)
 
     o1_ml = optimize(b -> -objective_function(b, my_data, logistic_template, false),
                      true_betas, LBFGS())
@@ -269,7 +237,6 @@ end
     @test isapprox(Optim.minimizer(o1_br), Optim.minimizer(o2_br.results))
     @test isapprox(Optim.minimizer(o3_ml), Optim.minimizer(o4_ml.results))
     @test isapprox(Optim.minimizer(o3_br), Optim.minimizer(o4_br.results))
-
     @test isapprox(sqrt.(diag(vcov(o2_br))), stderror(o2_br))
     
 end
@@ -280,77 +247,53 @@ end
     using Distributions
     using Optim
     using NLsolve
+
+    include("logistic_regression.jl")
     
-    ## Logisti regression data
-    struct logistic_data
-        y::Vector
-        x::Array{Float64}
-        m::Vector
-    end
-
-    ## Logistic regression nobs
-    function logistic_nobs(data::logistic_data)
-        nx = size(data.x)[1]
-        ny = length(data.y)
-        nm = length(data.m)
-        if (nx != ny) 
-            error("number of rows in of x is not equal to the length of y")
-        elseif (nx != nm)
-            error("number of rows in of x is not equal to the length of m")
-        elseif (ny != nm)
-            error("length of y is not equal to the length of m")
-        end
-        nx
-    end
-
-    function logistic_loglik(theta::Vector,
-                             data::logistic_data,
-                             i::Int64)
-        eta = sum(data.x[i, :] .* theta)
-        mu = exp.(eta)./(1 .+ exp.(eta))
-        ll = data.y[i] .* log.(mu) + (data.m[i] - data.y[i]) .* log.(1 .- mu)
-        ll
-    end
-
-    function logistic_ef(theta::Vector,
-                         data::logistic_data,
-                         i::Int64)
-        eta = sum(data.x[i, :] .* theta)
-        mu = exp.(eta)./(1 .+ exp.(eta))
-        data.x[i, :] * (data.y[i] - data.m[i] * mu)
-    end
-   
     Random.seed!(123);
-    n = 100;
-    m = 1;
-    p = 5;
+    n = 100; m = 1; p = 5;
     x = Array{Float64}(undef, n, p);
     x[:, 1] .= 1.0;
     for j in 2:p
         x[:, j] .= rand(n);
     end
     true_betas = randn(p) * sqrt(p);
-    y = rand.(Binomial.(m, cdf.(Logistic(), x * true_betas)));
-    my_data = logistic_data(y, x, fill(m, n));
+    my_data = logistic_regression.simulate(true_betas, x, fill(m, n));
 
-    logistic_obj_template = objective_function_template(logistic_nobs, logistic_loglik)
-    logistic_ef_template = estimating_function_template(logistic_nobs, logistic_ef)
+    logistic_obj_template = objective_function_template(logistic_regression.nobs,
+                                                        logistic_regression.loglik)
+    logistic_ef_template = estimating_function_template(logistic_regression.nobs,
+                                                        logistic_regression.ef)
+
+    ## Get ef template directly from obj template
+    logistic_ef2_template = estimating_function_template(logistic_obj_template)
     
     o1_ml = fit(logistic_obj_template, my_data, true_betas, estimation_method = "M")
     e1_ml = fit(logistic_ef_template, my_data, true_betas, estimation_method = "M")
+    e2_ml = fit(logistic_ef2_template, my_data, true_betas, estimation_method = "M")
+
     o1_br = fit(logistic_obj_template, my_data, true_betas, estimation_method = "RBM")
     e1_br = fit(logistic_ef_template, my_data, true_betas, estimation_method = "RBM")
+    e2_br = fit(logistic_ef2_template, my_data, true_betas, estimation_method = "RBM")
+
     o1_br1 = fit(logistic_obj_template, my_data, true_betas, estimation_method = "RBM", br_method = "explicit_trace")
-    o1_br2 = fit(logistic_obj_template, my_data, coef(o1_ml), estimation_method = "RBM", br_method = "explicit_trace")
     e1_br1 = fit(logistic_ef_template, my_data, true_betas, estimation_method = "RBM", br_method = "explicit_trace")
+    e2_br1 = fit(logistic_ef2_template, my_data, true_betas, estimation_method = "RBM", br_method = "explicit_trace")
+
+    o1_br2 = fit(logistic_obj_template, my_data, coef(o1_ml), estimation_method = "RBM", br_method = "explicit_trace")
     e1_br2 = fit(logistic_ef_template, my_data, coef(o1_ml), estimation_method = "RBM", br_method = "explicit_trace")
+    e2_br2 = fit(logistic_ef2_template, my_data, coef(o1_ml), estimation_method = "RBM", br_method = "explicit_trace")
 
     
     @test isapprox(coef(o1_ml), coef(e1_ml), atol = 1e-05)
+    @test isapprox(coef(o1_ml), coef(e2_ml), atol = 1e-05)
     @test isapprox(coef(o1_br), coef(e1_br), atol = 1e-05)
+    @test isapprox(coef(o1_br), coef(e2_br), atol = 1e-05)
     @test isapprox(coef(o1_br1), coef(e1_br1), atol = 1e-05)
+    @test isapprox(coef(o1_br1), coef(e2_br1), atol = 1e-05)
     @test isapprox(coef(o1_br2), coef(e1_br2), atol = 1e-05)
-    @test isapprox(coef(o1_br1), coef(e1_br2), atol = 1e-05)   
+    @test isapprox(coef(o1_br2), coef(e2_br2), atol = 1e-05)
+    @test isapprox(coef(o1_br1), coef(e1_br2), atol = 1e-05)
 
     @test isapprox(aic(o1_ml),
                    -2 * (objective_function(coef(o1_ml), my_data, logistic_obj_template, false) - p))
@@ -367,16 +310,16 @@ end
     @test isapprox(tic(o1_br),
                    -2 * (objective_function(coef(o1_br), my_data, logistic_obj_template) + 2 * quants_br[1]))
     
-
     @test isapprox(vcov(o1_ml), vcov(e1_ml))
     @test isapprox(vcov(o1_br), vcov(e1_br))
+    @test isapprox(vcov(o1_br), vcov(e2_br))
     @test isapprox(vcov(o1_br1), vcov(e1_br1))
     @test isapprox(vcov(o1_br2), vcov(e1_br2))
+    @test isapprox(vcov(o1_br2), vcov(e2_br2))
 
     @test isapprox(coeftable(o1_ml).cols, coeftable(e1_ml).cols)
     @test isapprox(coeftable(o1_br).cols, coeftable(e1_br).cols)
     @test isapprox(coeftable(o1_br1).cols, coeftable(e1_br1).cols)
-    @test isapprox(coeftable(o1_br2).cols, coeftable(e1_br2).cols)
-   
+    @test isapprox(coeftable(o1_br2).cols, coeftable(e1_br2).cols) 
     
 end

@@ -2,7 +2,10 @@
     estimating_function_template(nobs::Function, 
                                  ef_contribution::Function)
 
-Define an `estimating_function_template` by supplying:
+[Composite type](https://docs.julialang.org/en/v1/manual/types/#Composite-Types-1) for defining an `estimating_function_template`.
+
+Arguments
+===
 + `nobs`: a function of `data` that computes the number of observations of the particular data type,
 + `ef_contribution`: a function of the parameters `theta`, the `data` and the observation index `i` that returns a vector of length `length(theta)`.
 """
@@ -13,12 +16,24 @@ end
 
 """ 
     estimating_function(theta::Vector,
-                             data::Any,
-                             template::estimating_function_template,
-                             br::Bool = false,
-                             concentrate::Vector{Int64} = Vector{Int64}())
+                        data::Any,
+                        template::estimating_function_template,
+                        br::Bool = false,
+                        concentrate::Vector{Int64} = Vector{Int64}())
 
-Construct the estimating function by adding up all contributions in the `data` according to [`estimating_function_template`](@ref), and evaluate it at `theta`. If `br = true` then automatic differentiation is used to compute the empirical bias-reducing adjustments and add them to the estimating function. Bias-reducing adjustments can be computed for only a subset of estimating functions by setting the ([keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `concentrate` to the vector of the indices for those estimating functions.
+Evaluate a vector of estimating functions at `theta` by adding up all contributions in `data`, according to an [`estimating_function_template`](@ref).
+
+Arguments
+===
++ `theta`
++ `data`
++ `template`
++ `br`
++ `concentrate`
+
+Details
+===
+If `br = true` then automatic differentiation is used to compute the empirical bias-reducing adjustments, before adding them to the estimating functions. Bias-reducing adjustments can be computed for only a subset of estimating functions by setting the ([keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `concentrate` to the vector of the indices for those estimating functions.
 """
 function estimating_function(theta::Vector,
                              data::Any,
@@ -46,7 +61,19 @@ end
                             concentrate::Vector{Int64} = Vector{Int64}(),
                             regularizer::Any = Vector{Int64}())
 
-Construct the estimating function by adding up all contributions in the `data` according to [`estimating_function_template`](@ref). If `br = true` then automatic differentiation is used to compute the empirical bias-reducing adjustments and add them to the estimating function. Bias-reducing adjustments can be computed for only a subset of estimating functions by setting the ([keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `concentrate` to the vector of the indices for those estimating functions. The result is a function that stores the estimating functions evaluated at its second argument, in a preallocated vector passed as its first argument, ready to be used withing `NLsolve.nlsolve`. 
+Construct the estimating function by adding up all contributions in the `data` according to [`estimating_function_template`](@ref). 
+
+Arguments
+===
++ `data`
++ `template`
++ `br`
++ `concentrate`
++ `regularizer`
+
+Details
+===
+If `br = true` then automatic differentiation is used to compute the empirical bias-reducing adjustments and add them to the estimating function. Bias-reducing adjustments can be computed for only a subset of estimating functions by setting the ([keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `concentrate` to the vector of the indices for those estimating functions. The result is a function that stores the value of the estimating functions inferred from `template`, in a preallocated vector passed as its first argument, ready to be used withing `NLsolve.nlsolve`. 
 
 An extra additive regularizer to either the estimating functions or the adjusted estimating functions can be suplied via the [keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `regularizer`, which must be a function of the parameters and the data returning a real vector of dimension equal to the number of the estimating functions; the default value will result in no regularization.
 """

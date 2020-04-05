@@ -2,7 +2,10 @@
     objective_function_template(nobs::Function, 
                                 obj_contribution::Function)
 
-Define an `objective_function_template` by supplying:
+[Composite type](https://docs.julialang.org/en/v1/manual/types/#Composite-Types-1) for defining an `objective_function_template`.
+
+Arguments
+===
 + `nobs`: a function of `data` that computes the number of observations of the particular data type,
 + `obj_contribution`: a function of the parameters `theta`, the `data` and the observation index `i` that returns a real.
 """
@@ -18,10 +21,20 @@ end
                        template::objective_function_template, 
                        br::Bool = false)
 
-Construct the objective function by adding up all contributions in the
-`data` according to [`objective_function_template`](@ref), and
-evaluate it at `theta`. If `br = true` then automatic differentiation
-is used to compute the empirical bias-reducing penalty and add it to
+Evaluated the objective function at `theta` by adding up all contributions in 
+`data`, according to [`objective_function_template`](@ref).
+
+Arguments
+===
++ `theta`
++ `data`
++ `template`
++ `br`
+
+Details
+===
+If `br = true`, then automatic differentiation
+is used to compute the empirical bias-reducing penalty, before adding it to
 the objective function.  
 """
 function objective_function(theta::Vector,
@@ -82,8 +95,15 @@ function obj_quantities(theta::Vector,
     end
 end
 
+"""
+    estimating_function_template(object::objective_function_template)
 
+Construct an [`estimating_function_template`](@ref) from and [`objective_function_template`].
 
+Arguments
+===
++ `objective_function_template`
+"""
 function estimating_function_template(object::objective_function_template)
     function ef_contribution(theta::Vector, data::Any, i::Int64)
         out = similar(theta)
