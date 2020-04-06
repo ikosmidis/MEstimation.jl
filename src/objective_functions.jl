@@ -63,28 +63,28 @@ function objective_function(theta::Vector{Float64},
     end
 end
 
+
 function obj_quantities(theta::Vector,
                         data::Any,
                         template::objective_function_template,
                         penalty::Bool = false)
-    function npsi(eta::Vector, i::Int)
-        out = similar(eta)
-        ForwardDiff.gradient!(out, beta -> template.obj_contribution(beta, data, i), eta)
+    objective_i = (pars, i) -> template.obj_contribution(pars, data, i)
+    results_i = (x, i) -> begin
+        out = DiffResults.HessianResult(x)
+        ForwardDiff.hessian!(out, pars -> objective_i(pars, i), x)
     end
-    function nj(eta::Vector, i::Int)
-        out = similar(eta, p, p)
-        ForwardDiff.hessian!(out, beta -> template.obj_contribution(beta, data, i), eta)
-    end
+
     p = length(theta)
     n_obs = template.nobs(data)
     psi = zeros(p)
     emat = zeros(p, p)
     jmat = zeros(p, p)
     for i in 1:n_obs
-        cpsi = npsi(theta, i)
+        cdiffres = results_i(theta, i)
+        cpsi = DiffResults.gradient(cdiffres)
         psi += cpsi
         emat += cpsi * cpsi'
-        jmat += -nj(theta, i)
+        jmat += - DiffResults.hessian(cdiffres)
     end
     jmat_inv = try
         inv(jmat)
@@ -102,6 +102,7 @@ function obj_quantities(theta::Vector,
         [vcov, jmat_inv, emat, psi]
     end
 end
+
 
 """
     estimating_function_template(object::objective_function_template)
