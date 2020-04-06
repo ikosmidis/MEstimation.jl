@@ -21,7 +21,7 @@ end
 
 
 """   
-    objective_function(theta::Vector{Float64}, 
+    objective_function(theta::Vector, 
                        data::Any, 
                        template::objective_function_template, 
                        br::Bool = false)
@@ -31,7 +31,7 @@ Evaluates the objective function at `theta` by adding up all contributions in
 
 Arguments
 ===
-+ `theta`: a `Vector{Float64}` of parameter values at which to evaluate the objective function
++ `theta`: a `Vector` of parameter values at which to evaluate the objective function
 + `data`: typically an object of [composite type]((https://docs.julialang.org/en/v1/manual/types/#Composite-Types-1)) with all the data required to compute the `objective_function`.
 + `template`: an [`objective_function_template`](@ref) object
 + `br`: a `Bool`. If `false` (default), the objective function is constructed by adding up all contributions in 
@@ -45,7 +45,7 @@ Details
 ===
 `data` can be used to pass additional constants other than the actual data to the objective. 
 """
-function objective_function(theta::Vector{Float64},
+function objective_function(theta::Vector,
                             data::Any,
                             template::objective_function_template,
                             br::Bool = false)
@@ -56,8 +56,7 @@ function objective_function(theta::Vector{Float64},
         objective += template.obj_contribution(theta, data, i)
     end
     if (br)
-        quants = obj_quantities(theta, data, template, true)
-        objective + quants[1]
+        objective + obj_quantities(theta, data, template, true)[1]
     else
         objective
     end
@@ -73,7 +72,6 @@ function obj_quantities(theta::Vector,
         out = DiffResults.HessianResult(x)
         ForwardDiff.hessian!(out, pars -> objective_i(pars, i), x)
     end
-
     p = length(theta)
     n_obs = template.nobs(data)
     psi = zeros(p)
@@ -85,6 +83,47 @@ function obj_quantities(theta::Vector,
         psi += cpsi
         emat += cpsi * cpsi'
         jmat += - DiffResults.hessian(cdiffres)
+    end
+    jmat_inv = try
+        inv(jmat)
+    catch
+        fill(NaN, p, p)
+    end
+    vcov = jmat_inv * (emat * jmat_inv)
+    if (penalty)        
+        br_penalty = - tr(jmat_inv * emat) / 2
+        # br_penalty = n_obs * log(det(Matrix{Float64}(I * n_obs, p, p) -
+        #                              jmat_inv * emat)) / 2
+        # br_penalty = + log(det(sum(njmats))) / 2 - log(det(emat)) / 2
+        [br_penalty, jmat_inv, emat, psi]
+    else
+        [vcov, jmat_inv, emat, psi]
+    end
+end
+
+
+function obj_quantities_old(theta::Vector,
+                            data::Any,
+                            template::objective_function_template,
+                            penalty::Bool = false)
+    function gr_i(eta::Vector, i::Int)
+        out = similar(eta)
+        ForwardDiff.gradient!(out, beta -> template.obj_contribution(beta, data, i), eta)
+    end
+    function he_i(eta::Vector, i::Int)
+        out = similar(eta, p, p)
+        ForwardDiff.hessian!(out, beta -> template.obj_contribution(beta, data, i), eta)
+    end
+    p = length(theta)
+    n_obs = template.nobs(data)
+    psi = zeros(p)
+    emat = zeros(p, p)
+    jmat = zeros(p, p)
+    for i in 1:n_obs
+        cpsi = gr_i(theta, i)
+        psi += cpsi
+        emat += cpsi * cpsi'
+        jmat += - he_i(theta, i)
     end
     jmat_inv = try
         inv(jmat)

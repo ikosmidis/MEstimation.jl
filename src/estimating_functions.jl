@@ -19,7 +19,7 @@ struct estimating_function_template
 end
 
 """ 
-    estimating_function(theta::Vector{Float64},
+    estimating_function(theta::Vector,
                         data::Any,
                         template::estimating_function_template,
                         br::Bool = false,
@@ -29,7 +29,7 @@ Evaluate a vector of estimating functions at `theta` by adding up all contributi
 
 Arguments
 ===
-+ `theta`: a `Vector{Float64}` of parameter values at which to evaluate the estimating functions
++ `theta`: a `Vector` of parameter values at which to evaluate the estimating functions
 + `data`: typically an object of [composite type]((https://docs.julialang.org/en/v1/manual/types/#Composite-Types-1)) with all the data required to compute the `estimating_function`.
 + `template`: an [`estimating_function_template`](@ref) object.
 + `br`: a `Bool`. If `false` (default), the estimating functions is constructed by adding up all contributions in 
@@ -38,13 +38,13 @@ Arguments
 
 Result
 ===
-A `Vector{Float64}`.
+A `Vector`.
 
 Details
 ===
 `data` can be used to pass additional constants other than the actual data to the objective.
 """
-function estimating_function(theta::Vector{Float64},
+function estimating_function(theta::Vector,
                              data::Any,
                              template::estimating_function_template,
                              br::Bool = false,
@@ -79,7 +79,7 @@ Arguments
 + `br`: a `Bool`. If `false` (default), the estimating functions is constructed by adding up all contributions in 
 `data`, according to [`estimating_function_template`](@ref), before it is evaluated at `theta`. If `true` then the empirical bias-reducing adjustments in [Kosmidis & Lunardon, 2020](http://arxiv.org/abs/2001.03786) are computed and added to the estimating functions.
 + `concentrate`: a `Vector{Int64}`; if specified, empirical bias-reducing adjustments are added only to the subset of estimating functions indexed by `concentrate`. The default is to add empirical bias-reducing adjustments to all estimating functions.
-+ `regularizer`: a function of `theta` and `data` returning a `Vector{Float64}` of dimension equal to the number of the estimating functions, which is added to the (bias-reducing) estimating function; the default value will result in no regularization.
++ `regularizer`: a function of `theta` and `data` returning a `Vector` of dimension equal to the number of the estimating functions, which is added to the (bias-reducing) estimating function; the default value will result in no regularization.
 
 Result
 ===
@@ -109,10 +109,11 @@ function ef_quantities(theta::Vector,
                        data::Any,
                        template::estimating_function_template,
                        adjustment::Bool = false,
-                       concentrate::Vector{Int64} = Vector{Int64}())
-    function nj(eta::Vector, i::Int)
+                       concentrate::Vector{Int64} = Vector{Int64}())   
+    estfun_i = (pars, i) -> template.ef_contribution(pars, data, i)
+    function ja_i(eta::Vector, i::Int)
         out = similar(eta, p, p)
-        ForwardDiff.jacobian!(out, beta -> template.ef_contribution(beta, data, i), eta)
+        ForwardDiff.jacobian!(out, pars -> estfun_i(pars, i), eta)
     end
     p = length(theta)
     n_obs = template.nobs(data)
@@ -123,7 +124,7 @@ function ef_quantities(theta::Vector,
     if adjustment
         function u(eta::Vector, i::Int)
             out = similar(eta, p * p, p)
-            ForwardDiff.jacobian!(out, beta -> nj(beta, i), eta)
+            ForwardDiff.jacobian!(out, beta -> ja_i(beta, i), eta)
         end
         psi2 = Vector(undef, p)
         for j in 1:p
@@ -132,22 +133,22 @@ function ef_quantities(theta::Vector,
         # psi2 = zeros(p, p, p)
         umat = zeros(p * p, p)
         for i in 1:n_obs
-            cpsi = template.ef_contribution(theta, data, i)
+            cpsi = estfun_i(theta, i)
             psi += cpsi
             emat += cpsi * cpsi'
-            hess = nj(theta, i)
-            jmat += -hess
+            jaco = ja_i(theta, i)
+            jmat += -jaco
             umat += u(theta, i)
             for j in 1:p
-                psi2[j] += hess[j, :] * cpsi'
+                psi2[j] += jaco[j, :] * cpsi'
             end
         end
     else
         for i in 1:n_obs
-            cpsi = template.ef_contribution(theta, data, i)
+            cpsi = estfun_i(theta, i)
             psi += cpsi
             emat += cpsi * cpsi'
-            jmat += -nj(theta, i)
+            jmat += - ja_i(theta, i)
         end
     end
       
