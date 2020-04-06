@@ -213,5 +213,64 @@ o2_br = fit(logistic_template, my_data, true_betas, estimation_method = "RBM", b
 isapprox(coef(e2_br), coef(o2_br))
 ```
 
+### Regularization
 
+#### Ridge logistic regression
+**MEstimation** allows to pass arbitrary regularizers to either the objective or the estimating fucntions. For example, for doing L2-regularized logistic regression (aka ridge logistic regression), we can define a new data type that incorporates the tuning parameter, e.g.
+```@repl 2
+struct l2_logistic_data
+    y::Vector
+    x::Array{Float64}
+    m::Vector
+    λ::Real
+end
+```
+and a function that implements the L2 regularizer
+```@repl2
+l2_penalty(theta, data, λ) = - λ * sum(theta.^2)
+```
 
+Then, the coefficient path can be obtained as
+```@repl2
+lambda = collect(0:0.5:10)
+deviance = similar(lambda)
+coefficients = Matrix{Float64}(undef, length(lambda), length(start))
+coefficients[1, :] = coef(o1_ml)
+for j in 2:length(lambda)
+    current_fit = fit(logistic_template, my_data, coefficients[j - 1, :],
+                      regularizer = (theta, data) -> l2_penalty(theta, data, lambda[j]))
+    deviance[j] = 2 * current_fit.results.minimum
+    coefficients[j, :] = coef(current_fit)
+end
+
+using Plots
+plot(lambda, coefficients)
+plot(deviance, coefficients)
+```
+
+Another way to get the above is to define a new data type that holds lambda and then have
+```@repl2
+l2_penalty(theta, data) = - data.λ * sum(theta.^2)
+```
+This new data type, though, would require a redefinition of `logistic_loglik`, `logistic_nobs` and `logistic_template`.
+
+#### Jeffreys-prior penalty for bias reduction
+Firth (1993) showed that another reduced-bias estimator of the logistic regression parameters results if the logistic likelihood is penalized by Jeffreys prior. We can compute those reduced-bias estimates using the `regularizer` interface that **MEstimation** provides.
+
+The logartith of the Jeffreys prior for logistic regression is 
+```@repl2
+using LinearAlgebra
+
+function JeffreysPrior(theta, data)
+    x = data.x
+    probs = cdf.(Logistic(), x * theta)
+    log(det((x .* (probs .* (1 .- probs)))' * x)) / 2
+end
+```
+
+Then, the reduced-bias estimates are
+```@repl2
+o3_br = fit(logistic_template, my_data, true_betas, regularizer = JeffreysPrior) 
+```
+
+See, also, Kosmidis & Firth (2020), where it is shown that the reduced-bias estimates from penalization by Jeffreys prior are always finite and shrink to zero relative to the maximum likelihood estimator.
