@@ -13,16 +13,15 @@
 
 Arguments
 ===
-+ `results`
-+ `theta`
-+ `data`
-+ `template`
-+ `regularizer`
-+ `br`
-+ `has_objective`
-+ `has_regularizer`
-+ `br_method`
-
++ `results`: a `Union{NLsolve.SolverResults, Optim.MultivariateOptimizationResults, Optim.UnivariateOptimizationResults}` object holding the optimization results as returned from `Optim.optimize` or `NLsolve.nlsolve`.
++ `theta`: a `Vector{Float64}` with the M-estimates or their reduced-bias version.
++ `data`: an object of [composite type]((https://docs.julialang.org/en/v1/manual/types/#Composite-Types-1)) with all the data required to compute the objective function or the estimating functions; see [`objective_function`](@ref)` and [`estimating_function`](@ref).
++ `template`: an [`objective_function_template`](@ref) or [`estimating_function_template`](@ref) object.
++ `regularizer`: a function of `theta` and `data` returning either a `Vector{Float64}` of dimension equal to the number of the estimating functions (for [`estimating_function_template`](@ref)) or a `Float64` (for [`objective_function_template`](@ref)). See [`fit`](@ref) for details.
++ `br`: a `Bool`; if `false` then `results` are from the computation of M-estimates, otherwise from the computation of the RBM-estimates.
++ `has_objective`: a `Bool`; if `true` then `template` is an [`objective_function_template`](@ref). 
++ `has_regularizer`: a `Bool`; if `true` then a regularizer function has been used during optimization; see [`fit`](@ref).
++ `br_method`: either "implicit_trace" (default) or "explicit_trace"; see [`fit`](@ref).
 """
 struct MEstimation_results
     results::Union{NLsolve.SolverResults, Optim.MultivariateOptimizationResults, Optim.UnivariateOptimizationResults}
@@ -43,11 +42,11 @@ Compute an estimate of the variance-covariance matrix of the `M`-estimator or it
 
 Arguments
 ===
-+ `results`
++ `results`: a [`MEstimation_results`](@ref) object.
 
-Details
+Result
 ===
-
+The `length(coef(results))` times `length(coef(results))` estimated variance covariance matrix for the parameters. This matrix is the empirical sandwich variance covariance matrix for M- and RBM-estimators. See, for example, [Stefanski and Boos (2002, expression 10)](https://www.jstor.org/stable/3087324).
 
 """
 function vcov(results::MEstimation_results)
@@ -65,7 +64,7 @@ Compute the Takeuchi Information Criterion at `results.theta`, from a [`MEstimat
 
 Arguments
 ===
-+ `results`
++ `results`: a [`MEstimation_results`](@ref) object.
 
 Details
 ===
@@ -86,7 +85,7 @@ Compute the Akaike Information Criterion at `results.theta`, from a [`MEstimatio
 
 Arguments
 ===
-+ `results`
++ `results`: a [`MEstimation_results`](@ref) object.
 
 Details
 ===
@@ -107,7 +106,7 @@ Extract the parameter estimates from a [`MEstimation_results`](@ref) object.
 
 Arguments
 ===
-+ `results`
++ `results`: a [`MEstimation_results`](@ref) object.
 
 Details
 ===
@@ -121,18 +120,18 @@ end
 """
     show(io::IO, 
          results::MEstimation_results; 
-         digits::Real = 4)
+         digits::Int64 = 4)
 
 `show` method for `MEstimation_results` objects. 
 
 Arguments
 ===
-+ `io`
-+ `results`
++ `io`: an `IO` object; see [`show`](@ref) for details.
++ `results`: a [`MEstimation_results`](@ref) object.
 
 [Keyword arguments](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1)
 ===
-+ `digits`
++ `digits`: an `Int64` indicating the number of digits to display for the various summaries. Default is `4`.
 
 Details
 ===
@@ -203,8 +202,11 @@ Compute estimated standard errors from a from a [`MEstimation_results`](@ref) ob
 
 Arguments
 ===
-+ `results`
++ `results`: a [`MEstimation_results`](@ref) object.
 
+Details
+===
+The estimated standard errors are computed as `sqrt.(diag(vcov(results)))`.
 """
 function stderror(results::MEstimation_results)
     sqrt.(diag(vcov(results)))
@@ -218,15 +220,15 @@ Return a `StatsBase.CoefTable` from a [`MEstimation_results`](@ref) object.
 
 Arguments
 ===
-+ `results`
++ `results`: a [`MEstimation_results`](@ref) object.
 
 [Keyword arguments](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1)
 ===
-+ `level`
++ `level`: a `Real` that determines the level of the reported confidence intervals; default is `0.95`; see Details.
 
 Details
 ===
-`level` can be used to set the level of the reported Wald-type confidence intervals (using quantiles of the standard normal distribution). 
+The reported confidence intervals are Wald-type of nominal level `level`, using quantiles of the standard normal distribution.
 """
 function coeftable(results::MEstimation_results; level::Real=0.95)
     cc = coef(results)

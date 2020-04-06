@@ -10,22 +10,23 @@ Compute 1-dimensional slices of objective functions and estimating function surf
 
 Arguments
 ===
-+ `results`
-+ `what`
++ `results`: An [`MEstimation_results`](@ref) object.
++ `what`: the index of the parameter for which to compute a slice for
 
 [Keyword arguments](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1)
 ===
-+ `grid`
-+ `at`
-+ `n_points`
-+ `n_sd`
++ `grid`: a `Vector{Float64}`; if supplied, the slice is computed at each element of `grid`. The default will result in the automatic calculation of the grid; see Details.
++ `at`: a `Vector{Float64}` of the sample length as `coef(results)`, specifying the parameter values at which to compute the slice. The default results in computing the slice at `coef(results)`.
++ `n_points`: an `Int64` specifying the number of grid points to generate. Applicable only if `grid` is not supplied; see Details.
++ `n_sd`: an `Int64` specifying the number of standard errors to be used for the grid generation. Applicable only if `grid` is not supplied; see Details.
+
+Result
+===
+A [`Dict`](https://docs.julialang.org/en/v1/base/collections/#Dictionaries-1) with keys "grid" and "slice", holding `grid` and the values of the slice at `grid`, respectively.
 
 Details
 ===
 The default value of `grid` will result in the automatic calculation of a grid of `n_points` points, between `coef(results)[what] - n_sd * stderror(results)[what]` and `coef(results)[what] + n_sd * stderror(results)[what]`.
-
-Unless `at` is specified, slices will be computed at `coef(results)`.
-
 """
 function slice(results::MEstimation_results,
                what::Int64;
@@ -59,5 +60,5 @@ function slice(results::MEstimation_results,
         end
     end
     slice_m = map(function(b) th = theta[1:n_par]; th[what] = b; slice_function(th) end, grid)
-    Dict("value" => grid, "slice" => slice_m)
+    Dict("grid" => grid, "slice" => slice_m)
 end

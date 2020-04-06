@@ -16,21 +16,21 @@ Fit an [`objective_function_template`](@ref) on `data` using M-estimation (`esti
 Arguments
 ===
 
-+ `template`
-+ `data`
-+ `theta`
++ `template`: an [`objective_function_template`](@ref) object.
++ `data`: typically an object of [composite type]((https://docs.julialang.org/en/v1/manual/types/#Composite-Types-1)) with all the data required to compute the `objective_function`.
++ `theta`: a `Vector{Float64}` of parameter values to use as starting values in `Optim.optimize`.
 
 [Keyword arguments](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1)
 ===
 
-+ `estimation_method`
-+ `br_method`
-+ `regularizer`
-+ `lower`
-+ `upper`
-+ `optim_method`
-+ `optim_options`
-+ `optim_arugments...`
++ `estimation_method`: either "M" (default) or "RBM"; see Details.
++ `br_method`: either "implicit_trace" (default) or "explicit_trace"; see Details.
++ `regularizer`: a function of `theta` and `data` returning a `Float64`, which is added to the (bias-reducing penalized) objective; the default value will result in no regularization.
++ `lower`: a `Vector{Float64}` of dimension equal to `theta` for setting box constraints for the optimization. The default will result in unconstrained optimization. See Details.
++ `upper`: a `Vector{Float64}` of dimension equal to `theta` for setting box constraints for the optimization. The default will result in unconstrained optimization. See Details.
++ `optim_method`: the optimization method to be used; deafult is `Optim.LBFGS()`. See Details.
++ `optim_options`: the result of a call to `Optim.Options` to be passed to `Optim.optimize`. Default is `Optim.Options()`. See details.
++ `optim_arugments...`: extra keyword arguments to be passed to `Optim.optimize`. See Details.
 
 Details
 ===
@@ -112,25 +112,25 @@ end
         theta::Vector{Float64};
         estimation_method::String = "M",
         br_method::String = "implicit_trace",
-        regularizer::Function = function regularizer(theta::Vector{Float64}, data::Any) Vector{Float64}() end,
         concentrate::Vector{Int64} = Vector{Int64}(),
+        regularizer::Function = function regularizer(theta::Vector{Float64}, data::Any) Vector{Float64}() end,
         nlsolve_arguments...)
 
 Fit an [`estimating_function_template`](@ref) on `data` using M-estimation (`estimation_method = "M"`; default) or RBM-estimation (reduced-bias M estimation; [Kosmidis & Lunardon, 2020](http://arxiv.org/abs/2001.03786); `estimation_method = "RBM"`)
 
 Arguments
 ===
-+ `template`
-+ `data`
-+ `theta`
++ `template`: an [`estimating_function_template`](@ref) object.
++ `data`: typically an object of [composite type]((https://docs.julialang.org/en/v1/manual/types/#Composite-Types-1)) with all the data required to compute the `objective_function`.
++ `theta`: a `Vector{Float64}` of parameter values to use as starting values in `Optim.optimize`.
 
 [Keyword arguments](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1)
 ===
-+ `estimation_method`
-+ `br_method`
-+ `regularizer`
-+ `concentrate`
-+ `nlsolve_arguments...`
++ `estimation_method`: either "M" (default) or "RBM"; see Details.
++ `br_method`: either "implicit_trace" (default) or "explicit_trace"; see Details.
++ `concentrate`: a `Vector{Int64}`; if specified, empirical bias-reducing adjustments are added only to the subset of estimating functions indexed by `concentrate`. The default is to add empirical bias-reducing adjustments to all estimating functions.
++ `regularizer`: a function of `theta` and `data` returning a `Vector{Float64}` of dimension equal to the number of the estimating functions, which is added to the (bias-reducing) estimating function; the default value will result in no regularization.
++ `nlsolve_arguments...`: extra keyword arguments to be passed to `NLsolve.nlsolve`. See Details.
 
 Details
 ===
@@ -148,8 +148,8 @@ function fit(template::estimating_function_template,
              theta::Vector{Float64};
              estimation_method::String = "M",
              br_method::String = "implicit_trace",
-             regularizer::Function = function regularizer(theta::Vector{Float64}, data::Any) Vector{Float64}() end,
              concentrate::Vector{Int64} = Vector{Int64}(),
+             regularizer::Function = function regularizer(theta::Vector{Float64}, data::Any) Vector{Float64}() end,
              nlsolve_arguments...)
     if (estimation_method == "M")
         br = false

@@ -8,6 +8,10 @@ Arguments
 ===
 + `nobs`: a function of `data` that computes the number of observations of the particular data type,
 + `ef_contribution`: a function of the parameters `theta`, the `data` and the observation index `i` that returns a vector of length `length(theta)`.
+
+Result
+===
+An `estimating_function_template` object with fields `nobs` and `obj_contributions`.
 """
 struct estimating_function_template
     nobs::Function
@@ -15,7 +19,7 @@ struct estimating_function_template
 end
 
 """ 
-    estimating_function(theta::Vector,
+    estimating_function(theta::Vector{Float64},
                         data::Any,
                         template::estimating_function_template,
                         br::Bool = false,
@@ -25,17 +29,22 @@ Evaluate a vector of estimating functions at `theta` by adding up all contributi
 
 Arguments
 ===
-+ `theta`
-+ `data`
-+ `template`
-+ `br`
-+ `concentrate`
++ `theta`: a `Vector{Float64}` of parameter values at which to evaluate the estimating functions
++ `data`: typically an object of [composite type]((https://docs.julialang.org/en/v1/manual/types/#Composite-Types-1)) with all the data required to compute the `estimating_function`.
++ `template`: an [`estimating_function_template`](@ref) object.
++ `br`: a `Bool`. If `false` (default), the estimating functions is constructed by adding up all contributions in 
+`data`, according to [`estimating_function_template`](@ref), before it is evaluated at `theta`. If `true` then the empirical bias-reducing adjustments in [Kosmidis & Lunardon, 2020](http://arxiv.org/abs/2001.03786) are computed and added to the estimating functions.
++ `concentrate`: a `Vector{Int64}`; if specified, empirical bias-reducing adjustments are added only to the subset of estimating functions indexed by `concentrate`. The default is to add empirical bias-reducing adjustments to all estimating functions.
+
+Result
+===
+A `Vector{Float64}`.
 
 Details
 ===
-If `br = true` then automatic differentiation is used to compute the empirical bias-reducing adjustments, before adding them to the estimating functions. Bias-reducing adjustments can be computed for only a subset of estimating functions by setting the `concentrate` to the vector of the indices for those estimating functions.
+`data` can be used to pass additional constants other than the actual data to the objective.
 """
-function estimating_function(theta::Vector,
+function estimating_function(theta::Vector{Float64},
                              data::Any,
                              template::estimating_function_template,
                              br::Bool = false,
@@ -61,21 +70,20 @@ end
                             concentrate::Vector{Int64} = Vector{Int64}(),
                             regularizer::Any = Vector{Int64}())
 
-Construct the estimating function by adding up all contributions in the `data` according to [`estimating_function_template`](@ref). 
+Construct the estimating functions by adding up all contributions in the `data` according to [`estimating_function_template`](@ref).
 
 Arguments
 ===
-+ `data`
-+ `template`
-+ `br`
-+ `concentrate`
-+ `regularizer`
++ `data`: typically an object of [composite type]((https://docs.julialang.org/en/v1/manual/types/#Composite-Types-1)) with all the data required to compute the `estimating_function`.
++ `template`: an [`estimating_function_template`](@ref) object.
++ `br`: a `Bool`. If `false` (default), the estimating functions is constructed by adding up all contributions in 
+`data`, according to [`estimating_function_template`](@ref), before it is evaluated at `theta`. If `true` then the empirical bias-reducing adjustments in [Kosmidis & Lunardon, 2020](http://arxiv.org/abs/2001.03786) are computed and added to the estimating functions.
++ `concentrate`: a `Vector{Int64}`; if specified, empirical bias-reducing adjustments are added only to the subset of estimating functions indexed by `concentrate`. The default is to add empirical bias-reducing adjustments to all estimating functions.
++ `regularizer`: a function of `theta` and `data` returning a `Vector{Float64}` of dimension equal to the number of the estimating functions, which is added to the (bias-reducing) estimating function; the default value will result in no regularization.
 
-Details
+Result
 ===
-If `br = true` then automatic differentiation is used to compute the empirical bias-reducing adjustments and add them to the estimating function. Bias-reducing adjustments can be computed for only a subset of estimating functions by setting `concentrate` to the vector of the indices for those estimating functions. The result is a function that stores the value of the estimating functions inferred from `template`, in a preallocated vector passed as its first argument, ready to be used withing `NLsolve.nlsolve`. 
-
-An extra additive regularizer to either the estimating functions or the adjusted estimating functions can be suplied via `regularizer`, which must be a function of the parameters and the data returning a real vector of dimension equal to the number of the estimating functions; the default value will result in no regularization.
+An in-place function that stores the value of the estimating functions inferred from `template`, in a preallocated vector passed as its first argument, ready to be used withing `NLsolve.nlsolve`. This is the in-place version of [`estimating_function`](@ref) with the extra `regularizer` argument.
 """
 function get_estimating_function(data::Any,
                                  template::estimating_function_template,
