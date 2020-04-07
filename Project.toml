@@ -1,7 +1,7 @@
 name = "MEstimation"
 uuid = "38feb9b4-a243-49d8-ab24-fe2508a85779"
 authors = ["Ioannis Kosmidis <ioannis.kosmidis@warwick.ac.uk>"]
-version = "0.9.9"
+version = "0.10.0"
 
 
 [deps]
@@ -15,9 +15,9 @@ StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
 [compat]
 Distributions = "0.22, 0.23"
-FiniteDiff = "2.0"
+FiniteDiff = "2.0, 2.1, 2.2, 2.3"
 ForwardDiff = "0.10"
-NLsolve = "4.0"
+NLsolve = "4.0, 4.1, 4.2, 4.3"
 Optim = "0.20"
 StatsBase = "0.32, 0.33"
 julia = "1.3"

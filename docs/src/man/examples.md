@@ -13,7 +13,7 @@ Consider a setting where independent pairs of random variables ``(X_1, Y_1), \ld
 
 Assuming that sampling is from an infinite population, one way of estimating ``\theta`` without any further assumptions about the joint distribution of ``(X_i, Y_i)`` is to set the unbiased estimating equation ``\sum_{i = 1}^n (Y_i - \theta X_i) = 0``. The resulting ``M``-estimator is then  ``\hat\theta = s_Y/s_X`` where ``s_X = \sum_{i = 1}^n X_i`` and ``s_Y = \sum_{i = 1}^n Y_i``. 
 
-The estimator ``\hat\theta`` is generally biased, as can be shown, for example, by an application of the Jensen inequality assuming that ``X_i``is independent of ``Y_i``, and its bias can be reduced using the empirically adjusted estimating functions approach in Kosmidis & Lunardon (2020). 
+The estimator ``\hat\theta`` is generally biased, as can be shown, for example, by an application of the Jensen inequality assuming that ``X_i``is independent of ``Y_i``, and its bias can be reduced using the empirically adjusted estimating functions approach in [Kosmidis & Lunardon (2020)](http://arxiv.org/abs/2001.03786). 
 
 This example illustrates how **MEstimation** can be used to calculate the ``M``-estimator and its reduced-bias version.
 
@@ -66,7 +66,7 @@ The `estimating_function_template` for the ratio estimation problem can now be s
     ratio_template = estimating_function_template(ratio_nobs, ratio_ef);
 ```
 
-We are now ready use `ratio_template` and `my_data` to compute the ``M``-estimator of ``\theta`` by solving the esitmating equation ``\sum_{i = 1}^n (Y_i - \theta X_i) = 0``. The starting value for the nonlinear solver is set to `0.1`.
+We are now ready use `ratio_template` and `my_data` to compute the ``M``-estimator of ``\theta`` by solving the estimating equation ``\sum_{i = 1}^n (Y_i - \theta X_i) = 0``. The starting value for the nonlinear solver is set to `0.1`.
 ```@repl 1
 result_m = fit(ratio_template, my_data, [0.1])
 ```
@@ -81,7 +81,7 @@ result_br = fit(ratio_template, my_data, [0.1], estimation_method = "RBM")
 ```
 where `RBM` stands for reduced-bias `M`-estimation.
 
-Kosmidis & Lunardon (2020) show that the reduced-bias estimator of $\theta$ is ``\tilde\theta = (s_Y + s_{XY}/s_{X})/(s_X + s_{XX}/s_{X})``. The code chunks below tests that this is indeed the result **MEstimation** returns.
+[Kosmidis & Lunardon (2020)](http://arxiv.org/abs/2001.03786) show that the reduced-bias estimator of ``\theta`` is ``\tilde\theta = (s_Y + s_{XY}/s_{X})/(s_X + s_{XX}/s_{X})``. The code chunks below tests that this is indeed the result **MEstimation** returns.
 ```@repl 1
 sx = sum(my_data.x);
 sxx = sum(my_data.x .* my_data.x);
@@ -94,7 +94,7 @@ isapprox((sy + sxy/sx)/(sx + sxx/sx), result_br.theta[1])
 
 ## Logistic regression
 ### Using [`objective_function_template`](@ref)
-Here, we use **MEstimation**'s [`objective_function_template`](@ref) to estimate a logistic regression model using maximum likelihood and maximum penalized likelihood, with the empirical bias-reducing penalty in Kosmidis & Lunardon (2020).
+Here, we use **MEstimation**'s [`objective_function_template`](@ref) to estimate a logistic regression model using maximum likelihood and maximum penalized likelihood, with the empirical bias-reducing penalty in [Kosmidis & Lunardon (2020)](http://arxiv.org/abs/2001.03786).
 
 ```@repl 2
 using MEstimation
@@ -140,7 +140,7 @@ function logistic_loglik(theta::Vector,
 end
 ```
 
-Let's simulate some logistic regression data with $10$ covariates
+Let's simulate some logistic regression data with ``10`` covariates
 ```@repl 2
 Random.seed!(123);
 n = 100;
@@ -213,5 +213,82 @@ o2_br = fit(logistic_template, my_data, true_betas, estimation_method = "RBM", b
 isapprox(coef(e2_br), coef(o2_br))
 ```
 
+## Regularization
+**MEstimation** allows to pass arbitrary regularizers to either the objective or the estimating functions. Below we illustrate that functionality for carrying out ridge logistic regression, and maximum penalized likelihood, with a Jeffreys-prior penalty.
+
+### Ridge logistic regression
+The `logistic_template` that we defined earlier can be used for doing L2-regularized logistic regression (aka ridge logistic regression); we only need to define a function that implements the L2 regularizer
+```@repl2
+l2_penalty = (theta, data, λ) -> - λ * sum(theta.^2);
+```
+
+Then, the coefficient path can be computed as
+```@repl2
+lambda = collect(0:0.5:10);
+deviance = similar(true_betas);
+coefficients = Matrix{Float64}(undef, length(lambda), length(true_betas));
+coefficients[1, :] = coef(o1_ml);
+for j in 2:length(lambda)
+    current_fit = fit(logistic_template, my_data, coefficients[j - 1, :],
+                      regularizer = (theta, data) -> l2_penalty(theta, data, lambda[j]))
+    deviance[j] = 2 * current_fit.results.minimum
+    coefficients[j, :] = coef(current_fit)
+end
+```
+
+The coefficients versus ``\lambda``, and the deviance values are then
+```@repl2
+using Plots
+
+plot(lambda, coefficients)
+```
+
+```@repl2
+plot(deviance, coefficients)
+```
+
+Another way to get the above is to define a new data type that has a filed for ``\lambda`` and then pass
+```@repl2
+l2_penalty = (theta, data) -> - data.λ * sum(theta.^2)
+```
+to the `regularizer` argument when calling `fit`. Such a new data type, though, would require to redefine `logistic_loglik`, `logistic_nobs` and `logistic_template`.
+
+### Jeffreys-prior penalty for bias reduction
+[Firth (1993)](https://www.jstor.org/stable/2336755) showed that an alternative bias-reducing penalty for the logistic regression likelihood is the Jeffreys prior,. which can readily implemented and passed to `fit` through the `regularizer` interface that **MEstimation** provides. The logarithm of the Jeffreys prior for logistic regression is 
+```@repl2
+using LinearAlgebra
+
+function log_jeffreys_prior(theta, data)
+    x = data.x
+    probs = cdf.(Logistic(), x * theta)
+    log(det((x .* (data.m .* probs .* (1 .- probs)))' * x)) / 2
+end
+```
+
+Then, the reduced-bias estimates of [Firth (1993)](https://www.jstor.org/stable/2336755) are
+```@repl2
+o_jeffreys = fit(logistic_template, my_data, true_betas, regularizer = log_jeffreys_prior)
+```
+
+Note here, that the `regularizer` is only used to get estimates. Then all model quantities are computed at those estimates, but based only on `logistic_loglik` (i.e. without adding the regularizer to it). [Kosmidis & Firth (2020)](http://arxiv.org/abs/1812.01938) provide a more specific procedure for computing the reduced-bias estimates from the penalization of the logistic regression likelihood by Jeffreys prior, which uses repeated maximum likelihood fits on adjusted binomial data. [Kosmidis & Firth (2020)](http://arxiv.org/abs/1812.01938) also show that, for logistic regression, the reduced-bias estimates from are always finite and shrink to zero relative to the maximum likelihood estimator.
+
+Regularization is also available when fitting an `estimating_function_template`. For example, the gradient of the `log_jeffreys_prior` above is
+```@repl2
+using ForwardDiff
+log_jeffreys_prior_grad = (theta, data) -> ForwardDiff.gradient(pars -> log_jeffreys_prior(pars, data), theta)
+```
+
+Then the same fit as `o_jeffreys` can be obtained using estimating functions
+```@repl2
+e_jeffreys = fit(logistic_template_ef, my_data, true_betas, regularizer = log_jeffreys_prior_grad)
+```
+Note here that the value of the estimating functions shown in the output is that of the gradient of the log-likelihood, i.e.
+```@repl2
+logistic_loglik_grad = estimating_function(coef(e_jeffreys), my_data, logistic_template_ef)
+```
+instead of the regularized estimating functions, which, as expected, are very close to zero at the estimates
+```@repl2
+logistic_loglik_grad .+ log_jeffreys_prior_grad(coef(e_jeffreys), my_data)
+```
 
 

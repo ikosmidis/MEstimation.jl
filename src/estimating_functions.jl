@@ -2,9 +2,16 @@
     estimating_function_template(nobs::Function, 
                                  ef_contribution::Function)
 
-Define an `estimating_function_template` by supplying:
+[Composite type](https://docs.julialang.org/en/v1/manual/types/#Composite-Types-1) for defining an `estimating_function_template`.
+
+Arguments
+===
 + `nobs`: a function of `data` that computes the number of observations of the particular data type,
 + `ef_contribution`: a function of the parameters `theta`, the `data` and the observation index `i` that returns a vector of length `length(theta)`.
+
+Result
+===
+An `estimating_function_template` object with fields `nobs` and `obj_contributions`.
 """
 struct estimating_function_template
     nobs::Function
@@ -13,12 +20,29 @@ end
 
 """ 
     estimating_function(theta::Vector,
-                             data::Any,
-                             template::estimating_function_template,
-                             br::Bool = false,
-                             concentrate::Vector{Int64} = Vector{Int64}())
+                        data::Any,
+                        template::estimating_function_template,
+                        br::Bool = false,
+                        concentrate::Vector{Int64} = Vector{Int64}())
 
-Construct the estimating function by adding up all contributions in the `data` according to [`estimating_function_template`](@ref), and evaluate it at `theta`. If `br = true` then automatic differentiation is used to compute the empirical bias-reducing adjustments and add them to the estimating function. Bias-reducing adjustments can be computed for only a subset of estimating functions by setting the ([keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `concentrate` to the vector of the indices for those estimating functions.
+Evaluate a vector of estimating functions at `theta` by adding up all contributions in `data`, according to an [`estimating_function_template`](@ref).
+
+Arguments
+===
++ `theta`: a `Vector` of parameter values at which to evaluate the estimating functions
++ `data`: typically an object of [composite type](https://docs.julialang.org/en/v1/manual/types/#Composite-Types-1) with all the data required to compute the `estimating_function`.
++ `template`: an [`estimating_function_template`](@ref) object.
++ `br`: a `Bool`. If `false` (default), the estimating functions is constructed by adding up all contributions in 
+`data`, according to [`estimating_function_template`](@ref), before it is evaluated at `theta`. If `true` then the empirical bias-reducing adjustments in [Kosmidis & Lunardon, 2020](http://arxiv.org/abs/2001.03786) are computed and added to the estimating functions.
++ `concentrate`: a `Vector{Int64}`; if specified, empirical bias-reducing adjustments are added only to the subset of estimating functions indexed by `concentrate`. The default is to add empirical bias-reducing adjustments to all estimating functions.
+
+Result
+===
+A `Vector`.
+
+Details
+===
+`data` can be used to pass additional constants other than the actual data to the objective.
 """
 function estimating_function(theta::Vector,
                              data::Any,
@@ -46,9 +70,20 @@ end
                             concentrate::Vector{Int64} = Vector{Int64}(),
                             regularizer::Any = Vector{Int64}())
 
-Construct the estimating function by adding up all contributions in the `data` according to [`estimating_function_template`](@ref). If `br = true` then automatic differentiation is used to compute the empirical bias-reducing adjustments and add them to the estimating function. Bias-reducing adjustments can be computed for only a subset of estimating functions by setting the ([keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `concentrate` to the vector of the indices for those estimating functions. The result is a function that stores the estimating functions evaluated at its second argument, in a preallocated vector passed as its first argument, ready to be used withing `NLsolve.nlsolve`. 
+Construct the estimating functions by adding up all contributions in the `data` according to [`estimating_function_template`](@ref).
 
-An extra additive regularizer to either the estimating functions or the adjusted estimating functions can be suplied via the [keyword argument](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1) `regularizer`, which must be a function of the parameters and the data returning a real vector of dimension equal to the number of the estimating functions; the default value will result in no regularization.
+Arguments
+===
++ `data`: typically an object of [composite type](https://docs.julialang.org/en/v1/manual/types/#Composite-Types-1) with all the data required to compute the `estimating_function`.
++ `template`: an [`estimating_function_template`](@ref) object.
++ `br`: a `Bool`. If `false` (default), the estimating functions is constructed by adding up all contributions in 
+`data`, according to [`estimating_function_template`](@ref), before it is evaluated at `theta`. If `true` then the empirical bias-reducing adjustments in [Kosmidis & Lunardon, 2020](http://arxiv.org/abs/2001.03786) are computed and added to the estimating functions.
++ `concentrate`: a `Vector{Int64}`; if specified, empirical bias-reducing adjustments are added only to the subset of estimating functions indexed by `concentrate`. The default is to add empirical bias-reducing adjustments to all estimating functions.
++ `regularizer`: a function of `theta` and `data` returning a `Vector` of dimension equal to the number of the estimating functions, which is added to the (bias-reducing) estimating function; the default value will result in no regularization.
+
+Result
+===
+An in-place function that stores the value of the estimating functions inferred from `template`, in a preallocated vector passed as its first argument, ready to be used withing `NLsolve.nlsolve`. This is the in-place version of [`estimating_function`](@ref) with the extra `regularizer` argument.
 """
 function get_estimating_function(data::Any,
                                  template::estimating_function_template,
@@ -74,10 +109,11 @@ function ef_quantities(theta::Vector,
                        data::Any,
                        template::estimating_function_template,
                        adjustment::Bool = false,
-                       concentrate::Vector{Int64} = Vector{Int64}())
-    function nj(eta::Vector, i::Int)
+                       concentrate::Vector{Int64} = Vector{Int64}())   
+    estfun_i = (pars, i) -> template.ef_contribution(pars, data, i)
+    function ja_i(eta::Vector, i::Int)
         out = similar(eta, p, p)
-        ForwardDiff.jacobian!(out, beta -> template.ef_contribution(beta, data, i), eta)
+        ForwardDiff.jacobian!(out, pars -> estfun_i(pars, i), eta)
     end
     p = length(theta)
     n_obs = template.nobs(data)
@@ -88,7 +124,7 @@ function ef_quantities(theta::Vector,
     if adjustment
         function u(eta::Vector, i::Int)
             out = similar(eta, p * p, p)
-            ForwardDiff.jacobian!(out, beta -> nj(beta, i), eta)
+            ForwardDiff.jacobian!(out, beta -> ja_i(beta, i), eta)
         end
         psi2 = Vector(undef, p)
         for j in 1:p
@@ -97,22 +133,22 @@ function ef_quantities(theta::Vector,
         # psi2 = zeros(p, p, p)
         umat = zeros(p * p, p)
         for i in 1:n_obs
-            cpsi = template.ef_contribution(theta, data, i)
+            cpsi = estfun_i(theta, i)
             psi += cpsi
             emat += cpsi * cpsi'
-            hess = nj(theta, i)
-            jmat += -hess
+            jaco = ja_i(theta, i)
+            jmat += -jaco
             umat += u(theta, i)
             for j in 1:p
-                psi2[j] += hess[j, :] * cpsi'
+                psi2[j] += jaco[j, :] * cpsi'
             end
         end
     else
         for i in 1:n_obs
-            cpsi = template.ef_contribution(theta, data, i)
+            cpsi = estfun_i(theta, i)
             psi += cpsi
             emat += cpsi * cpsi'
-            jmat += -nj(theta, i)
+            jmat += - ja_i(theta, i)
         end
     end
       

@@ -6,6 +6,7 @@ using FiniteDiff
 using ForwardDiff
 using LinearAlgebra
 using Distributions
+# using InvertedIndices
 
 import Base: show, print
 import StatsBase: fit, aic, vcov, coef, coeftable, stderror, CoefTable
@@ -26,11 +27,13 @@ export fit
 export stderror
 
 export slice
+# export profile
 
 include("estimating_functions.jl")
 include("objective_functions.jl")
 include("fit.jl")
 include("result_methods.jl")
 include("slice.jl")
+# include("profile.jl")
 
 end # module
