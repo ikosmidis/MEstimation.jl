@@ -50,4 +50,24 @@ function simulate(theta::Vector,
     data(y, x, m);
 end
 
+function loglik_alt(theta::Vector,
+                    data::data,
+                    i::Int64)
+    eta = sum(data.x[i, :] .* theta)
+    mu = exp.(eta)./(1 .+ exp.(eta))
+    ll = data.y[i] .* log.(mu) + (data.m[i] - data.y[i]) .* log.(1 .- mu)
+    ll - 10 * sum(theta.^2) / length(data.y)
+end
+
+function l2_penalty_obj(theta::Vector,
+                        data::data)
+    - 10 * sum(theta.^2)
+end
+
+function l2_penalty_ef(theta::Vector,
+                       data::data)
+    - 20 * theta
+end
+
+
 end

@@ -11,12 +11,12 @@
 + `objective_function` and `estimating_function` are fully differentiable.
 
 ## Other improvements, updates and additions
-+ Change name from `GEEBRA` to `MEstimation`
++ Change name from `GEEBRA` to `MEstimation`.
 + The default output from `fit` now reports whether the optimization algorithm converged or not, and details on the (regularized) objective or estimating equations that are used.
-+ Documentation written from scratch, and updated example in online documentation
-+ New tests
++ Documentation written from scratch, and updated example in online documentation.
++ New tests.
 + Run time optimizations, mainly through using [`DiffResults`](https://github.com/JuliaDiff/DiffResults.jl), codebase refactoring, and explicit type specification.
-+ Updates in compatibility with dependences
++ Updates in compatibility with dependences.
 
 # GEEBRA 0.1.0
 

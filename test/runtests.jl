@@ -324,3 +324,46 @@ end
     @test isapprox(coeftable(o1_br2).cols, coeftable(e1_br2).cols) 
     
 end
+
+@testset "test regularizer implementation" begin
+    using MEstimation
+    using Random
+    using Distributions
+    using Optim
+    using NLsolve
+
+    include("logistic_regression.jl")
+     
+    Random.seed!(123);
+    n = 200; m = 1; p = 10;
+    x = Array{Float64}(undef, n, p);
+    x[:, 1] .= 1.0;
+    for j in 2:p
+        x[:, j] .= rand(n);
+    end
+    true_betas = randn(p) * sqrt(p);
+    my_data = logistic_regression.simulate(true_betas, x, fill(m, n));
+
+    logistic_obj_template = objective_function_template(logistic_regression.nobs,
+                                                        logistic_regression.loglik)
+    logistic_obj_alt_template = objective_function_template(logistic_regression.nobs,
+                                                            logistic_regression.loglik_alt)
+    logistic_ef_template = estimating_function_template(logistic_regression.nobs,
+                                                        logistic_regression.ef)
+
+    o1_l2 = fit(logistic_obj_template, my_data, true_betas, estimation_method = "M",
+                regularizer = logistic_regression.l2_penalty_obj)
+    e1_l2 = fit(logistic_ef_template, my_data, true_betas, estimation_method = "M",
+                regularizer = logistic_regression.l2_penalty_ef)
+    o2_l2 = fit(logistic_obj_alt_template, my_data, true_betas, estimation_method = "M")
+
+    @test isapprox(o1_l2.results.minimum, o2_l2.results.minimum)
+
+    @test isapprox(coef(o1_l2), coef(e1_l2))
+    @test isapprox(coef(o1_l2), coef(o2_l2))
+
+    @test isapprox(estimating_function(coef(o1_l2), my_data, logistic_ef_template) + logistic_regression.l2_penalty_ef(coef(o1_l2), my_data), fill(0.0, 10), atol = 1e-06)
+
+    @test isapprox(objective_function(coef(o1_l2), my_data, logistic_obj_template) + logistic_regression.l2_penalty_obj(coef(o1_l2), my_data), -o2_l2.results.minimum, atol = 1e-06)
+    
+end
