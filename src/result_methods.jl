@@ -15,7 +15,7 @@ Arguments
 ===
 + `results`: a `Union{NLsolve.SolverResults, Optim.MultivariateOptimizationResults, Optim.UnivariateOptimizationResults}` object holding the optimization results as returned from `Optim.optimize` or `NLsolve.nlsolve`.
 + `theta`: a `Vector{Float64}` with the M-estimates or their reduced-bias version.
-+ `data`: an object of [composite type]((https://docs.julialang.org/en/v1/manual/types/#Composite-Types-1)) with all the data required to compute the objective function or the estimating functions; see [`objective_function`](@ref)` and [`estimating_function`](@ref).
++ `data`: an object of [composite type](https://docs.julialang.org/en/v1/manual/types/#Composite-Types-1) with all the data required to compute the objective function or the estimating functions; see [`objective_function`](@ref)` and [`estimating_function`](@ref).
 + `template`: an [`objective_function_template`](@ref) or [`estimating_function_template`](@ref) object.
 + `regularizer`: a function of `theta` and `data` returning either a `Vector{Float64}` of dimension equal to the number of the estimating functions (for [`estimating_function_template`](@ref)) or a `Float64` (for [`objective_function_template`](@ref)). See [`fit`](@ref) for details.
 + `br`: a `Bool`; if `false` then `results` are from the computation of M-estimates, otherwise from the computation of the RBM-estimates.
@@ -112,7 +112,6 @@ Details
 ===
 `coef(results)` returns `results.theta`
 """
-
 function coef(results::MEstimation_results)
     results.theta
 end

@@ -32,7 +32,7 @@ Evaluates the objective function at `theta` by adding up all contributions in
 Arguments
 ===
 + `theta`: a `Vector` of parameter values at which to evaluate the objective function
-+ `data`: typically an object of [composite type]((https://docs.julialang.org/en/v1/manual/types/#Composite-Types-1)) with all the data required to compute the `objective_function`.
++ `data`: typically an object of [composite type](https://docs.julialang.org/en/v1/manual/types/#Composite-Types-1) with all the data required to compute the `objective_function`.
 + `template`: an [`objective_function_template`](@ref) object
 + `br`: a `Bool`. If `false` (default), the objective function is constructed by adding up all contributions in 
 `data`, according to [`objective_function_template`](@ref), before it is evaluated at `theta`. If `true` then the bias-reducing penalty in [Kosmidis & Lunardon, 2020](http://arxiv.org/abs/2001.03786) is computed and added to the objective function.

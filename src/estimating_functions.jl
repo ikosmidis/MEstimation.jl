@@ -30,7 +30,7 @@ Evaluate a vector of estimating functions at `theta` by adding up all contributi
 Arguments
 ===
 + `theta`: a `Vector` of parameter values at which to evaluate the estimating functions
-+ `data`: typically an object of [composite type]((https://docs.julialang.org/en/v1/manual/types/#Composite-Types-1)) with all the data required to compute the `estimating_function`.
++ `data`: typically an object of [composite type](https://docs.julialang.org/en/v1/manual/types/#Composite-Types-1) with all the data required to compute the `estimating_function`.
 + `template`: an [`estimating_function_template`](@ref) object.
 + `br`: a `Bool`. If `false` (default), the estimating functions is constructed by adding up all contributions in 
 `data`, according to [`estimating_function_template`](@ref), before it is evaluated at `theta`. If `true` then the empirical bias-reducing adjustments in [Kosmidis & Lunardon, 2020](http://arxiv.org/abs/2001.03786) are computed and added to the estimating functions.
@@ -74,7 +74,7 @@ Construct the estimating functions by adding up all contributions in the `data` 
 
 Arguments
 ===
-+ `data`: typically an object of [composite type]((https://docs.julialang.org/en/v1/manual/types/#Composite-Types-1)) with all the data required to compute the `estimating_function`.
++ `data`: typically an object of [composite type](https://docs.julialang.org/en/v1/manual/types/#Composite-Types-1) with all the data required to compute the `estimating_function`.
 + `template`: an [`estimating_function_template`](@ref) object.
 + `br`: a `Bool`. If `false` (default), the estimating functions is constructed by adding up all contributions in 
 `data`, according to [`estimating_function_template`](@ref), before it is evaluated at `theta`. If `true` then the empirical bias-reducing adjustments in [Kosmidis & Lunardon, 2020](http://arxiv.org/abs/2001.03786) are computed and added to the estimating functions.

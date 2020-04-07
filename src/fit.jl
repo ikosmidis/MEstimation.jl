@@ -17,7 +17,7 @@ Arguments
 ===
 
 + `template`: an [`objective_function_template`](@ref) object.
-+ `data`: typically an object of [composite type]((https://docs.julialang.org/en/v1/manual/types/#Composite-Types-1)) with all the data required to compute the `objective_function`.
++ `data`: typically an object of [composite type](https://docs.julialang.org/en/v1/manual/types/#Composite-Types-1) with all the data required to compute the `objective_function`.
 + `theta`: a `Vector{Float64}` of parameter values to use as starting values in `Optim.optimize`.
 
 [Keyword arguments](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1)
@@ -121,7 +121,7 @@ Fit an [`estimating_function_template`](@ref) on `data` using M-estimation (`est
 Arguments
 ===
 + `template`: an [`estimating_function_template`](@ref) object.
-+ `data`: typically an object of [composite type]((https://docs.julialang.org/en/v1/manual/types/#Composite-Types-1)) with all the data required to compute the `objective_function`.
++ `data`: typically an object of [composite type](https://docs.julialang.org/en/v1/manual/types/#Composite-Types-1) with all the data required to compute the `objective_function`.
 + `theta`: a `Vector{Float64}` of parameter values to use as starting values in `Optim.optimize`.
 
 [Keyword arguments](https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1)
