@@ -19,8 +19,10 @@ makedocs(
 
 deploydocs(
     repo = "github.com/ikosmidis/MEstimation.jl.git",
+    branch = "gh-pages",
     target = "build",
     devbranch = "develop",
+    devurl = "dev",
     push_preview = true,
 )
 
