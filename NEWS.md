@@ -1,4 +1,6 @@
-# MEstimation 0.1.0
+# MEstimation 0.1.0 
+
+The below are changes from [GEEBRA](https://github.com/ikosmidis/GEEBRA.jl) v0.1.0 codebase, on which MEstimation was based on.
 
 ## New functionality
 + New `concentrate` keyword argument in `fit` for `estimating_function_template`s, which allows adding bias-reducing adjustments only to a subset of estimating functions.
@@ -15,4 +17,4 @@
 + Documentation written from scratch, and updated example in online documentation.
 + New tests.
 + Run time optimizations, mainly through using [`DiffResults`](https://github.com/JuliaDiff/DiffResults.jl), codebase refactoring, and explicit type specification.
-+ Updates in compatibility with dependences.
++ Updates in compatibility with dependencies.
