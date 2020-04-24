@@ -225,7 +225,7 @@ l2_penalty = (theta, data, λ) -> - λ * sum(theta.^2);
 Then, the coefficient path can be computed as
 ```@repl2
 lambda = collect(0:0.5:10);
-deviance = similar(true_betas);
+deviance = similar(lambda);
 coefficients = Matrix{Float64}(undef, length(lambda), length(true_betas));
 coefficients[1, :] = coef(o1_ml);
 for j in 2:length(lambda)
@@ -239,13 +239,16 @@ end
 The coefficients versus ``\lambda``, and the deviance values are then
 ```@repl2
 using Plots
-
-plot(lambda, coefficients)
+plot(lambda, coefficients);
+savefig("coef_path1.svg");
 ```
+![](coef_path1.svg)
 
 ```@repl2
-plot(deviance, coefficients)
+plot(deviance, coefficients);
+savefig("coef_path2.svg");
 ```
+![](coef_path2.svg)
 
 Another way to get the above is to define a new data type that has a filed for ``\lambda`` and then pass
 ```@repl2
