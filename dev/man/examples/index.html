@@ -1,81 +1,55 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Examples · MEstimation</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">MEstimation</span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li class="is-active"><a class="tocitem" href>Examples</a><ul class="internal"><li><a class="tocitem" href="#Contents-1"><span>Contents</span></a></li><li><a class="tocitem" href="#Ratio-of-two-means-1"><span>Ratio of two means</span></a></li><li><a class="tocitem" href="#Logistic-regression-1"><span>Logistic regression</span></a></li><li><a class="tocitem" href="#Regularization-1"><span>Regularization</span></a></li></ul></li><li><span class="tocitem">Documentation</span><ul><li><a class="tocitem" href="../../lib/public/">Public</a></li><li><a class="tocitem" href="../../lib/internal/">Internal</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Examples</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Examples</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/ikosmidis/MEstimation.jl/blob/master/docs/src/man/examples.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Examples-1"><a class="docs-heading-anchor" href="#Examples-1">Examples</a><a class="docs-heading-anchor-permalink" href="#Examples-1" title="Permalink"></a></h1><h2 id="Contents-1"><a class="docs-heading-anchor" href="#Contents-1">Contents</a><a class="docs-heading-anchor-permalink" href="#Contents-1" title="Permalink"></a></h2><ul><li><a href="#Examples-1">Examples</a></li><ul><li><a href="#Contents-1">Contents</a></li><li><a href="#Ratio-of-two-means-1">Ratio of two means</a></li><li><a href="#Logistic-regression-1">Logistic regression</a></li><ul><li><a href="#Using-[objective_function_template](@ref)-1">Using <code>objective_function_template</code></a></li><li><a href="#Using-[estimating_function_template](@ref)-1">Using <code>estimating_function_template</code></a></li><li><a href="#Bias-reduction-methods-1">Bias-reduction methods</a></li></ul><li><a href="#Regularization-1">Regularization</a></li><ul><li><a href="#Ridge-logistic-regression-1">Ridge logistic regression</a></li><li><a href="#Jeffreys-prior-penalty-for-bias-reduction-1">Jeffreys-prior penalty for bias reduction</a></li></ul></ul></ul><h2 id="Ratio-of-two-means-1"><a class="docs-heading-anchor" href="#Ratio-of-two-means-1">Ratio of two means</a><a class="docs-heading-anchor-permalink" href="#Ratio-of-two-means-1" title="Permalink"></a></h2><p>Consider a setting where independent pairs of random variables <span>$(X_1, Y_1), \ldots, (X_n, Y_n)$</span> are observed, and suppose that interest is in the ratio of the mean of <span>$Y_i$</span> to  the mean of <span>$X_i$</span>, that is <span>$\theta = \mu_Y / \mu_X$</span>, with   <span>$\mu_X = E(X_i)$</span> and <span>$\mu_Y = E(Y_i) \ne 0$</span> <span>$(i = 1, \ldots, n)$</span>.</p><p>Assuming that sampling is from an infinite population, one way of estimating <span>$\theta$</span> without any further assumptions about the joint distribution of <span>$(X_i, Y_i)$</span> is to set the unbiased estimating equation <span>$\sum_{i = 1}^n (Y_i - \theta X_i) = 0$</span>. The resulting <span>$M$</span>-estimator is then  <span>$\hat\theta = s_Y/s_X$</span> where <span>$s_X = \sum_{i = 1}^n X_i$</span> and <span>$s_Y = \sum_{i = 1}^n Y_i$</span>. </p><p>The estimator <span>$\hat\theta$</span> is generally biased, as can be shown, for example, by an application of the Jensen inequality assuming that <span>$X_i$</span>is independent of <span>$Y_i$</span>, and its bias can be reduced using the empirically adjusted estimating functions approach in <a href="http://arxiv.org/abs/2001.03786">Kosmidis &amp; Lunardon (2020)</a>. </p><p>This example illustrates how <strong>MEstimation</strong> can be used to calculate the <span>$M$</span>-estimator and its reduced-bias version.</p><pre><code class="language-julia-repl">julia&gt; using MEstimation, Random</code></pre><p>Define a data type for ratio estimation problems</p><pre><code class="language-julia-repl">julia&gt; struct ratio_data
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Examples · MEstimation</title><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">MEstimation</a></span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li class="is-active"><a class="tocitem" href>Examples</a><ul class="internal"><li><a class="tocitem" href="#Contents"><span>Contents</span></a></li><li><a class="tocitem" href="#Ratio-of-two-means"><span>Ratio of two means</span></a></li><li><a class="tocitem" href="#Logistic-regression"><span>Logistic regression</span></a></li><li><a class="tocitem" href="#Regularization"><span>Regularization</span></a></li></ul></li><li><span class="tocitem">Documentation</span><ul><li><a class="tocitem" href="../../lib/public/">Public</a></li><li><a class="tocitem" href="../../lib/internal/">Internal</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Examples</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Examples</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/ikosmidis/MEstimation.jl/blob/master/docs/src/man/examples.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Examples"><a class="docs-heading-anchor" href="#Examples">Examples</a><a id="Examples-1"></a><a class="docs-heading-anchor-permalink" href="#Examples" title="Permalink"></a></h1><h2 id="Contents"><a class="docs-heading-anchor" href="#Contents">Contents</a><a id="Contents-1"></a><a class="docs-heading-anchor-permalink" href="#Contents" title="Permalink"></a></h2><ul><li><a href="#Examples">Examples</a></li><li class="no-marker"><ul><li><a href="#Contents">Contents</a></li><li><a href="#Ratio-of-two-means">Ratio of two means</a></li><li><a href="#Logistic-regression">Logistic regression</a></li><li class="no-marker"><ul><li><a href="#Using-[objective_function_template](@ref)">Using <code>objective_function_template</code></a></li><li><a href="#Using-[estimating_function_template](@ref)">Using <code>estimating_function_template</code></a></li><li><a href="#Bias-reduction-methods">Bias-reduction methods</a></li></ul></li><li><a href="#Regularization">Regularization</a></li><li class="no-marker"><ul><li><a href="#Ridge-logistic-regression">Ridge logistic regression</a></li><li><a href="#Jeffreys-prior-penalty-for-bias-reduction">Jeffreys-prior penalty for bias reduction</a></li></ul></li></ul></li></ul><h2 id="Ratio-of-two-means"><a class="docs-heading-anchor" href="#Ratio-of-two-means">Ratio of two means</a><a id="Ratio-of-two-means-1"></a><a class="docs-heading-anchor-permalink" href="#Ratio-of-two-means" title="Permalink"></a></h2><p>Consider a setting where independent pairs of random variables <span>$(X_1, Y_1), \ldots, (X_n, Y_n)$</span> are observed, and suppose that interest is in the ratio of the mean of <span>$Y_i$</span> to  the mean of <span>$X_i$</span>, that is <span>$\theta = \mu_Y / \mu_X$</span>, with   <span>$\mu_X = E(X_i)$</span> and <span>$\mu_Y = E(Y_i) \ne 0$</span> <span>$(i = 1, \ldots, n)$</span>.</p><p>Assuming that sampling is from an infinite population, one way of estimating <span>$\theta$</span> without any further assumptions about the joint distribution of <span>$(X_i, Y_i)$</span> is to set the unbiased estimating equation <span>$\sum_{i = 1}^n (Y_i - \theta X_i) = 0$</span>. The resulting <span>$M$</span>-estimator is then  <span>$\hat\theta = s_Y/s_X$</span> where <span>$s_X = \sum_{i = 1}^n X_i$</span> and <span>$s_Y = \sum_{i = 1}^n Y_i$</span>. </p><p>The estimator <span>$\hat\theta$</span> is generally biased, as can be shown, for example, by an application of the Jensen inequality assuming that <span>$X_i$</span>is independent of <span>$Y_i$</span>, and its bias can be reduced using the empirically adjusted estimating functions approach in <a href="http://arxiv.org/abs/2001.03786">Kosmidis &amp; Lunardon (2020)</a>. </p><p>This example illustrates how <strong>MEstimation</strong> can be used to calculate the <span>$M$</span>-estimator and its reduced-bias version.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using MEstimation, Random</code><code class="nohighlight hljs ansi" style="display:block;"></code></pre><p>Define a data type for ratio estimation problems</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; struct ratio_data
            y::Vector
            x::Vector
-       end;</code></pre><p>Write a function to compute the number of observations for objects of type <code>ratio_data</code>.</p><pre><code class="language-julia-repl">julia&gt; function ratio_nobs(data::ratio_data)
+       end;</code><code class="nohighlight hljs ansi" style="display:block;"></code></pre><p>Write a function to compute the number of observations for objects of type <code>ratio_data</code>.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; function ratio_nobs(data::ratio_data)
            nx = length(data.x)
            ny = length(data.y)
            if (nx != ny)
                error(&quot;length of x is not equal to the length of y&quot;)
            end
            nx
-       end;</code></pre><p>Generate some data to test things out</p><pre><code class="language-julia-repl">julia&gt; Random.seed!(123);
-
-julia&gt; my_data = ratio_data(randn(10), rand(10));
-
-julia&gt; ratio_nobs(my_data)
-10</code></pre><p>The estimating function for the ratio <span>$\theta$</span> is </p><p><span>$\sum_{i = 1}^n (Y_i - \theta X_i)$</span></p><p>So, the contribution to the estimating function can be implemented as</p><pre><code class="language-julia-repl">julia&gt; function ratio_ef(theta::Vector,
+       end;</code><code class="nohighlight hljs ansi" style="display:block;"></code></pre><p>Generate some data to test things out</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; Random.seed!(123);</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; my_data = ratio_data(randn(10), rand(10));</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; ratio_nobs(my_data)</code><code class="nohighlight hljs ansi" style="display:block;">10</code></pre><p>The estimating function for the ratio <span>$\theta$</span> is </p><p><span>$\sum_{i = 1}^n (Y_i - \theta X_i)$</span></p><p>So, the contribution to the estimating function can be implemented as</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; function ratio_ef(theta::Vector,
                          data::ratio_data,
                          i::Int64)
            data.y[i] .- theta * data.x[i]
-       end;</code></pre><p>The <code>estimating_function_template</code> for the ratio estimation problem can now be set up using <code>ratio_nobs</code> and <code>ratio_ef</code>.</p><pre><code class="language-julia-repl">julia&gt;     ratio_template = estimating_function_template(ratio_nobs, ratio_ef);</code></pre><p>We are now ready use <code>ratio_template</code> and <code>my_data</code> to compute the <span>$M$</span>-estimator of <span>$\theta$</span> by solving the estimating equation <span>$\sum_{i = 1}^n (Y_i - \theta X_i) = 0$</span>. The starting value for the nonlinear solver is set to <code>0.1</code>.</p><pre><code class="language-julia-repl">julia&gt; result_m = fit(ratio_template, my_data, [0.1])
-M-estimation with estimating function contributions `ratio_ef`
+       end;</code><code class="nohighlight hljs ansi" style="display:block;"></code></pre><p>The <code>estimating_function_template</code> for the ratio estimation problem can now be set up using <code>ratio_nobs</code> and <code>ratio_ef</code>.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt;     ratio_template = estimating_function_template(ratio_nobs, ratio_ef);</code><code class="nohighlight hljs ansi" style="display:block;"></code></pre><p>We are now ready use <code>ratio_template</code> and <code>my_data</code> to compute the <span>$M$</span>-estimator of <span>$\theta$</span> by solving the estimating equation <span>$\sum_{i = 1}^n (Y_i - \theta X_i) = 0$</span>. The starting value for the nonlinear solver is set to <code>0.1</code>.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; result_m = fit(ratio_template, my_data, [0.1])</code><code class="nohighlight hljs ansi" style="display:block;">M-estimation with estimating function contributions `ratio_ef`
 
-────────────────────────────────────────────────────────────────────────
-          Estimate  Std. Error  z value  Pr(&gt;|z|)   Lower 95%  Upper 95%
-────────────────────────────────────────────────────────────────────────
-theta[1]   1.07548    0.573615  1.87492    0.0608  -0.0487819    2.19975
-────────────────────────────────────────────────────────────────────────
-Estimating functions:	[-2.051803171809752e-12]
-Converged: true</code></pre><p><code>fit</code> uses methods from the <a href="https://github.com/JuliaNLSolvers/NLsolve.jl"><strong>NLsolve</strong></a> package for solving the estimating equations. Arguments can be passed directly to <code>NLsolve.nlsolve</code> through <a href="https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1">keyword arguments</a> to the <code>fit</code> method. For example,</p><pre><code class="language-julia-repl">julia&gt; result_m = fit(ratio_template, my_data, [0.1], show_trace = true)
-Iter     f(x) inf-norm    Step 2-norm 
+─────────────────────────────────────────────────────────────────────────
+           Estimate  Std. Error   z value  Pr(&gt;|z|)  Lower 95%  Upper 95%
+─────────────────────────────────────────────────────────────────────────
+theta[1]  -0.616287    0.455728  -1.35231    0.1763    -1.5095   0.276923
+─────────────────────────────────────────────────────────────────────────
+Estimating functions:	[-1.4759304889366831e-12]
+Converged: true</code></pre><p><code>fit</code> uses methods from the <a href="https://github.com/JuliaNLSolvers/NLsolve.jl"><strong>NLsolve</strong></a> package for solving the estimating equations. Arguments can be passed directly to <code>NLsolve.nlsolve</code> through <a href="https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1">keyword arguments</a> to the <code>fit</code> method. For example,</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; result_m = fit(ratio_template, my_data, [0.1], show_trace = true)</code><code class="nohighlight hljs ansi" style="display:block;">Iter     f(x) inf-norm    Step 2-norm 
 ------   --------------   --------------
-     0     4.321212e+00              NaN
-     1     3.878230e+00     1.000000e-01
-     2     2.992266e+00     2.000000e-01
-     3     1.220339e+00     4.000000e-01
-     4     2.051803e-12     2.754829e-01
+     0     4.044470e+00              NaN
+     1     3.479826e+00     1.000000e-01
+     2     2.350539e+00     2.000000e-01
+     3     9.196457e-02     4.000000e-01
+     4     1.475930e-12     1.628719e-02
 M-estimation with estimating function contributions `ratio_ef`
 
-────────────────────────────────────────────────────────────────────────
-          Estimate  Std. Error  z value  Pr(&gt;|z|)   Lower 95%  Upper 95%
-────────────────────────────────────────────────────────────────────────
-theta[1]   1.07548    0.573615  1.87492    0.0608  -0.0487819    2.19975
-────────────────────────────────────────────────────────────────────────
-Estimating functions:	[-2.051803171809752e-12]
-Converged: true</code></pre><p>Bias reduction in general <span>$M$</span>-estimation can be achieved by solving the adjusted estimating equation <span>$\sum_{i = 1}^n (Y_i - \theta X_i) + A(\theta, Y, X) = 0$</span>, where <span>$A(\theta)$</span> are empirical bias-reducing adjustments depending on the first and second derivatives of the estimating function contributions. <strong>MEstimation</strong> can use <code>ratio_template</code> and automatic differentiation (see, <a href="https://github.com/JuliaDiff/ForwardDiff.jl">ForwardDiff</a>) to construct <span>$A(\theta, Y, X)$</span> and, then, solve the bias-reducing adjusted estimating equations. All this is simply done by</p><pre><code class="language-julia-repl">julia&gt; result_br = fit(ratio_template, my_data, [0.1], estimation_method = &quot;RBM&quot;)
-RBM-estimation with estimating function contributions `ratio_ef`
+─────────────────────────────────────────────────────────────────────────
+           Estimate  Std. Error   z value  Pr(&gt;|z|)  Lower 95%  Upper 95%
+─────────────────────────────────────────────────────────────────────────
+theta[1]  -0.616287    0.455728  -1.35231    0.1763    -1.5095   0.276923
+─────────────────────────────────────────────────────────────────────────
+Estimating functions:	[-1.4759304889366831e-12]
+Converged: true</code></pre><p>Bias reduction in general <span>$M$</span>-estimation can be achieved by solving the adjusted estimating equation <span>$\sum_{i = 1}^n (Y_i - \theta X_i) + A(\theta, Y, X) = 0$</span>, where <span>$A(\theta)$</span> are empirical bias-reducing adjustments depending on the first and second derivatives of the estimating function contributions. <strong>MEstimation</strong> can use <code>ratio_template</code> and automatic differentiation (see, <a href="https://github.com/JuliaDiff/ForwardDiff.jl">ForwardDiff</a>) to construct <span>$A(\theta, Y, X)$</span> and, then, solve the bias-reducing adjusted estimating equations. All this is simply done by</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; result_br = fit(ratio_template, my_data, [0.1], estimation_method = &quot;RBM&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">RBM-estimation with estimating function contributions `ratio_ef`
 Bias reduction method: implicit_trace
 
-────────────────────────────────────────────────────────────────────────
-          Estimate  Std. Error  z value  Pr(&gt;|z|)   Lower 95%  Upper 95%
-────────────────────────────────────────────────────────────────────────
-theta[1]   1.06754    0.573499  1.86146    0.0627  -0.0564928    2.19158
-────────────────────────────────────────────────────────────────────────
-Adjusted estimating functions:	[-1.3405943022348765e-14]
-Converged: true</code></pre><p>where <code>RBM</code> stands for reduced-bias <code>M</code>-estimation.</p><p><a href="http://arxiv.org/abs/2001.03786">Kosmidis &amp; Lunardon (2020)</a> show that the reduced-bias estimator of <span>$\theta$</span> is <span>$\tilde\theta = (s_Y + s_{XY}/s_{X})/(s_X + s_{XX}/s_{X})$</span>. The code chunks below tests that this is indeed the result <strong>MEstimation</strong> returns.</p><pre><code class="language-julia-repl">julia&gt; sx = sum(my_data.x);
-
-julia&gt; sxx = sum(my_data.x .* my_data.x);
-
-julia&gt; sy = sum(my_data.y);
-
-julia&gt; sxy = sum(my_data.x .* my_data.y);
-
-julia&gt; isapprox(sy/sx, result_m.theta[1])
-true
-
-julia&gt; isapprox((sy + sxy/sx)/(sx + sxx/sx), result_br.theta[1])
-true</code></pre><h2 id="Logistic-regression-1"><a class="docs-heading-anchor" href="#Logistic-regression-1">Logistic regression</a><a class="docs-heading-anchor-permalink" href="#Logistic-regression-1" title="Permalink"></a></h2><h3 id="Using-[objective_function_template](@ref)-1"><a class="docs-heading-anchor" href="#Using-[objective_function_template](@ref)-1">Using <a href="../../lib/public/#MEstimation.objective_function_template"><code>objective_function_template</code></a></a><a class="docs-heading-anchor-permalink" href="#Using-[objective_function_template](@ref)-1" title="Permalink"></a></h3><p>Here, we use <strong>MEstimation</strong>&#39;s <a href="../../lib/public/#MEstimation.objective_function_template"><code>objective_function_template</code></a> to estimate a logistic regression model using maximum likelihood and maximum penalized likelihood, with the empirical bias-reducing penalty in <a href="http://arxiv.org/abs/2001.03786">Kosmidis &amp; Lunardon (2020)</a>.</p><pre><code class="language-julia-repl">julia&gt; using MEstimation
-
-julia&gt; using Random
-
-julia&gt; using Distributions
-
-julia&gt; using Optim</code></pre><p>A data type for logistic regression models (consisting of a response vector <code>y</code>, a model matrix <code>x</code>, and a vector of weights <code>m</code>) is</p><pre><code class="language-julia-repl">julia&gt; struct logistic_data
+─────────────────────────────────────────────────────────────────────────
+           Estimate  Std. Error   z value  Pr(&gt;|z|)  Lower 95%  Upper 95%
+─────────────────────────────────────────────────────────────────────────
+theta[1]  -0.591874    0.454331  -1.30274    0.1927   -1.48235   0.298599
+─────────────────────────────────────────────────────────────────────────
+Adjusted estimating functions:	[-2.853828284798965e-13]
+Converged: true</code></pre><p>where <code>RBM</code> stands for reduced-bias <code>M</code>-estimation.</p><p><a href="http://arxiv.org/abs/2001.03786">Kosmidis &amp; Lunardon (2020)</a> show that the reduced-bias estimator of <span>$\theta$</span> is <span>$\tilde\theta = (s_Y + s_{XY}/s_{X})/(s_X + s_{XX}/s_{X})$</span>. The code chunks below tests that this is indeed the result <strong>MEstimation</strong> returns.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; sx = sum(my_data.x);</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; sxx = sum(my_data.x .* my_data.x);</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; sy = sum(my_data.y);</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; sxy = sum(my_data.x .* my_data.y);</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; isapprox(sy/sx, result_m.theta[1])</code><code class="nohighlight hljs ansi" style="display:block;">true</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; isapprox((sy + sxy/sx)/(sx + sxx/sx), result_br.theta[1])</code><code class="nohighlight hljs ansi" style="display:block;">true</code></pre><h2 id="Logistic-regression"><a class="docs-heading-anchor" href="#Logistic-regression">Logistic regression</a><a id="Logistic-regression-1"></a><a class="docs-heading-anchor-permalink" href="#Logistic-regression" title="Permalink"></a></h2><h3 id="Using-[objective_function_template](@ref)"><a class="docs-heading-anchor" href="#Using-[objective_function_template](@ref)">Using <a href="../../lib/public/#MEstimation.objective_function_template"><code>objective_function_template</code></a></a><a id="Using-[objective_function_template](@ref)-1"></a><a class="docs-heading-anchor-permalink" href="#Using-[objective_function_template](@ref)" title="Permalink"></a></h3><p>Here, we use <strong>MEstimation</strong>&#39;s <a href="../../lib/public/#MEstimation.objective_function_template"><code>objective_function_template</code></a> to estimate a logistic regression model using maximum likelihood and maximum penalized likelihood, with the empirical bias-reducing penalty in <a href="http://arxiv.org/abs/2001.03786">Kosmidis &amp; Lunardon (2020)</a>.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using MEstimation</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; using Random</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; using Distributions</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; using Optim</code><code class="nohighlight hljs ansi" style="display:block;"></code></pre><p>A data type for logistic regression models (consisting of a response vector <code>y</code>, a model matrix <code>x</code>, and a vector of weights <code>m</code>) is</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; struct logistic_data
            y::Vector
            x::Array{Float64}
            m::Vector
-       end</code></pre><p>A function to compute the number of observations from <code>logistic_data</code> objects is</p><pre><code class="language-julia-repl">julia&gt; function logistic_nobs(data::logistic_data)
+       end</code><code class="nohighlight hljs ansi" style="display:block;"></code></pre><p>A function to compute the number of observations from <code>logistic_data</code> objects is</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; function logistic_nobs(data::logistic_data)
            nx = size(data.x)[1]
            ny = length(data.y)
            nm = length(data.m)
@@ -87,256 +61,198 @@ julia&gt; using Optim</code></pre><p>A data type for logistic regression models 
                error(&quot;length of y is not equal to the length of m&quot;)
            end
            nx
-       end
-logistic_nobs (generic function with 1 method)</code></pre><p>The logistic regression log-likelihood contribution at a parameter <code>theta</code> for the <span>$i$</span>th observations of data <code>data</code> is</p><pre><code class="language-julia-repl">julia&gt; function logistic_loglik(theta::Vector,
+       end</code><code class="nohighlight hljs ansi" style="display:block;">logistic_nobs (generic function with 1 method)</code></pre><p>The logistic regression log-likelihood contribution at a parameter <code>theta</code> for the <span>$i$</span>th observations of data <code>data</code> is</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; function logistic_loglik(theta::Vector,
                                 data::logistic_data,
                                 i::Int64)
            eta = sum(data.x[i, :] .* theta)
            mu = exp.(eta)./(1 .+ exp.(eta))
            data.y[i] .* log.(mu) + (data.m[i] - data.y[i]) .* log.(1 .- mu)
-       end
-logistic_loglik (generic function with 1 method)</code></pre><p>Let&#39;s simulate some logistic regression data with <span>$10$</span> covariates</p><pre><code class="language-julia-repl">julia&gt; Random.seed!(123);
-
-julia&gt; n = 100;
-
-julia&gt; m = 1;
-
-julia&gt; p = 10
-10
-
-julia&gt; x = Array{Float64}(undef, n, p);
-
-julia&gt; x[:, 1] .= 1.0;
-
-julia&gt; for j in 2:p
+       end</code><code class="nohighlight hljs ansi" style="display:block;">logistic_loglik (generic function with 1 method)</code></pre><p>Let&#39;s simulate some logistic regression data with <span>$10$</span> covariates</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; Random.seed!(123);</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; n = 100;</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; m = 1;</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; p = 10</code><code class="nohighlight hljs ansi" style="display:block;">10</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; x = Array{Float64}(undef, n, p);</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; x[:, 1] .= 1.0;</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; for j in 2:p
                x[:, j] .= rand(n);
-       end
+       end</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; true_betas = randn(p) * sqrt(p);</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; y = rand.(Binomial.(m, cdf.(Logistic(), x * true_betas)));</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; my_data = logistic_data(y, x, fill(m, n));</code><code class="nohighlight hljs ansi" style="display:block;"></code></pre><p>and set up an <code>objective_function_template</code> for logistic regression</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; logistic_template = objective_function_template(logistic_nobs, logistic_loglik)</code><code class="nohighlight hljs ansi" style="display:block;">objective_function_template(Main.logistic_nobs, Main.logistic_loglik)</code></pre><p>The maximum likelihood estimates starting at <code>true_betas</code> are</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; o1_ml = fit(logistic_template, my_data, true_betas, optim_method = NelderMead())</code><code class="nohighlight hljs ansi" style="display:block;">M-estimation with objective contributions `logistic_loglik`
 
-julia&gt; true_betas = randn(p) * sqrt(p);
-
-julia&gt; y = rand.(Binomial.(m, cdf.(Logistic(), x * true_betas)));
-
-julia&gt; my_data = logistic_data(y, x, fill(m, n));</code></pre><p>and set up an <code>objective_function_template</code> for logistic regression</p><pre><code class="language-julia-repl">julia&gt; logistic_template = objective_function_template(logistic_nobs, logistic_loglik)
-objective_function_template(Main.ex-2.logistic_nobs, Main.ex-2.logistic_loglik)</code></pre><p>The maximum likelihood estimates starting at <code>true_betas</code> are</p><pre><code class="language-julia-repl">julia&gt; o1_ml = fit(logistic_template, my_data, true_betas, optim_method = NelderMead())
-M-estimation with objective contributions `logistic_loglik`
+──────────────────────────────────────────────────────────────────────────────
+              Estimate  Std. Error     z value  Pr(&gt;|z|)  Lower 95%  Upper 95%
+──────────────────────────────────────────────────────────────────────────────
+theta[1]     0.0642275     5.40987   0.0118723    0.9905  -10.5389    10.6674
+theta[2]    -1.07189       2.61211  -0.410355     0.6815   -6.19154    4.04775
+theta[3]   -10.8887        2.51036  -4.33751      &lt;1e-04  -15.8089    -5.96849
+theta[4]   -17.4507        5.02228  -3.47466      0.0005  -27.2942    -7.60723
+theta[5]   -10.1597        3.76219  -2.70048      0.0069  -17.5335    -2.78595
+theta[6]    -6.67685       1.98707  -3.36015      0.0008  -10.5714    -2.78226
+theta[7]   -23.5455        3.61585  -6.51176      &lt;1e-10  -30.6325   -16.4586
+theta[8]   -30.1538        6.29408  -4.79082      &lt;1e-05  -42.49     -17.8176
+theta[9]    -0.11266       1.67223  -0.0673712    0.9463   -3.39017    3.16485
+theta[10]   -0.219789      2.30336  -0.0954212    0.9240   -4.73429    4.29471
+──────────────────────────────────────────────────────────────────────────────
+Objective:			-0.0
+Takeuchi information criterion:	0.0
+Akaike information criterion:	20.0
+Converged: true</code></pre><p><code>fit</code> uses methods from the <a href="https://github.com/JuliaNLSolvers/Optim.jl"><strong>Optim</strong></a> package internally. Here, we used the <code>Optim.NelderMead</code> method. Alternative optimization methods and options can be supplied directly through the <a href="https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1">keyword arguments</a> <code>optim_method</code> and <code>optim_options</code>, respectively. For example,</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; o2_ml = fit(logistic_template, my_data, true_betas, optim_method = LBFGS(), optim_options = Optim.Options(g_abstol = 1e-05))</code><code class="nohighlight hljs ansi" style="display:block;">M-estimation with objective contributions `logistic_loglik`
 
 ──────────────────────────────────────────────────────────────────────────
             Estimate  Std. Error   z value  Pr(&gt;|z|)  Lower 95%  Upper 95%
 ──────────────────────────────────────────────────────────────────────────
-theta[1]    1.03786      2.46744   0.42062    0.6740   -3.79824   5.87395
-theta[2]   -6.33539      1.53213  -4.13502    &lt;1e-4    -9.33832  -3.33247
-theta[3]   -6.76459      1.63753  -4.13096    &lt;1e-4    -9.9741   -3.55508
-theta[4]    0.994292     1.1077    0.89762    0.3694   -1.17676   3.16534
-theta[5]    5.4302       1.6185    3.35508    0.0008    2.25799   8.6024
-theta[6]    6.58354      1.92567   3.41884    0.0006    2.8093   10.3578
-theta[7]    4.92474      1.39467   3.53111    0.0004    2.19123   7.65824
-theta[8]    1.29824      1.25277   1.0363     0.3001   -1.15714   3.75362
-theta[9]   -3.00981      1.43218  -2.10156    0.0356   -5.81682  -0.202796
-theta[10]  -4.96494      1.85256  -2.68005    0.0074   -8.59589  -1.334
+theta[1]   -18.2474      3.85573  -4.73253    &lt;1e-05   -25.8045  -10.6903
+theta[2]    -9.26473     2.25983  -4.09974    &lt;1e-04   -13.6939   -4.83554
+theta[3]   -11.3257      2.12791  -5.32243    &lt;1e-06   -15.4963   -7.15503
+theta[4]    -8.88823     2.69686  -3.29577    0.0010   -14.174    -3.60249
+theta[5]    -9.00095     2.85915  -3.14812    0.0016   -14.6048   -3.39712
+theta[6]    -8.9545      1.49549  -5.98768    &lt;1e-08   -11.8856   -6.0234
+theta[7]   -11.8706      2.59587  -4.57288    &lt;1e-05   -16.9584   -6.7828
+theta[8]   -10.5582      1.87893  -5.61924    &lt;1e-07   -14.2408   -6.87552
+theta[9]   -11.9214      2.11974  -5.62401    &lt;1e-07   -16.076    -7.76681
+theta[10]   -7.91036     2.47638  -3.19433    0.0014   -12.764    -3.05675
 ──────────────────────────────────────────────────────────────────────────
-Objective:			-31.9044
-Takeuchi information criterion:	83.6381
-Akaike information criterion:	83.8088
-Converged: true</code></pre><p><code>fit</code> uses methods from the <a href="https://github.com/JuliaNLSolvers/Optim.jl"><strong>Optim</strong></a> package internally. Here, we used the <code>Optim.NelderMead</code> method. Alternative optimization methods and options can be supplied directly through the <a href="https://docs.julialang.org/en/v1/manual/functions/#Keyword-Arguments-1">keyword arguments</a> <code>optim_method</code> and <code>optim_options</code>, respectively. For example,</p><pre><code class="language-julia-repl">julia&gt; o2_ml = fit(logistic_template, my_data, true_betas, optim_method = LBFGS(), optim_options = Optim.Options(g_abstol = 1e-05))
-M-estimation with objective contributions `logistic_loglik`
-
-───────────────────────────────────────────────────────────────────────────
-            Estimate  Std. Error    z value  Pr(&gt;|z|)  Lower 95%  Upper 95%
-───────────────────────────────────────────────────────────────────────────
-theta[1]    1.03787      2.46744   0.420628    0.6740   -3.79822   5.87397
-theta[2]   -6.33546      1.53214  -4.13505     &lt;1e-4    -9.3384   -3.33253
-theta[3]   -6.76458      1.63752  -4.13098     &lt;1e-4    -9.97407  -3.55509
-theta[4]    0.994237     1.1077    0.897571    0.3694   -1.17681   3.16528
-theta[5]    5.43023      1.61849   3.35512     0.0008    2.25805   8.60241
-theta[6]    6.58354      1.92566   3.41885     0.0006    2.80932  10.3578
-theta[7]    4.9247       1.39466   3.53111     0.0004    2.19122   7.65818
-theta[8]    1.29827      1.25278   1.03632     0.3001   -1.15712   3.75367
-theta[9]   -3.00978      1.43216  -2.10156     0.0356   -5.81676  -0.202795
-theta[10]  -4.96494      1.85254  -2.68006     0.0074   -8.59585  -1.33402
-───────────────────────────────────────────────────────────────────────────
-Objective:			-31.9044
-Takeuchi information criterion:	83.6381
-Akaike information criterion:	83.8088
-Converged: true</code></pre><p>The reduced-bias estimates starting at the maximum likelihood ones are</p><pre><code class="language-julia-repl">julia&gt; o1_br = fit(logistic_template, my_data, coef(o1_ml), estimation_method = &quot;RBM&quot;)
-RBM-estimation with objective contributions `logistic_loglik`
+Objective:			0.0
+Takeuchi information criterion:	0.0
+Akaike information criterion:	20.0
+Converged: true</code></pre><p>The reduced-bias estimates starting at the maximum likelihood ones are</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; o1_br = fit(logistic_template, my_data, coef(o1_ml), estimation_method = &quot;RBM&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">RBM-estimation with objective contributions `logistic_loglik`
 Bias reduction method: implicit_trace
 
-───────────────────────────────────────────────────────────────────────────
-            Estimate  Std. Error    z value  Pr(&gt;|z|)  Lower 95%  Upper 95%
-───────────────────────────────────────────────────────────────────────────
-theta[1]    0.928169    2.20201    0.42151     0.6734   -3.38769   5.24402
-theta[2]   -5.4578      1.20924   -4.51341     &lt;1e-5    -7.82787  -3.08773
-theta[3]   -5.81835     1.26797   -4.58872     &lt;1e-5    -8.30352  -3.33318
-theta[4]    0.81906     0.980035   0.835746    0.4033   -1.10177   2.73989
-theta[5]    4.64568     1.30015    3.5732      0.0004    2.09744   7.19393
-theta[6]    5.66444     1.54657    3.66258     0.0002    2.63321   8.69566
-theta[7]    4.16222     1.11835    3.72174     0.0002    1.97028   6.35415
-theta[8]    1.14271     1.13618    1.00575     0.3145   -1.08416   3.36957
-theta[9]   -2.58574     1.2083    -2.13999     0.0324   -4.95396  -0.217525
-theta[10]  -4.22949     1.49518   -2.82876     0.0047   -7.15999  -1.299
-───────────────────────────────────────────────────────────────────────────
-Penalized objetive:		-36.5538
-Takeuchi information criterion:	81.9311
-Akaike information criterion:	84.284
-Converged: true</code></pre><h3 id="Using-[estimating_function_template](@ref)-1"><a class="docs-heading-anchor" href="#Using-[estimating_function_template](@ref)-1">Using <a href="../../lib/public/#MEstimation.estimating_function_template"><code>estimating_function_template</code></a></a><a class="docs-heading-anchor-permalink" href="#Using-[estimating_function_template](@ref)-1" title="Permalink"></a></h3><p>The same results as above can be returned using an <a href="../../lib/public/#MEstimation.estimating_function_template"><code>estimating_function_template</code></a> for logistic regression. </p><p>The contribution to the derivatives of the log-likelihood for logistic regression is</p><pre><code class="language-julia-repl">julia&gt; function logistic_ef(theta::Vector,
+──────────────────────────────────────────────────────────────────────────────
+              Estimate  Std. Error     z value  Pr(&gt;|z|)  Lower 95%  Upper 95%
+──────────────────────────────────────────────────────────────────────────────
+theta[1]     0.0642275     5.40987   0.0118723    0.9905  -10.5389    10.6674
+theta[2]    -1.07189       2.61211  -0.410355     0.6815   -6.19154    4.04775
+theta[3]   -10.8887        2.51036  -4.33751      &lt;1e-04  -15.8089    -5.96849
+theta[4]   -17.4507        5.02228  -3.47466      0.0005  -27.2942    -7.60723
+theta[5]   -10.1597        3.76219  -2.70048      0.0069  -17.5335    -2.78595
+theta[6]    -6.67685       1.98707  -3.36015      0.0008  -10.5714    -2.78226
+theta[7]   -23.5455        3.61585  -6.51176      &lt;1e-10  -30.6325   -16.4586
+theta[8]   -30.1538        6.29408  -4.79082      &lt;1e-05  -42.49     -17.8176
+theta[9]    -0.11266       1.67223  -0.0673712    0.9463   -3.39017    3.16485
+theta[10]   -0.219789      2.30336  -0.0954212    0.9240   -4.73429    4.29471
+──────────────────────────────────────────────────────────────────────────────
+Penalized objetive:		-0.0
+Takeuchi information criterion:	0.0
+Akaike information criterion:	20.0
+Converged: true</code></pre><h3 id="Using-[estimating_function_template](@ref)"><a class="docs-heading-anchor" href="#Using-[estimating_function_template](@ref)">Using <a href="../../lib/public/#MEstimation.estimating_function_template"><code>estimating_function_template</code></a></a><a id="Using-[estimating_function_template](@ref)-1"></a><a class="docs-heading-anchor-permalink" href="#Using-[estimating_function_template](@ref)" title="Permalink"></a></h3><p>The same results as above can be returned using an <a href="../../lib/public/#MEstimation.estimating_function_template"><code>estimating_function_template</code></a> for logistic regression. </p><p>The contribution to the derivatives of the log-likelihood for logistic regression is</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; function logistic_ef(theta::Vector,
                             data::logistic_data,
                             i::Int64)
            eta = sum(data.x[i, :] .* theta)
            mu = exp.(eta)./(1 .+ exp.(eta))
            data.x[i, :] * (data.y[i] - data.m[i] * mu)
-       end
-logistic_ef (generic function with 1 method)</code></pre><p>Then, solving the bias-reducing adjusted estimating equations</p><pre><code class="language-julia-repl">julia&gt; logistic_template_ef = estimating_function_template(logistic_nobs, logistic_ef);
-
-julia&gt; e1_br = fit(logistic_template_ef, my_data, true_betas, estimation_method = &quot;RBM&quot;)
-RBM-estimation with estimating function contributions `logistic_ef`
+       end</code><code class="nohighlight hljs ansi" style="display:block;">logistic_ef (generic function with 1 method)</code></pre><p>Then, solving the bias-reducing adjusted estimating equations</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; logistic_template_ef = estimating_function_template(logistic_nobs, logistic_ef);</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; e1_br = fit(logistic_template_ef, my_data, true_betas, estimation_method = &quot;RBM&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">RBM-estimation with estimating function contributions `logistic_ef`
 Bias reduction method: implicit_trace
 
-───────────────────────────────────────────────────────────────────────────
-            Estimate  Std. Error    z value  Pr(&gt;|z|)  Lower 95%  Upper 95%
-───────────────────────────────────────────────────────────────────────────
-theta[1]    0.928169    2.20201    0.42151     0.6734   -3.38769   5.24402
-theta[2]   -5.4578      1.20924   -4.51341     &lt;1e-5    -7.82787  -3.08773
-theta[3]   -5.81835     1.26797   -4.58872     &lt;1e-5    -8.30352  -3.33318
-theta[4]    0.81906     0.980035   0.835746    0.4033   -1.10177   2.73989
-theta[5]    4.64568     1.30015    3.5732      0.0004    2.09744   7.19393
-theta[6]    5.66444     1.54657    3.66258     0.0002    2.63321   8.69566
-theta[7]    4.16222     1.11835    3.72174     0.0002    1.97028   6.35415
-theta[8]    1.14271     1.13618    1.00575     0.3145   -1.08416   3.36957
-theta[9]   -2.58574     1.2083    -2.13999     0.0324   -4.95396  -0.217525
-theta[10]  -4.22949     1.49518   -2.82876     0.0047   -7.15999  -1.299
-───────────────────────────────────────────────────────────────────────────
-Adjusted estimating functions:	[-5.174194406265542e-12, -7.715619809722796e-12, -7.701256299341708e-12, -1.129478455208499e-12, -2.931599407673957e-12, -2.5313223739331647e-12, 5.52573264922529e-12, -1.086478129685986e-12, -5.202852038088679e-12, -4.371947248671404e-12]
-Converged: true</code></pre><p>returns the reduced-bias estimates from maximum penalized likelihood:</p><pre><code class="language-julia-repl">julia&gt; isapprox(coef(o1_br), coef(e1_br))
-true</code></pre><h3 id="Bias-reduction-methods-1"><a class="docs-heading-anchor" href="#Bias-reduction-methods-1">Bias-reduction methods</a><a class="docs-heading-anchor-permalink" href="#Bias-reduction-methods-1" title="Permalink"></a></h3><p><strong>MEstimation</strong> currently implements 2 alternative bias reduction methods, called <code>implicit_trace</code> and <code>explicit_trace</code>. <code>implicit_trace</code> will adjust the estimating functions or penalize the objectives, as we have seen earlier. <code>explicit_trace</code>, on the other hand, will form an estimate of the bias of the <span>$M$</span>-estimator and subtract that from the <span>$M$</span>-estimates. The default method is <code>implicit_trace</code>.</p><p>For example, for logistic regression via estimating functions </p><pre><code class="language-julia-repl">julia&gt; e2_br = fit(logistic_template_ef, my_data, true_betas, estimation_method = &quot;RBM&quot;, br_method = &quot;explicit_trace&quot;)
-RBM-estimation with estimating function contributions `logistic_ef`
+──────────────────────────────────────────────────────────────────────────────
+             Estimate  Std. Error    z value  Pr(&gt;|z|)   Lower 95%   Upper 95%
+──────────────────────────────────────────────────────────────────────────────
+theta[1]   -17.5124      2.088     -8.38719     &lt;1e-16  -21.6048    -13.42
+theta[2]     1.2354      1.13902    1.08461     0.2781   -0.997051    3.46784
+theta[3]    -3.8147      1.11491   -3.42154     0.0006   -5.99988    -1.62953
+theta[4]     3.79134     1.05689    3.58725     0.0003    1.71987     5.8628
+theta[5]    -3.69434     1.40476   -2.62988     0.0085   -6.44761    -0.941064
+theta[6]    -2.55227     1.50629   -1.69441     0.0902   -5.50453     0.400002
+theta[7]    -6.8218      1.88731   -3.61457     0.0003  -10.5208     -3.12274
+theta[8]    -6.41405     1.33859   -4.79163     &lt;1e-05   -9.03764    -3.79045
+theta[9]    -0.422571    0.928138  -0.455288    0.6489   -2.24169     1.39655
+theta[10]   -0.235556    1.2173    -0.193507    0.8466   -2.62141     2.1503
+──────────────────────────────────────────────────────────────────────────────
+Adjusted estimating functions:	[-7.760109876105032e-9, -4.6554751571883975e-9, -3.1595236190293042e-9, -5.667127973939888e-9, -2.2173365607324946e-9, -2.70530005859938e-9, -2.2060763223242113e-9, -1.7088852876682721e-9, -5.208711230336687e-9, -3.3428348025724895e-9]
+Converged: true</code></pre><p>returns the reduced-bias estimates from maximum penalized likelihood:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; isapprox(coef(o1_br), coef(e1_br))</code><code class="nohighlight hljs ansi" style="display:block;">false</code></pre><h3 id="Bias-reduction-methods"><a class="docs-heading-anchor" href="#Bias-reduction-methods">Bias-reduction methods</a><a id="Bias-reduction-methods-1"></a><a class="docs-heading-anchor-permalink" href="#Bias-reduction-methods" title="Permalink"></a></h3><p><strong>MEstimation</strong> currently implements 2 alternative bias reduction methods, called <code>implicit_trace</code> and <code>explicit_trace</code>. <code>implicit_trace</code> will adjust the estimating functions or penalize the objectives, as we have seen earlier. <code>explicit_trace</code>, on the other hand, will form an estimate of the bias of the <span>$M$</span>-estimator and subtract that from the <span>$M$</span>-estimates. The default method is <code>implicit_trace</code>.</p><p>For example, for logistic regression via estimating functions </p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; e2_br = fit(logistic_template_ef, my_data, true_betas, estimation_method = &quot;RBM&quot;, br_method = &quot;explicit_trace&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">RBM-estimation with estimating function contributions `logistic_ef`
 Bias reduction method: explicit_trace
 
-───────────────────────────────────────────────────────────────────────────
-            Estimate  Std. Error    z value  Pr(&gt;|z|)  Lower 95%  Upper 95%
-───────────────────────────────────────────────────────────────────────────
-theta[1]    0.895301    2.10014    0.426305    0.6699   -3.2209    5.0115
-theta[2]   -5.11645     1.11115   -4.60463     &lt;1e-5    -7.29427  -2.93863
-theta[3]   -5.46494     1.15431   -4.73437     &lt;1e-5    -7.72736  -3.20253
-theta[4]    0.74801     0.936884   0.798402    0.4246   -1.08825   2.58427
-theta[5]    4.34256     1.20242    3.6115      0.0003    1.98585   6.69926
-theta[6]    5.29117     1.42302    3.71828     0.0002    2.50211   8.08023
-theta[7]    3.87517     1.0339     3.74812     0.0002    1.84877   5.90158
-theta[8]    1.07407     1.09374    0.98202     0.3261   -1.06962   3.21776
-theta[9]   -2.42976     1.13518   -2.14042     0.0323   -4.65466  -0.204855
-theta[10]  -3.93176     1.37586   -2.85768     0.0043   -6.62839  -1.23512
-───────────────────────────────────────────────────────────────────────────
-Adjusted estimating functions:	[0.04705609374707262, -0.0064249302319434876, -0.03901183608447706, 0.01075860044658633, 0.0644619641090736, 0.10170034856149987, 0.07052426640831691, -0.01925324826958494, -0.02383295657436299, -0.03494242367189243]
-Converged: true</code></pre><p>which gives slightly different estimates that what are in the <code>implict_trace</code> fit in <code>e1_br</code>. </p><p>The same can be done using objective functions, but numerical differentiation (using the <a href="https://github.com/JuliaDiff/FiniteDiff.jl">FiniteDiff</a> package) is used to approximate the gradient of the bias-reducing penalty (i.e. <span>$A(\theta)$</span>).</p><pre><code class="language-julia-repl">julia&gt; o2_br = fit(logistic_template, my_data, true_betas, estimation_method = &quot;RBM&quot;, br_method = &quot;explicit_trace&quot;)
-RBM-estimation with objective contributions `logistic_loglik`
+────────────────────────────────────────────────────────────────────────────────
+             Estimate  Std. Error     z value  Pr(&gt;|z|)   Lower 95%    Upper 95%
+────────────────────────────────────────────────────────────────────────────────
+theta[1]   -18.7594      1.47295   -12.7359      &lt;1e-36  -21.6464    -15.8725
+theta[2]     0.980103    0.909501    1.07763     0.2812   -0.802485    2.76269
+theta[3]    -3.11008     0.969043   -3.20944     0.0013   -5.00937    -1.21079
+theta[4]     3.22469     0.914142    3.52756     0.0004    1.43301     5.01638
+theta[5]    -2.92686     1.25522    -2.33175     0.0197   -5.38705    -0.466676
+theta[6]    -2.12556     1.10169    -1.92937     0.0537   -4.28484     0.0337069
+theta[7]    -5.22537     1.23829    -4.21982     &lt;1e-04   -7.65238    -2.79836
+theta[8]    -5.09395     0.937559   -5.43321     &lt;1e-07   -6.93154    -3.25637
+theta[9]    -0.38592     0.75559    -0.510754    0.6095   -1.86685     1.09501
+theta[10]   -0.219085    0.976058   -0.224459    0.8224   -2.13212     1.69395
+────────────────────────────────────────────────────────────────────────────────
+Adjusted estimating functions:	[-5.474460909514576e-9, -3.2215350169060783e-9, -2.340309274374181e-9, -3.879654537632486e-9, -1.6620069066073888e-9, -1.98093772445207e-9, -1.5709390430233212e-9, -1.30816713281371e-9, -3.4865208829177413e-9, -2.3720147831530654e-9]
+Converged: true</code></pre><p>which gives slightly different estimates that what are in the <code>implict_trace</code> fit in <code>e1_br</code>. </p><p>The same can be done using objective functions, but numerical differentiation (using the <a href="https://github.com/JuliaDiff/FiniteDiff.jl">FiniteDiff</a> package) is used to approximate the gradient of the bias-reducing penalty (i.e. <span>$A(\theta)$</span>).</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; o2_br = fit(logistic_template, my_data, true_betas, estimation_method = &quot;RBM&quot;, br_method = &quot;explicit_trace&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">RBM-estimation with objective contributions `logistic_loglik`
 Bias reduction method: explicit_trace
 
-───────────────────────────────────────────────────────────────────────────
-            Estimate  Std. Error    z value  Pr(&gt;|z|)  Lower 95%  Upper 95%
-───────────────────────────────────────────────────────────────────────────
-theta[1]    0.895301    2.10014    0.426305    0.6699   -3.2209    5.0115
-theta[2]   -5.11645     1.11115   -4.60463     &lt;1e-5    -7.29427  -2.93863
-theta[3]   -5.46494     1.15431   -4.73437     &lt;1e-5    -7.72736  -3.20253
-theta[4]    0.74801     0.936884   0.798402    0.4246   -1.08825   2.58427
-theta[5]    4.34256     1.20242    3.6115      0.0003    1.98585   6.69926
-theta[6]    5.29117     1.42302    3.71828     0.0002    2.50211   8.08023
-theta[7]    3.87517     1.0339     3.74812     0.0002    1.84877   5.90158
-theta[8]    1.07407     1.09374    0.98202     0.3261   -1.06962   3.21776
-theta[9]   -2.42976     1.13518   -2.14042     0.0323   -4.65466  -0.204855
-theta[10]  -3.93176     1.37586   -2.85768     0.0043   -6.62839  -1.23512
-───────────────────────────────────────────────────────────────────────────
-Penalized objetive:		-36.607
-Takeuchi information criterion:	81.6646
-Akaike information criterion:	84.7635
-Converged: true
-
-julia&gt; isapprox(coef(e2_br), coef(o2_br))
-true</code></pre><h2 id="Regularization-1"><a class="docs-heading-anchor" href="#Regularization-1">Regularization</a><a class="docs-heading-anchor-permalink" href="#Regularization-1" title="Permalink"></a></h2><p><strong>MEstimation</strong> allows to pass arbitrary regularizers to either the objective or the estimating functions. Below we illustrate that functionality for carrying out ridge logistic regression, and maximum penalized likelihood, with a Jeffreys-prior penalty.</p><h3 id="Ridge-logistic-regression-1"><a class="docs-heading-anchor" href="#Ridge-logistic-regression-1">Ridge logistic regression</a><a class="docs-heading-anchor-permalink" href="#Ridge-logistic-regression-1" title="Permalink"></a></h3><p>The <code>logistic_template</code> that we defined earlier can be used for doing L2-regularized logistic regression (aka ridge logistic regression); we only need to define a function that implements the L2 regularizer</p><pre><code class="language-julia-repl">julia&gt; l2_penalty = (theta, data, λ) -&gt; - λ * sum(theta.^2);</code></pre><p>Then, the coefficient path can be computed as</p><pre><code class="language-julia-repl">julia&gt; lambda = collect(0:0.5:10);
-
-julia&gt; deviance = similar(true_betas);
-
-julia&gt; coefficients = Matrix{Float64}(undef, length(lambda), length(true_betas));
-
-julia&gt; coefficients[1, :] = coef(o1_ml);
-
-julia&gt; for j in 2:length(lambda)
+──────────────────────────────────────────────────────────────────────────
+            Estimate  Std. Error   z value  Pr(&gt;|z|)  Lower 95%  Upper 95%
+──────────────────────────────────────────────────────────────────────────
+theta[1]   -19.6877      3.81443  -5.16137    &lt;1e-06   -27.1638  -12.2115
+theta[2]    -8.82863     2.04132  -4.32497    &lt;1e-04   -12.8295   -4.82772
+theta[3]   -10.442       2.01928  -5.17117    &lt;1e-06   -14.3997   -6.48431
+theta[4]    -8.9447      2.52308  -3.54514    0.0004   -13.8899   -3.99954
+theta[5]    -9.08359     2.86073  -3.17528    0.0015   -14.6905   -3.47667
+theta[6]    -9.20455     1.50095  -6.13249    &lt;1e-09   -12.1464   -6.26275
+theta[7]   -11.4005      2.59277  -4.39704    &lt;1e-04   -16.4822   -6.31878
+theta[8]   -10.5007      1.80888  -5.80507    &lt;1e-08   -14.046    -6.95534
+theta[9]   -10.6194      1.75307  -6.05762    &lt;1e-08   -14.0554   -7.18346
+theta[10]   -6.96113     2.27231  -3.06346    0.0022   -11.4148   -2.50749
+──────────────────────────────────────────────────────────────────────────
+Penalized objetive:		-0.0
+Takeuchi information criterion:	0.0
+Akaike information criterion:	20.0
+Converged: true</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; isapprox(coef(e2_br), coef(o2_br))</code><code class="nohighlight hljs ansi" style="display:block;">false</code></pre><h2 id="Regularization"><a class="docs-heading-anchor" href="#Regularization">Regularization</a><a id="Regularization-1"></a><a class="docs-heading-anchor-permalink" href="#Regularization" title="Permalink"></a></h2><p><strong>MEstimation</strong> allows to pass arbitrary regularizers to either the objective or the estimating functions. Below we illustrate that functionality for carrying out ridge logistic regression, and maximum penalized likelihood, with a Jeffreys-prior penalty.</p><h3 id="Ridge-logistic-regression"><a class="docs-heading-anchor" href="#Ridge-logistic-regression">Ridge logistic regression</a><a id="Ridge-logistic-regression-1"></a><a class="docs-heading-anchor-permalink" href="#Ridge-logistic-regression" title="Permalink"></a></h3><p>The <code>logistic_template</code> that we defined earlier can be used for doing L2-regularized logistic regression (aka ridge logistic regression); we only need to define a function that implements the L2 regularizer</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; l2_penalty = (theta, data, λ) -&gt; - λ * sum(theta.^2);</code><code class="nohighlight hljs ansi" style="display:block;"></code></pre><p>Then, the coefficient path can be computed as</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; lambda = collect(0:0.5:10);</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; deviance = similar(lambda);</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; coefficients = Matrix{Float64}(undef, length(lambda), length(true_betas));</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; coefficients[1, :] = coef(o1_ml);</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; for j in 2:length(lambda)
            current_fit = fit(logistic_template, my_data, coefficients[j - 1, :],
                              regularizer = (theta, data) -&gt; l2_penalty(theta, data, lambda[j]))
            deviance[j] = 2 * current_fit.results.minimum
            coefficients[j, :] = coef(current_fit)
-       end
-ERROR: BoundsError: attempt to access 10-element Array{Float64,1} at index [11]</code></pre><p>The coefficients versus <span>$\lambda$</span>, and the deviance values are then</p><pre><code class="language-julia-repl">julia&gt; using Plots
-
-julia&gt; plot(lambda, coefficients)
-Plot{Plots.GRBackend() n=10}</code></pre><pre><code class="language-julia-repl">julia&gt; plot(deviance, coefficients)
-Plot{Plots.GRBackend() n=10}</code></pre><p>Another way to get the above is to define a new data type that has a filed for <span>$\lambda$</span> and then pass</p><pre><code class="language-julia-repl">julia&gt; l2_penalty = (theta, data) -&gt; - data.λ * sum(theta.^2)
-#5 (generic function with 1 method)</code></pre><p>to the <code>regularizer</code> argument when calling <code>fit</code>. Such a new data type, though, would require to redefine <code>logistic_loglik</code>, <code>logistic_nobs</code> and <code>logistic_template</code>.</p><h3 id="Jeffreys-prior-penalty-for-bias-reduction-1"><a class="docs-heading-anchor" href="#Jeffreys-prior-penalty-for-bias-reduction-1">Jeffreys-prior penalty for bias reduction</a><a class="docs-heading-anchor-permalink" href="#Jeffreys-prior-penalty-for-bias-reduction-1" title="Permalink"></a></h3><p><a href="https://www.jstor.org/stable/2336755">Firth (1993)</a> showed that an alternative bias-reducing penalty for the logistic regression likelihood is the Jeffreys prior,. which can readily implemented and passed to <code>fit</code> through the <code>regularizer</code> interface that <strong>MEstimation</strong> provides. The logarithm of the Jeffreys prior for logistic regression is </p><pre><code class="language-julia-repl">julia&gt; using LinearAlgebra
-
-julia&gt; function log_jeffreys_prior(theta, data)
+       end</code><code class="nohighlight hljs ansi" style="display:block;"></code></pre><p>The coefficients versus <span>$\lambda$</span>, and the deviance values are then</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using Plots</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: ArgumentError: Package Plots not found in current path.
+- Run `import Pkg; Pkg.add(&quot;Plots&quot;)` to install the Plots package.</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; plot(lambda, coefficients);</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: UndefVarError: plot not defined</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; savefig(&quot;coef_path1.svg&quot;);</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: UndefVarError: savefig not defined</code></pre><p><img src="coef_path1.svg" alt/></p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; plot(deviance, coefficients);</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: UndefVarError: plot not defined</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; savefig(&quot;coef_path2.svg&quot;);</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: UndefVarError: savefig not defined</code></pre><p><img src="coef_path2.svg" alt/></p><p>Another way to get the above is to define a new data type that has a filed for <span>$\lambda$</span> and then pass</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; l2_penalty = (theta, data) -&gt; - data.λ * sum(theta.^2)</code><code class="nohighlight hljs ansi" style="display:block;">#5 (generic function with 1 method)</code></pre><p>to the <code>regularizer</code> argument when calling <code>fit</code>. Such a new data type, though, would require to redefine <code>logistic_loglik</code>, <code>logistic_nobs</code> and <code>logistic_template</code>.</p><h3 id="Jeffreys-prior-penalty-for-bias-reduction"><a class="docs-heading-anchor" href="#Jeffreys-prior-penalty-for-bias-reduction">Jeffreys-prior penalty for bias reduction</a><a id="Jeffreys-prior-penalty-for-bias-reduction-1"></a><a class="docs-heading-anchor-permalink" href="#Jeffreys-prior-penalty-for-bias-reduction" title="Permalink"></a></h3><p><a href="https://www.jstor.org/stable/2336755">Firth (1993)</a> showed that an alternative bias-reducing penalty for the logistic regression likelihood is the Jeffreys prior,. which can readily implemented and passed to <code>fit</code> through the <code>regularizer</code> interface that <strong>MEstimation</strong> provides. The logarithm of the Jeffreys prior for logistic regression is </p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using LinearAlgebra</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; function log_jeffreys_prior(theta, data)
            x = data.x
            probs = cdf.(Logistic(), x * theta)
            log(det((x .* (data.m .* probs .* (1 .- probs)))&#39; * x)) / 2
-       end
-log_jeffreys_prior (generic function with 1 method)</code></pre><p>Then, the reduced-bias estimates of <a href="https://www.jstor.org/stable/2336755">Firth (1993)</a> are</p><pre><code class="language-julia-repl">julia&gt; o_jeffreys = fit(logistic_template, my_data, true_betas, regularizer = log_jeffreys_prior)
-M-estimation with objective contributions `logistic_loglik` and user-supplied regularizer
+       end</code><code class="nohighlight hljs ansi" style="display:block;">log_jeffreys_prior (generic function with 1 method)</code></pre><p>Then, the reduced-bias estimates of <a href="https://www.jstor.org/stable/2336755">Firth (1993)</a> are</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; o_jeffreys = fit(logistic_template, my_data, true_betas, regularizer = log_jeffreys_prior)</code><code class="nohighlight hljs ansi" style="display:block;">M-estimation with objective contributions `logistic_loglik` and user-supplied regularizer
 
 ───────────────────────────────────────────────────────────────────────────
             Estimate  Std. Error    z value  Pr(&gt;|z|)  Lower 95%  Upper 95%
 ───────────────────────────────────────────────────────────────────────────
-theta[1]    0.902757    2.12848    0.424131    0.6715   -3.26899   5.07451
-theta[2]   -5.12117     1.12598   -4.54821     &lt;1e-5    -7.32804  -2.9143
-theta[3]   -5.50697     1.17399   -4.6908      &lt;1e-5    -7.80795  -3.20598
-theta[4]    0.731759    0.943289   0.775753    0.4379   -1.11705   2.58057
-theta[5]    4.40532     1.22655    3.59162     0.0003    2.00132   6.80932
-theta[6]    5.35741     1.45244    3.68856     0.0002    2.51069   8.20414
-theta[7]    4.01716     1.05586    3.80464     0.0001    1.94772   6.0866
-theta[8]    0.968304    1.09226    0.886514    0.3753   -1.17249   3.1091
-theta[9]   -2.45574     1.15748   -2.12163     0.0339   -4.72435  -0.187126
-theta[10]  -4.00791     1.41216   -2.83815     0.0045   -6.77569  -1.24013
+theta[1]   -2.72139     0.591575  -4.60025     &lt;1e-05  -3.88086   -1.56193
+theta[2]   -0.709242    0.413271  -1.71616     0.0861  -1.51924    0.100755
+theta[3]   -0.15944     0.402685  -0.395942    0.6921  -0.948687   0.629808
+theta[4]    0.29656     0.408597   0.725801    0.4680  -0.504275   1.09739
+theta[5]    0.329316    0.410825   0.801597    0.4228  -0.475886   1.13452
+theta[6]   -0.222871    0.359498  -0.61995     0.5353  -0.927473   0.481732
+theta[7]    0.679226    0.408675   1.66202     0.0965  -0.121763   1.48021
+theta[8]   -0.292296    0.392618  -0.744479    0.4566  -1.06181    0.477221
+theta[9]   -0.159811    0.378344  -0.422395    0.6727  -0.90135    0.581729
+theta[10]  -0.392374    0.39982   -0.981378    0.3264  -1.17601    0.391258
 ───────────────────────────────────────────────────────────────────────────
-Objective:			-32.3185
-Takeuchi information criterion:	81.7497
-Akaike information criterion:	84.6369
-Converged: false</code></pre><p>Note here, that the <code>regularizer</code> is only used to get estimates. Then all model quantities are computed at those estimates, but based only on <code>logistic_loglik</code> (i.e. without adding the regularizer to it). <a href="http://arxiv.org/abs/1812.01938">Kosmidis &amp; Firth (2020)</a> provide a more specific procedure for computing the reduced-bias estimates from the penalization of the logistic regression likelihood by Jeffreys prior, which uses repeated maximum likelihood fits on adjusted binomial data. <a href="http://arxiv.org/abs/1812.01938">Kosmidis &amp; Firth (2020)</a> also show that, for logistic regression, the reduced-bias estimates from are always finite and shrink to zero relative to the maximum likelihood estimator.</p><p>Regularization is also available when fitting an <code>estimating_function_template</code>. For example, the gradient of the <code>log_jeffreys_prior</code> above is</p><pre><code class="language-julia-repl">julia&gt; using ForwardDiff
+Objective:			-4.6144
+Takeuchi information criterion:	10.2889
+Akaike information criterion:	29.2289
+Converged: true</code></pre><p>Note here, that the <code>regularizer</code> is only used to get estimates. Then all model quantities are computed at those estimates, but based only on <code>logistic_loglik</code> (i.e. without adding the regularizer to it). <a href="http://arxiv.org/abs/1812.01938">Kosmidis &amp; Firth (2020)</a> provide a more specific procedure for computing the reduced-bias estimates from the penalization of the logistic regression likelihood by Jeffreys prior, which uses repeated maximum likelihood fits on adjusted binomial data. <a href="http://arxiv.org/abs/1812.01938">Kosmidis &amp; Firth (2020)</a> also show that, for logistic regression, the reduced-bias estimates from are always finite and shrink to zero relative to the maximum likelihood estimator.</p><p>Regularization is also available when fitting an <code>estimating_function_template</code>. For example, the gradient of the <code>log_jeffreys_prior</code> above is</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using ForwardDiff</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; log_jeffreys_prior_grad = (theta, data) -&gt; ForwardDiff.gradient(pars -&gt; log_jeffreys_prior(pars, data), theta)</code><code class="nohighlight hljs ansi" style="display:block;">#7 (generic function with 1 method)</code></pre><p>Then the same fit as <code>o_jeffreys</code> can be obtained using estimating functions</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; e_jeffreys = fit(logistic_template_ef, my_data, true_betas, regularizer = log_jeffreys_prior_grad)</code><code class="nohighlight hljs ansi" style="display:block;">M-estimation with estimating function contributions `logistic_ef` and user-supplied regularizer
 
-julia&gt; log_jeffreys_prior_grad = (theta, data) -&gt; ForwardDiff.gradient(pars -&gt; log_jeffreys_prior(pars, data), theta)
-#7 (generic function with 1 method)</code></pre><p>Then the same fit as <code>o_jeffreys</code> can be obtained using estimating functions</p><pre><code class="language-julia-repl">julia&gt; e_jeffreys = fit(logistic_template_ef, my_data, true_betas, regularizer = log_jeffreys_prior_grad)
-M-estimation with estimating function contributions `logistic_ef` and user-supplied regularizer
-
-───────────────────────────────────────────────────────────────────────────
-            Estimate  Std. Error    z value  Pr(&gt;|z|)  Lower 95%  Upper 95%
-───────────────────────────────────────────────────────────────────────────
-theta[1]    0.902757    2.12848    0.424132    0.6715   -3.26899   5.07451
-theta[2]   -5.12117     1.12598   -4.54821     &lt;1e-5    -7.32804  -2.9143
-theta[3]   -5.50697     1.17399   -4.6908      &lt;1e-5    -7.80795  -3.20598
-theta[4]    0.731759    0.943289   0.775753    0.4379   -1.11705   2.58057
-theta[5]    4.40532     1.22655    3.59162     0.0003    2.00132   6.80932
-theta[6]    5.35741     1.45244    3.68856     0.0002    2.51069   8.20414
-theta[7]    4.01716     1.05586    3.80464     0.0001    1.94772   6.0866
-theta[8]    0.968304    1.09226    0.886514    0.3753   -1.17249   3.1091
-theta[9]   -2.45574     1.15748   -2.12163     0.0339   -4.72435  -0.187126
-theta[10]  -4.00791     1.41216   -2.83815     0.0045   -6.77569  -1.24013
-───────────────────────────────────────────────────────────────────────────
-Estimating functions:	[-0.05654234767743366, -0.15711133343677602, -0.2224983623352868, -0.0496152937772255, 0.053589253173147666, 0.141776025954009, 0.0496589906960232, -0.06659143373502979, -0.18441489214860096, -0.0968042975258635]
-Converged: true</code></pre><p>Note here that the value of the estimating functions shown in the output is that of the gradient of the log-likelihood, i.e.</p><pre><code class="language-julia-repl">julia&gt; logistic_loglik_grad = estimating_function(coef(e_jeffreys), my_data, logistic_template_ef)
-10-element Array{Float64,1}:
- -0.05654234767743366
- -0.15711133343677602
- -0.2224983623352868
- -0.0496152937772255
-  0.053589253173147666
-  0.141776025954009
-  0.0496589906960232
- -0.06659143373502979
- -0.18441489214860096
- -0.0968042975258635</code></pre><p>instead of the regularized estimating functions, which, as expected, are very close to zero at the estimates</p><pre><code class="language-julia-repl">julia&gt; logistic_loglik_grad .+ log_jeffreys_prior_grad(coef(e_jeffreys), my_data)
-10-element Array{Float64,1}:
- -3.3664765419771925e-11
- -6.854786183119188e-11
- -7.54295514937553e-11
-  3.2645414149712337e-12
- -1.716715658517387e-11
- -1.0427353425157548e-11
-  6.718571532449147e-11
- -3.034239526300553e-12
- -5.1641968479287925e-11
- -3.874026099914829e-11</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../../lib/public/">Public »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 22 April 2020 18:10">Wednesday 22 April 2020</span>. Using Julia version 1.4.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+───────────────────────────────────────────────────────────────────────────────
+              Estimate  Std. Error     z value  Pr(&gt;|z|)   Lower 95%  Upper 95%
+───────────────────────────────────────────────────────────────────────────────
+theta[1]    -2.8426        3.53647  -0.803795     0.4215   -9.77395     4.08876
+theta[2]     5.87135       4.9521    1.18563      0.2358   -3.8346     15.5773
+theta[3]    -5.62689       2.10177  -2.67722      0.0074   -9.74628    -1.5075
+theta[4]     9.55396       5.10385   1.87191      0.0612   -0.449412   19.5573
+theta[5]   -20.6593        8.48364  -2.43519      0.0149  -37.2869     -4.03166
+theta[6]     6.51817       3.74053   1.74258      0.0814   -0.813135   13.8495
+theta[7]   -17.5571        8.11688  -2.16304      0.0305  -33.4659     -1.64833
+theta[8]   -10.6909        4.57575  -2.33642      0.0195  -19.6592     -1.72258
+theta[9]     3.21754       2.44352   1.31677      0.1879   -1.57167     8.00676
+theta[10]    0.0920687     2.91743   0.0315582    0.9748   -5.62598     5.81012
+───────────────────────────────────────────────────────────────────────────────
+Estimating functions:	[-2.5512459989740726, -1.2249989785610222, -1.5796081066190875, -1.623849502093225, -0.45862967327262183, -1.6308852892708967, -0.39014295134018717, -0.7182185110539234, -1.4771057875003222, -1.0369154074033433]
+Converged: false</code></pre><p>Note here that the value of the estimating functions shown in the output is that of the gradient of the log-likelihood, i.e.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; logistic_loglik_grad = estimating_function(coef(e_jeffreys), my_data, logistic_template_ef)</code><code class="nohighlight hljs ansi" style="display:block;">10-element Vector{Float64}:
+ -2.5512459989740726
+ -1.2249989785610222
+ -1.5796081066190875
+ -1.623849502093225
+ -0.45862967327262183
+ -1.6308852892708967
+ -0.39014295134018717
+ -0.7182185110539234
+ -1.4771057875003222
+ -1.0369154074033433</code></pre><p>instead of the regularized estimating functions, which, as expected, are very close to zero at the estimates</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; logistic_loglik_grad .+ log_jeffreys_prior_grad(coef(e_jeffreys), my_data)</code><code class="nohighlight hljs ansi" style="display:block;">10-element Vector{Float64}:
+  0.0050076730923955814
+  0.002448939922122806
+  0.017770078868340144
+ -0.08557776917297888
+  0.08167023760982128
+ -0.03574273043676168
+  0.07032375509459765
+  0.06767600430348009
+  0.008041248591773797
+  0.018981843568285584</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../../lib/public/">Public »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.22 on <span class="colophon-date" title="Thursday 25 August 2022 19:24">Thursday 25 August 2022</span>. Using Julia version 1.8.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
