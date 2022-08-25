@@ -145,12 +145,12 @@ theta[3]    -3.8147      1.11491   -3.42154     0.0006   -5.99988    -1.62953
 theta[4]     3.79134     1.05689    3.58725     0.0003    1.71987     5.8628
 theta[5]    -3.69434     1.40476   -2.62988     0.0085   -6.44761    -0.941064
 theta[6]    -2.55227     1.50629   -1.69441     0.0902   -5.50453     0.400002
-theta[7]    -6.82179     1.88731   -3.61457     0.0003  -10.5208     -3.12274
+theta[7]    -6.8218      1.88731   -3.61457     0.0003  -10.5208     -3.12274
 theta[8]    -6.41405     1.33859   -4.79163     &lt;1e-05   -9.03764    -3.79045
 theta[9]    -0.422571    0.928138  -0.455288    0.6489   -2.24169     1.39655
 theta[10]   -0.235556    1.2173    -0.193507    0.8466   -2.62141     2.1503
 ──────────────────────────────────────────────────────────────────────────────
-Adjusted estimating functions:	[-7.760109872099276e-9, -4.655475157399112e-9, -3.1595236182836216e-9, -5.6671279720315534e-9, -2.217336561400475e-9, -2.7053000608775576e-9, -2.2060763258217927e-9, -1.7088852877251828e-9, -5.208711227184449e-9, -3.3428348041037216e-9]
+Adjusted estimating functions:	[-7.760109876105032e-9, -4.6554751571883975e-9, -3.1595236190293042e-9, -5.667127973939888e-9, -2.2173365607324946e-9, -2.70530005859938e-9, -2.2060763223242113e-9, -1.7088852876682721e-9, -5.208711230336687e-9, -3.3428348025724895e-9]
 Converged: true</code></pre><p>returns the reduced-bias estimates from maximum penalized likelihood:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; isapprox(coef(o1_br), coef(e1_br))</code><code class="nohighlight hljs ansi" style="display:block;">false</code></pre><h3 id="Bias-reduction-methods"><a class="docs-heading-anchor" href="#Bias-reduction-methods">Bias-reduction methods</a><a id="Bias-reduction-methods-1"></a><a class="docs-heading-anchor-permalink" href="#Bias-reduction-methods" title="Permalink"></a></h3><p><strong>MEstimation</strong> currently implements 2 alternative bias reduction methods, called <code>implicit_trace</code> and <code>explicit_trace</code>. <code>implicit_trace</code> will adjust the estimating functions or penalize the objectives, as we have seen earlier. <code>explicit_trace</code>, on the other hand, will form an estimate of the bias of the <span>$M$</span>-estimator and subtract that from the <span>$M$</span>-estimates. The default method is <code>implicit_trace</code>.</p><p>For example, for logistic regression via estimating functions </p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; e2_br = fit(logistic_template_ef, my_data, true_betas, estimation_method = &quot;RBM&quot;, br_method = &quot;explicit_trace&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">RBM-estimation with estimating function contributions `logistic_ef`
 Bias reduction method: explicit_trace
 
@@ -168,23 +168,23 @@ theta[8]    -5.09395     0.937559   -5.43321     &lt;1e-07   -6.93154    -3.2563
 theta[9]    -0.38592     0.75559    -0.510754    0.6095   -1.86685     1.09501
 theta[10]   -0.219085    0.976058   -0.224459    0.8224   -2.13212     1.69395
 ────────────────────────────────────────────────────────────────────────────────
-Adjusted estimating functions:	[-5.47446090960202e-9, -3.2215350169080164e-9, -2.340309274344094e-9, -3.879654537639649e-9, -1.6620069064723074e-9, -1.9809377243771136e-9, -1.570939043088554e-9, -1.3081671328038098e-9, -3.486520882802875e-9, -2.3720147832941833e-9]
+Adjusted estimating functions:	[-5.474460909514576e-9, -3.2215350169060783e-9, -2.340309274374181e-9, -3.879654537632486e-9, -1.6620069066073888e-9, -1.98093772445207e-9, -1.5709390430233212e-9, -1.30816713281371e-9, -3.4865208829177413e-9, -2.3720147831530654e-9]
 Converged: true</code></pre><p>which gives slightly different estimates that what are in the <code>implict_trace</code> fit in <code>e1_br</code>. </p><p>The same can be done using objective functions, but numerical differentiation (using the <a href="https://github.com/JuliaDiff/FiniteDiff.jl">FiniteDiff</a> package) is used to approximate the gradient of the bias-reducing penalty (i.e. <span>$A(\theta)$</span>).</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; o2_br = fit(logistic_template, my_data, true_betas, estimation_method = &quot;RBM&quot;, br_method = &quot;explicit_trace&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">RBM-estimation with objective contributions `logistic_loglik`
 Bias reduction method: explicit_trace
 
 ──────────────────────────────────────────────────────────────────────────
             Estimate  Std. Error   z value  Pr(&gt;|z|)  Lower 95%  Upper 95%
 ──────────────────────────────────────────────────────────────────────────
-theta[1]   -19.6885      3.81435  -5.16169    &lt;1e-06   -27.1645  -12.2125
-theta[2]    -8.82874     2.04152  -4.3246     &lt;1e-04   -12.83     -4.82744
-theta[3]   -10.4424      2.01936  -5.17116    &lt;1e-06   -14.4003   -6.48456
-theta[4]    -8.94337     2.5234   -3.54418    0.0004   -13.8891   -3.9976
-theta[5]    -9.08163     2.86062  -3.1747     0.0015   -14.6884   -3.47491
-theta[6]    -9.20376     1.50091  -6.13212    &lt;1e-09   -12.1455   -6.26203
-theta[7]   -11.4         2.5927   -4.39696    &lt;1e-04   -16.4816   -6.3184
-theta[8]   -10.5003      1.80892  -5.80476    &lt;1e-08   -14.0458   -6.95492
-theta[9]   -10.6199      1.75331  -6.05704    &lt;1e-08   -14.0563   -7.18346
-theta[10]   -6.96344     2.27247  -3.06425    0.0022   -11.4174   -2.50947
+theta[1]   -19.6877      3.81443  -5.16137    &lt;1e-06   -27.1638  -12.2115
+theta[2]    -8.82863     2.04132  -4.32497    &lt;1e-04   -12.8295   -4.82772
+theta[3]   -10.442       2.01928  -5.17117    &lt;1e-06   -14.3997   -6.48431
+theta[4]    -8.9447      2.52308  -3.54514    0.0004   -13.8899   -3.99954
+theta[5]    -9.08359     2.86073  -3.17528    0.0015   -14.6905   -3.47667
+theta[6]    -9.20455     1.50095  -6.13249    &lt;1e-09   -12.1464   -6.26275
+theta[7]   -11.4005      2.59277  -4.39704    &lt;1e-04   -16.4822   -6.31878
+theta[8]   -10.5007      1.80888  -5.80507    &lt;1e-08   -14.046    -6.95534
+theta[9]   -10.6194      1.75307  -6.05762    &lt;1e-08   -14.0554   -7.18346
+theta[10]   -6.96113     2.27231  -3.06346    0.0022   -11.4148   -2.50749
 ──────────────────────────────────────────────────────────────────────────
 Penalized objetive:		-0.0
 Takeuchi information criterion:	0.0
@@ -223,36 +223,36 @@ Converged: true</code></pre><p>Note here, that the <code>regularizer</code> is o
 ───────────────────────────────────────────────────────────────────────────────
               Estimate  Std. Error     z value  Pr(&gt;|z|)   Lower 95%  Upper 95%
 ───────────────────────────────────────────────────────────────────────────────
-theta[1]    -2.79797       3.53135  -0.792324     0.4282   -9.71929     4.12335
-theta[2]     5.85177       4.92341   1.18856      0.2346   -3.79793    15.5015
-theta[3]    -5.54879       2.09062  -2.65413      0.0080   -9.64633    -1.45125
-theta[4]     9.56232       5.13043   1.86384      0.0623   -0.493138   19.6178
-theta[5]   -20.4785        8.32226  -2.46069      0.0139  -36.7898     -4.1672
-theta[6]     6.38901       3.73089   1.71246      0.0868   -0.923392   13.7014
-theta[7]   -17.6612        8.18714  -2.15719      0.0310  -33.7077     -1.61472
-theta[8]   -10.7012        4.61038  -2.3211       0.0203  -19.7373     -1.66499
-theta[9]     3.19947       2.44817   1.30688      0.1913   -1.59885     7.9978
-theta[10]    0.0667298     2.92441   0.0228182    0.9818   -5.66501     5.79847
+theta[1]    -2.8426        3.53647  -0.803795     0.4215   -9.77395     4.08876
+theta[2]     5.87135       4.9521    1.18563      0.2358   -3.8346     15.5773
+theta[3]    -5.62689       2.10177  -2.67722      0.0074   -9.74628    -1.5075
+theta[4]     9.55396       5.10385   1.87191      0.0612   -0.449412   19.5573
+theta[5]   -20.6593        8.48364  -2.43519      0.0149  -37.2869     -4.03166
+theta[6]     6.51817       3.74053   1.74258      0.0814   -0.813135   13.8495
+theta[7]   -17.5571        8.11688  -2.16304      0.0305  -33.4659     -1.64833
+theta[8]   -10.6909        4.57575  -2.33642      0.0195  -19.6592     -1.72258
+theta[9]     3.21754       2.44352   1.31677      0.1879   -1.57167     8.00676
+theta[10]    0.0920687     2.91743   0.0315582    0.9748   -5.62598     5.81012
 ───────────────────────────────────────────────────────────────────────────────
-Estimating functions:	[-2.5499385846674096, -1.2267080678383444, -1.5814116404465246, -1.6263514421542489, -0.46127405373866276, -1.6300048300256176, -0.3886970820472852, -0.7169691379612477, -1.4753766668065311, -1.0386761122985442]
+Estimating functions:	[-2.5512459989740726, -1.2249989785610222, -1.5796081066190875, -1.623849502093225, -0.45862967327262183, -1.6308852892708967, -0.39014295134018717, -0.7182185110539234, -1.4771057875003222, -1.0369154074033433]
 Converged: false</code></pre><p>Note here that the value of the estimating functions shown in the output is that of the gradient of the log-likelihood, i.e.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; logistic_loglik_grad = estimating_function(coef(e_jeffreys), my_data, logistic_template_ef)</code><code class="nohighlight hljs ansi" style="display:block;">10-element Vector{Float64}:
- -2.5499385846674096
- -1.2267080678383444
- -1.5814116404465246
- -1.6263514421542489
- -0.46127405373866276
- -1.6300048300256176
- -0.3886970820472852
- -0.7169691379612477
- -1.4753766668065311
- -1.0386761122985442</code></pre><p>instead of the regularized estimating functions, which, as expected, are very close to zero at the estimates</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; logistic_loglik_grad .+ log_jeffreys_prior_grad(coef(e_jeffreys), my_data)</code><code class="nohighlight hljs ansi" style="display:block;">10-element Vector{Float64}:
-  0.008001676862369855
-  0.0022977566545099304
-  0.018539029846736055
- -0.08383973088877483
-  0.08302982327507508
- -0.03534398545997175
-  0.06969364460488003
-  0.066260115156075
-  0.00815357954767415
-  0.014606402949612463</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../../lib/public/">Public »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.22 on <span class="colophon-date" title="Thursday 25 August 2022 19:38">Thursday 25 August 2022</span>. Using Julia version 1.8.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+ -2.5512459989740726
+ -1.2249989785610222
+ -1.5796081066190875
+ -1.623849502093225
+ -0.45862967327262183
+ -1.6308852892708967
+ -0.39014295134018717
+ -0.7182185110539234
+ -1.4771057875003222
+ -1.0369154074033433</code></pre><p>instead of the regularized estimating functions, which, as expected, are very close to zero at the estimates</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; logistic_loglik_grad .+ log_jeffreys_prior_grad(coef(e_jeffreys), my_data)</code><code class="nohighlight hljs ansi" style="display:block;">10-element Vector{Float64}:
+  0.0050076730923955814
+  0.002448939922122806
+  0.017770078868340144
+ -0.08557776917297888
+  0.08167023760982128
+ -0.03574273043676168
+  0.07032375509459765
+  0.06767600430348009
+  0.008041248591773797
+  0.018981843568285584</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../../lib/public/">Public »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.22 on <span class="colophon-date" title="Thursday 25 August 2022 20:46">Thursday 25 August 2022</span>. Using Julia version 1.8.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
