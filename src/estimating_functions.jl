@@ -171,8 +171,8 @@ function ef_quantities(theta::Vector,
                 nce = deleteat!(collect(1:p), concentrate)
                 A_ist = A[ist]
                 A_nce = A[nce]
-                A = vcat(A_ist + inv(jmat_inv[ist, ist]) * jmat_inv[ist, nce] * A_nce,
-                         zeros(length(nce)))
+                A = zeros(p)
+                A[ist] = A_ist + inv(jmat_inv[ist, ist]) * jmat_inv[ist, nce] * A_nce
             end
         end
         [A, jmat_inv, emat, psi]

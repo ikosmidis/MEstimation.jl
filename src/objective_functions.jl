@@ -92,9 +92,15 @@ function obj_quantities(theta::Vector,
     vcov = jmat_inv * (emat * jmat_inv)
     if (penalty)        
         br_penalty = - tr(jmat_inv * emat) / 2
-        # br_penalty = n_obs * log(det(Matrix{Float64}(I * n_obs, p, p) -
-        #                              jmat_inv * emat)) / 2
-        # br_penalty = + log(det(sum(njmats))) / 2 - log(det(emat)) / 2
+        # br_penalty = try n_obs * log(det(Matrix{Float64}(I * n_obs, p, p) -
+        #                                  jmat_inv * emat)) / 2
+        # catch
+        #     NaN
+        # end
+        # br_penalty = try + log(det(jmat)) / 2 - log(det(emat)) / 2
+        # catch
+        #     NaN
+        # end
         [br_penalty, jmat_inv, emat, psi]
     else
         [vcov, jmat_inv, emat, psi]
