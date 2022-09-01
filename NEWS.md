@@ -1,11 +1,9 @@
-# MEstimation 0.1.x
-
-## New functionality
-
-## Bug fixes
+# MEstimation 0.2.0
 
 ## Other improvements, updates and additions
 
++ Work on compatibility with dependencies to avoid downgrades of packages when installing MEstimation.
++ Moved CI to github actions.
 
 # MEstimation 0.1.0 
 
