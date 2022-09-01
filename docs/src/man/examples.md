@@ -218,12 +218,12 @@ isapprox(coef(e2_br), coef(o2_br))
 
 ### Ridge logistic regression
 The `logistic_template` that we defined earlier can be used for doing L2-regularized logistic regression (aka ridge logistic regression); we only need to define a function that implements the L2 regularizer
-```@repl2
+```@repl 2
 l2_penalty = (theta, data, λ) -> - λ * sum(theta.^2);
 ```
 
 Then, the coefficient path can be computed as
-```@repl2
+```@repl 2
 lambda = collect(0:0.5:10);
 deviance = similar(lambda);
 coefficients = Matrix{Float64}(undef, length(lambda), length(true_betas));
@@ -237,28 +237,28 @@ end
 ```
 
 The coefficients versus ``\lambda``, and the deviance values are then
-```@repl2
+```@repl 2
 using Plots
 plot(lambda, coefficients);
 savefig("coef_path1.svg");
 ```
 ![](coef_path1.svg)
 
-```@repl2
+```@repl 2
 plot(deviance, coefficients);
 savefig("coef_path2.svg");
 ```
 ![](coef_path2.svg)
 
 Another way to get the above is to define a new data type that has a filed for ``\lambda`` and then pass
-```@repl2
+```@repl 2
 l2_penalty = (theta, data) -> - data.λ * sum(theta.^2)
 ```
 to the `regularizer` argument when calling `fit`. Such a new data type, though, would require to redefine `logistic_loglik`, `logistic_nobs` and `logistic_template`.
 
 ### Jeffreys-prior penalty for bias reduction
 [Firth (1993)](https://www.jstor.org/stable/2336755) showed that an alternative bias-reducing penalty for the logistic regression likelihood is the Jeffreys prior,. which can readily implemented and passed to `fit` through the `regularizer` interface that **MEstimation** provides. The logarithm of the Jeffreys prior for logistic regression is 
-```@repl2
+```@repl 2
 using LinearAlgebra
 
 function log_jeffreys_prior(theta, data)
@@ -269,28 +269,28 @@ end
 ```
 
 Then, the reduced-bias estimates of [Firth (1993)](https://www.jstor.org/stable/2336755) are
-```@repl2
+```@repl 2
 o_jeffreys = fit(logistic_template, my_data, true_betas, regularizer = log_jeffreys_prior)
 ```
 
 Note here, that the `regularizer` is only used to get estimates. Then all model quantities are computed at those estimates, but based only on `logistic_loglik` (i.e. without adding the regularizer to it). [Kosmidis & Firth (2020)](http://arxiv.org/abs/1812.01938) provide a more specific procedure for computing the reduced-bias estimates from the penalization of the logistic regression likelihood by Jeffreys prior, which uses repeated maximum likelihood fits on adjusted binomial data. [Kosmidis & Firth (2020)](http://arxiv.org/abs/1812.01938) also show that, for logistic regression, the reduced-bias estimates from are always finite and shrink to zero relative to the maximum likelihood estimator.
 
 Regularization is also available when fitting an `estimating_function_template`. For example, the gradient of the `log_jeffreys_prior` above is
-```@repl2
+```@repl 2
 using ForwardDiff
 log_jeffreys_prior_grad = (theta, data) -> ForwardDiff.gradient(pars -> log_jeffreys_prior(pars, data), theta)
 ```
 
 Then the same fit as `o_jeffreys` can be obtained using estimating functions
-```@repl2
+```@repl 2
 e_jeffreys = fit(logistic_template_ef, my_data, true_betas, regularizer = log_jeffreys_prior_grad)
 ```
 Note here that the value of the estimating functions shown in the output is that of the gradient of the log-likelihood, i.e.
-```@repl2
+```@repl 2
 logistic_loglik_grad = estimating_function(coef(e_jeffreys), my_data, logistic_template_ef)
 ```
 instead of the regularized estimating functions, which, as expected, are very close to zero at the estimates
-```@repl2
+```@repl 2
 logistic_loglik_grad .+ log_jeffreys_prior_grad(coef(e_jeffreys), my_data)
 ```
 

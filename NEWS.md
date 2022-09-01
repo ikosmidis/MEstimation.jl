@@ -1,3 +1,10 @@
+# MEstimation 0.2.0
+
+## Other improvements, updates and additions
+
++ Work on compatibility with dependencies to avoid downgrades of packages when installing MEstimation.
++ Moved CI to github actions.
+
 # MEstimation 0.1.0 
 
 The below are changes from [GEEBRA](https://github.com/ikosmidis/GEEBRA.jl) v0.1.0 codebase, on which MEstimation was based on.
